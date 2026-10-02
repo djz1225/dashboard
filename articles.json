@@ -1,0 +1,115 @@
+[
+  {
+    "specialty": "肾内科",
+    "date": "2026-09-30",
+    "title": "ASN 2026 CKM 指南：心血管-肾脏-代谢综合征（首部肾内主导）",
+    "url": "https://www.asn-online.org/education/guidelines/",
+    "points": [
+      "所有 CKD 患者至少归入 CKM 2 期，极高危 CKD 直接归入 3 期，应尽早上多靶点药物。",
+      "四大支柱药物：RASi、SGLT2i、非奈利酮（UACR≥30 加用）、GLP-1 RA（UACR≥100 加用）。",
+      "中国共识更积极：UACR≥30 mg/g 即可启动 RASi+SGLT2i+nsMRA 三联。",
+      "CKD 患者心血管死亡风险是普通人群的 10~30 倍，须整体干预。"
+    ],
+    "url_status": "HTTP 404"
+  },
+  {
+    "specialty": "肾内科",
+    "date": "2026-05-31",
+    "title": "中国慢性肾脏病筛查、诊断及治疗临床实践指南（2026版）",
+    "url": "https://rs.yiigle.com/cmaid/1687484",
+    "points": [
+      "CKD 诊断：肾脏结构/功能异常持续超过 3 个月并影响健康；危险分层 = eGFR 分期 × 尿白蛋白分级（1低/2中/3高/4极高危）。",
+      "GFR 分层精准评估：eGFRcr、eGFRcys、eGFRcr-cys、mGFR，基层可用 POCT 即时检测。",
+      "首次明确 G3~G5 期用 KFRE 评估肾衰绝对风险（G1~G2 不适用）；5 年>3%~5% 转诊、2 年>40% 备透析。",
+      "成人每年体检检测尿常规+UACR+Scr。"
+    ],
+    "url_status": 200
+  },
+  {
+    "specialty": "肾内科",
+    "date": "2026-01-27",
+    "title": "KDIGO 2026 慢性肾脏病贫血管理临床实践指南",
+    "url": "https://kdigo.org/guidelines/anemia-in-ckd/",
+    "points": [
+      "ESA 为肾性贫血一线治疗；Hb 目标 <11.5 g/L。",
+      "术语更新：绝对铁缺乏→“系统性铁缺乏”；功能性铁缺乏→“铁限制性红细胞生成”。",
+      "HD 铁蛋白≤500、TSAT≤30% 提示补铁；非透析 <100。<11.5 g/L 起始 ESA。"
+    ],
+    "url_status": 200
+  },
+  {
+    "specialty": "内分泌·体重管理",
+    "date": "2026-08-20",
+    "title": "肥胖患者的长期体重管理及药物临床应用指南（2026版）",
+    "url": "https://guide.medlive.cn/guideline/40100",
+    "points": [
+      "治疗药物首选 NuSH（营养刺激激素）受体激动剂；国内已获批 6 款：贝那鲁肽、利拉鲁肽、司美格鲁肽、埃诺格鲁肽、替尔泊肽、玛仕度肽。",
+      "管理分两阶段：强化治疗期 + 治疗维持期；采用“治疗达标”而非“序贯治疗”。",
+      "适应证：BMI≥28，或 BMI≥24 且伴≥1 种体重相关合并症。",
+      "老年/肌少症：减重宜缓；合并心血管/肾脏优先司美格鲁肽/替尔泊肽，肌少症高风险优先替尔泊肽。"
+    ],
+    "url_status": 302
+  },
+  {
+    "specialty": "内分泌·体重管理",
+    "date": "2026-05-20",
+    "title": "2 型糖尿病缓解专家共识（2026版）",
+    "url": "https://news.medlive.cn/all/info-news/show-248772.html",
+    "points": [
+      "缓解定义：停用降糖药≥3 个月后 HbA1c<6.5%（或空腹血糖<7.0 mmol/L）。",
+      "ABCD 筛选适用人群：抗体阴性 / BMI≥25（或腰围男>90、女>85）/ 空腹 C 肽≥1.1 且 2h≥2.5 / 病程≤5 年。",
+      "减重是核心：减重>15kg 缓解率可达 86%；确诊后 6 年内每减重 1%，缓解率约+5%。",
+      "路径：强化生活方式（A级）+ 药物（GLP-1/SGLT2i，B级）+ 代谢手术（BMI≥32.5，A级）。缓解≠治愈。"
+    ],
+    "url_status": 301
+  },
+  {
+    "specialty": "内分泌·体重管理",
+    "date": "2026-02-25",
+    "title": "中国成人体重管理指南（中华医学会内分泌学分会）",
+    "url": "https://www.sgpjbg.com.cn/searchtag/26348781.html",
+    "points": [
+      "首次将“超重/肥胖”与“消瘦”纳入统一管理框架。",
+      "诊断打破“唯 BMI 论”：采用“体脂测量+疾病体征”双轴模型，腰高比与 BMI 并列。",
+      "目标：多数超重/轻度肥胖 3~6 个月减 5%~15%；消瘦恢复至 BMI≥18.5 并维持肌肉量。"
+    ],
+    "url_status": "<urlopen error timed out>"
+  },
+  {
+    "specialty": "心血管",
+    "date": "2026-09-01",
+    "title": "ESH 首部腕式血压手表共识声明",
+    "url": "https://www.icirculation.com/",
+    "points": [
+      "281 篇文献中仅 2 款腕表式血压计通过严格验证（Omron HeartGuide、Huawei Watch D/D2）。",
+      "三条铁律：只用经过验证的机型、腕部与心脏同水平、腕围>21cm 及儿童/孕妇/房颤需独立验证。",
+      "定位：在医疗监督下按“家庭血压监测”模式使用，暂不能替代动态血压。"
+    ],
+    "url_status": 200
+  },
+  {
+    "specialty": "心血管",
+    "date": "2026-08-28",
+    "title": "2026 ESC/ERA 心血管疾病与慢性肾脏病（CVD-CKD）管理指南",
+    "url": "https://guide.medlive.cn/guideline/40307",
+    "points": [
+      "全球首部 CVD+CKD 共病指南，核心框架“STAMP on CKD”（筛查/分诊/干预/调整CVD/规划服务）。",
+      "所有 CVD 患者均测 eGFR + UACR 筛查 CKD；G3~G5 用 KFRE 评估进展风险。",
+      "用药骨架：ACEI/ARB + SGLT2i + 他汀（非透析 CKD 无论血脂均用）+ 选择性 finerenone/司美格鲁肽。"
+    ],
+    "url_status": 302
+  },
+  {
+    "specialty": "心血管",
+    "date": "2026-03-14",
+    "title": "2026 ACC/AHA 血脂异常管理指南",
+    "url": "https://professional.heart.org/en/science-news/2026-guideline-on-the-management-of-dyslipidemia",
+    "points": [
+      "风险评估改用 PREVENT-ASCVD 方程，适用年龄下探至 30 岁，同时估算 10 年/30 年风险。",
+      "重新启用 LDL-C 与非 HDL-C 目标值；极高危 LDL-C<55 mg/dL。",
+      "所有成人一生至少测一次 Lp(a)；必要时加测 ApoB、冠状动脉钙化（CAC）。",
+      "40~75 岁合并 CKD≥3 期或 HIV 者，无论 LDL 水平均启动降脂治疗。"
+    ],
+    "url_status": 403
+  }
+]
