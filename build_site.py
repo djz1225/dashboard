@@ -303,7 +303,42 @@ table.arttbl{font-size:15.5px}
 .art-d{color:var(--mut);white-space:nowrap;width:96px;font-size:14px}
 tr.art-p td{color:#42533f;font-size:15px;padding-top:2px;border-bottom:1px solid #e6eddd}
 footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);color:var(--mut);font-size:13px}
-@media(max-width:860px){.g4,.g3{grid-template-col4px;width:84px}}
+@media(max-width:860px){
+.g4,.g3{grid-template-columns:1fr 1fr}
+.g2{grid-template-columns:1fr}
+.bl{width:84px;flex:0 0 84px}
+h1{font-size:22px}
+.iprice{font-size:20px}
+.stitle{font-size:17px}
+.inm{font-size:16.5px}
+.pts{font-size:15.5px;margin-left:26px}
+table.itbl{margin-left:26px;width:calc(100% - 26px)}
+.go{margin-left:26px}
+}
+@media(max-width:560px){
+body{padding:14px 10px}
+.grid{gap:10px}
+.g4,.g3,.g2{grid-template-columns:1fr}
+h1{font-size:19px}
+h2{font-size:16.5px;margin:24px 0 12px;padding-left:9px}
+.icard{padding:12px}
+.iprice{font-size:19px}
+.tbl{padding:10px 12px}
+.chart{padding:12px 14px}
+.bl{width:64px;flex:0 0 64px;font-size:12px}
+.bv{width:26px;font-size:12px}
+.bt{height:13px}
+.stitle{font-size:15.5px}
+.inm{font-size:15px}
+.num{width:22px;height:22px;flex-basis:22px;font-size:13px}
+.pts{font-size:14.5px;margin:0 0 8px 12px}
+table.itbl{margin-left:12px;width:calc(100% - 12px);font-size:13px}
+.go{margin-left:12px;font-size:13.5px}
+.tag{font-size:13.5px;padding:2px 9px}
+table{font-size:13px}
+td,th{padding:6px 5px}
+.tbl,.scard{overflow-x:auto}
+}
 """
 
 MAIN_TPL = """<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
@@ -351,6 +386,7 @@ th{background:#eef5e9;font-weight:700;color:#1d3a28}
 .src{background:#f3f7ee;border:1px solid #d3ddc7;border-radius:10px;padding:14px 16px;margin:18px 0;font-size:15px}
 .src a{color:#3b6ea5;text-decoration:none;font-weight:600}
 .back{display:inline-block;margin-top:10px;color:#3b6ea5;font-weight:600;text-decoration:none}
+@media(max-width:680px){body{padding:16px 10px}.wrap{padding:18px 14px;border-radius:10px}h2{font-size:20px}h3{font-size:17px}h4{font-size:15.5px}p,li{font-size:15px}table{font-size:14px}td,th{padding:6px 7px}}
 """
 
 def md_to_html(md):
