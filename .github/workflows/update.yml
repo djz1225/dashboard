@@ -8,6 +8,7 @@ on:
     paths:
       - "specialties/**"
       - "articles.json"
+      - "*.py"
 
 permissions:
   contents: read
