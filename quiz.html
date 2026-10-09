@@ -159,7 +159,7 @@ const LS = 'hndk_v2';
 /* 官方来源校验：防止他人把本应用复制（fork）后篡改，冒充官方分享给同事 */
 const OFFICIAL_HOST = 'djz1225.github.io';
 const OFFICIAL_PATH = '/dashboard/quiz.html';
-const APP_VERSION = '2026-10-09-v4';
+const APP_VERSION = '2026-10-09-v5';
 const OFFICIAL_URL = 'https://' + OFFICIAL_HOST + OFFICIAL_PATH;
 (function sourceGuard(){
   try{
@@ -305,6 +305,12 @@ function renderHome(){
     <span class="go">进入背题 ▶</span>
   </div>
 
+  ${(function(){const un=(pool(fScope,fTag)).filter(i=>(state.know||{})[i]==='un').length;
+    return un?`<div class="card" onclick="startMemorizeUn()" style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border:1.5px solid #fecaca;background:#fff7f7">
+    <div><div style="font-weight:700;font-size:15.5px;color:#b91c1c">🔥 只看不熟（${un} 题）</div>
+    <div style="font-size:12.5px;color:#9a7b7b;margin-top:3px">专攻标记为「不熟」的题，逐个攻克</div></div>
+    <div style="color:#dc2626;font-weight:700;font-size:20px">›</div></div>`:'';})()}
+
   <div class="grid2" style="margin-top:14px">
     <div class="stat"><div class="n">${state.stats.total}</div><div class="l">累计答题</div></div>
     <div class="stat"><div class="n">${rate}%</div><div class="l">总正确率</div></div>
@@ -336,21 +342,34 @@ function setMode(v){mode=v;save();render()}
 function startPractice(){nextQuestion();nav('practice')}
 
 /* ============ 背题模式 ============ */
-let mem={idx:0, revealed:true, list:null};
+let mem={idx:0, revealed:true, list:null, onlyUn:false};
 function memList(){
   const pl=pool(fScope,fTag);
   const knows=state.know||{};
-  const hideKnown = state.memHideKnown;
-  let arr = hideKnown? pl.filter(i=>knows[i]!=='know') : pl;
-  return arr.length?arr:pl;
+  let arr;
+  if(mem.onlyUn){ arr = pl.filter(i=>knows[i]==='un'); }
+  else if(state.memHideKnown){ arr = pl.filter(i=>knows[i]!=='know'); }
+  else { arr = pl; }
+  return arr;
 }
-function startMemorize(){ mem.list=null; mem.idx=0; mem.revealed=true; nav('memorize'); }
-function memEnsure(){ if(!mem.list||!mem.list.length){ mem.list=memList(); if(mem.idx>=mem.list.length) mem.idx=0; } }
+function startMemorize(){ mem={idx:0,revealed:true,list:null,onlyUn:false}; nav('memorize'); }
+function startMemorizeUn(){
+  const unCount=(pool(fScope,fTag)).filter(i=>(state.know||{})[i]==='un').length;
+  if(!unCount){ alert('当前范围还没有标记「不熟」的题。\n先进入背题模式，把不熟的题标出来吧。'); return; }
+  mem={idx:0,revealed:true,list:null,onlyUn:true}; nav('memorize');
+}
+function memEnsure(){ if(!mem.list){ mem.list=memList(); if(mem.idx>=mem.list.length) mem.idx=0; } }
 function memMark(type){
   memEnsure(); if(!mem.list.length)return;
   const qi=mem.list[mem.idx]; state.know=state.know||{};
   if(state.know[qi]===type) delete state.know[qi]; else state.know[qi]=type;
-  save(); renderMemorize();
+  save();
+  if(mem.onlyUn && state.know[qi]!=='un'){ // 在"只看不熟"下标记为已掌握/取消 → 从队列移除
+    mem.list.splice(mem.idx,1);
+    if(mem.idx>=mem.list.length) mem.idx=Math.max(0,mem.list.length-1);
+    if(!mem.list.length){ renderMemorize(); return; }
+  }
+  renderMemorize();
 }
 function memJump(){ memEnsure();
   const el=document.getElementById('memJump');
@@ -361,19 +380,23 @@ function memPrev(){ memEnsure(); if(mem.idx>0){mem.idx--;renderMemorize();} }
 function memNext(){
   memEnsure(); if(!mem.list.length)return;
   if(mem.idx<mem.list.length-1){mem.idx++;renderMemorize();}
-  else{ // 到底：提示
-    const b=document.getElementById('memEndTip'); if(b){b.textContent='🎉 已到最后一题';setTimeout(()=>b.textContent='',1500);} }
+  else{ const b=document.getElementById('memEndTip'); if(b){b.textContent='🎉 已到最后一题';setTimeout(()=>b.textContent='',1500);} }
 }
 function toggleKnowFilter(){
   state.memHideKnown=!state.memHideKnown; save(); mem.list=null; mem.idx=0; renderMemorize();
 }
+function toggleOnlyUn(){ mem.onlyUn=!mem.onlyUn; mem.list=null; mem.idx=0; renderMemorize(); }
 function renderMemorize(){
   memEnsure();
   const c=document.getElementById('main');
-  const total=memList().length; // 用于显示总数（受筛选影响）
   const knows=state.know||{};
   if(!mem.list.length){
-    c.innerHTML=`<div class="empty"><div class="ico">📖</div>该范围暂无题目</div>`;
+    const unCnt=(pool(fScope,fTag)).filter(i=>knows[i]==='un').length;
+    const msg = mem.onlyUn
+      ? (unCnt? '当前筛选下没有更多「不熟」的题了':'当前范围还没有标记「不熟」的题')
+      : '该范围暂无题目';
+    c.innerHTML=`<div class="empty"><div class="ico">${mem.onlyUn?'🎉':'📖'}</div>${msg}
+      ${mem.onlyUn?'<br><br><span style="color:#0f766e;font-weight:600" onclick="mem.onlyUn=false;mem.list=null;mem.idx=0;renderMemorize()">← 返回全部背题</span>':''}</div>`;
     document.getElementById('toolbar').innerHTML=`<button class="btn gray small" onclick="nav('home')">首页</button>
       <button class="btn pri" onclick="startPractice()">正常刷题 ▶</button>`;
     return;
@@ -381,7 +404,6 @@ function renderMemorize(){
   const qi=mem.list[mem.idx]; const q=DATA[qi];
   const stem=q[0],opts=q[1],ans=q[2],ok=q[3]; const isRw=q[4]==='rw';
   const mark=knows[qi];
-  // 已掌握/不熟 计数（全库）
   const allKnow=Object.values(knows).filter(v=>v==='know').length;
   const allUn=Object.values(knows).filter(v=>v==='un').length;
   let optsHtml='';
@@ -396,11 +418,14 @@ function renderMemorize(){
   <div class="mem-stats">
     <div class="it"><b>${allKnow}</b><span>已掌握</span></div>
     <div class="it"><b>${allUn}</b><span>不熟</span></div>
-    <div class="it"><b>${total}</b><span>当前范围</span></div>
+    <div class="it"><b>${mem.list.length}</b><span>${mem.onlyUn?'不熟队列':'当前范围'}</span></div>
   </div>
   <div class="mem-nav">
-    <div class="jump">跳到 <input id="memJump" type="number" min="1" max="${mem.list.length}" placeholder="${mem.idx+1}" onkeydown="if(event.key==='Enter')memJump()"> / ${mem.list.length} <span style="color:#0f766e;font-weight:600;cursor:pointer" onclick="memJump()">前往</span></div>
-    <div class="chip ${state.memHideKnown?'on':''}" style="margin:0;padding:6px 12px;font-size:12.5px" onclick="toggleKnowFilter()">隐藏已掌握</div>
+    <div class="jump">跳到 <input id="memJump" type="number" min="1" max="${mem.list.length}" value="${mem.idx+1}" onkeydown="if(event.key==='Enter')memJump()"> / ${mem.list.length} <span style="color:#0f766e;font-weight:600;cursor:pointer" onclick="memJump()">前往</span></div>
+    <div style="display:flex;gap:6px">
+      <div class="chip ${mem.onlyUn?'on':''}" style="margin:0;padding:6px 11px;font-size:12px" onclick="toggleOnlyUn()">只看不熟</div>
+      <div class="chip ${(state.memHideKnown&&!mem.onlyUn)?'on':''}" style="margin:0;padding:6px 11px;font-size:12px" onclick="toggleKnowFilter()">隐藏已掌握</div>
+    </div>
   </div>
   <div class="card">
     <div class="qmeta" style="justify-content:flex-start;gap:8px;flex-wrap:wrap">
@@ -613,6 +638,24 @@ function renderStats(){
       <span style="flex:0 0 54px;text-align:right;color:#475569">${s.n}题${s.n>=DAILY_GOAL?' ✅':''}</span></div>`;});
   const exams=(state.exams||[]).slice(0,10);
   const trend=trendChart(state.exams||[]);
+  const knows=state.know||{};
+  const mKnow=Object.values(knows).filter(v=>v==='know').length;
+  const mUn=Object.values(knows).filter(v=>v==='un').length;
+  const mMarked=mKnow+mUn, mTotal=DATA.length, mOpen=Math.max(0,mTotal-mMarked);
+  const pKnow=Math.round(mKnow/mTotal*100), pUn=Math.round(mUn/mTotal*100), pOpen=Math.max(0,100-pKnow-pUn);
+  // 按科目掌握情况（Top 弱项：不熟最多）
+  const spStat={};
+  Object.keys(knows).forEach(i=>{const q=DATA[i]; if(!q)return; const s=q[5]||'其他';
+    (spStat[s]=spStat[s]||{k:0,u:0}); (knows[i]==='know'?spStat[s].k++:spStat[s].u++);});
+  const weakList=Object.keys(spStat).map(s=>({s,...spStat[s]})).filter(x=>x.u>0).sort((a,b)=>b.u-a.u).slice(0,8);
+  const weakHtml=weakList.length?weakList.map(x=>{
+    const tot=x.k+x.u; const pctK=Math.round(x.k/tot*100);
+    return `<div style="display:flex;align-items:center;gap:10px;margin:9px 0;font-size:12.5px">
+      <span style="flex:0 0 92px;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(x.s)}</span>
+      <span style="flex:1;background:#eef2f6;border-radius:6px;height:16px;overflow:hidden;display:flex">
+        <i style="width:${pctK}%;background:#16a34a;height:100%"></i><i style="width:${100-pctK}%;background:#f87171;height:100%"></i></span>
+      <span style="flex:0 0 76px;text-align:right;color:#475569">熟${x.k} 不熟${x.u}</span></div>`;
+  }).join(''):'<div class="empty" style="padding:20px">还没有背题标记，去「背题模式」标记已掌握/不熟</div>'
   let examHtml=exams.length?exams.map(e=>{
     const dt=new Date(e.ts); const ds=(dt.getMonth()+1)+'/'+dt.getDate()+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
     return `<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eef2f6;font-size:14px">
@@ -626,6 +669,20 @@ function renderStats(){
     <div class="stat"><div class="n">${days.length}</div><div class="l">刷题天数</div></div>
     <div class="stat"><div class="n">${state.wrong.length}</div><div class="l">错题数</div></div>
   </div>
+  <div class="sect">背题掌握度（共 ${mTotal} 题）</div>
+  <div class="card" style="padding:14px 16px">
+    <div style="display:flex;height:20px;border-radius:8px;overflow:hidden;background:#eef2f6">
+      <i style="width:${pKnow}%;background:#16a34a"></i><i style="width:${pUn}%;background:#f87171"></i>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#64748b;margin-top:8px">
+      <span><b style="color:#16a34a">● 已掌握 ${mKnow}</b>（${pKnow}%）</span>
+      <span><b style="color:#dc2626">● 不熟 ${mUn}</b>（${pUn}%）</span>
+      <span>○ 未标记 ${mOpen}（${pOpen}%）</span>
+    </div>
+    ${mUn>0?`<div style="margin-top:12px"><div class="chip" style="margin:0;padding:9px 14px;font-size:13px;border-color:#dc2626;color:#b91c1c;display:inline-block" onclick="startMemorizeUn()">🔥 专攻不熟的 ${mUn} 题 →</div></div>`:''}
+  </div>
+  <div class="sect">薄弱科目（不熟数排序）</div>
+  <div class="card" style="padding:12px 16px">${weakHtml}</div>
   <div class="sect">模拟考试成绩趋势</div>
   <div class="card" style="padding:12px 8px">${trend}</div>
   <div class="sect">近 14 天打卡</div>
