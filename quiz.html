@@ -89,6 +89,33 @@ main{flex:1;padding:14px 14px 96px}
 .examcard h3{font-size:19px;font-weight:800;margin-bottom:6px}
 .examcard p{font-size:13px;opacity:.9;line-height:1.7}
 .examcard .go{display:inline-block;margin-top:14px;background:#fff;color:#1e3a8a;font-weight:700;font-size:14px;padding:9px 20px;border-radius:22px}
+.memcard{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border-radius:16px;padding:20px;box-shadow:0 6px 20px rgba(124,58,237,.28);cursor:pointer;position:relative;overflow:hidden}
+.memcard:active{transform:scale(.99)}
+.memcard h3{font-size:19px;font-weight:800;margin-bottom:6px}
+.memcard p{font-size:13px;opacity:.92;line-height:1.7}
+.memcard .go{display:inline-block;margin-top:14px;background:#fff;color:#7c3aed;font-weight:700;font-size:14px;padding:9px 20px;border-radius:22px}
+/* 背题模式 */
+.mem-opt{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border:1.6px solid var(--line);border-radius:12px;background:#fbfcfd;font-size:15.5px;line-height:1.6}
+.mem-opt.correct{border-color:#16a34a;background:#f0fdf4}
+.mem-opt .k{flex:0 0 25px;height:25px;border-radius:50%;background:#eef2f6;color:var(--sub);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.mem-opt.correct .k{background:#16a34a;color:#fff}
+.mem-opt .v{flex:1;padding-top:1px}
+.mem-ans{margin-top:14px;padding:12px 15px;border-radius:12px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:15px}
+.mem-ans .lb{font-weight:700;color:#16a34a}
+.mem-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border-radius:14px;padding:10px 14px;box-shadow:0 2px 10px rgba(15,23,42,.05);margin-bottom:12px;font-size:13px;color:var(--sub)}
+.mem-nav .jump{display:flex;align-items:center;gap:6px}
+.mem-nav input{width:56px;border:1.5px solid var(--line);border-radius:8px;padding:6px 8px;font-size:14px;text-align:center;font-family:inherit}
+.mem-mark{display:flex;gap:10px;margin-top:14px}
+.mem-mark .b{flex:1;padding:12px;border-radius:12px;font-size:15px;font-weight:600;text-align:center;cursor:pointer;border:1.6px solid var(--line);background:#fff;transition:.15s}
+.mem-mark .b:active{transform:scale(.98)}
+.mem-mark .b.know.on{background:#dcfce7;border-color:#16a34a;color:#15803d}
+.mem-mark .b.un.on{background:#fee2e2;border-color:#dc2626;color:#b91c1c}
+.mem-hide .opts,.mem-hide .mem-ans{filter:blur(9px);pointer-events:none;user-select:none}
+.reveal{text-align:center;font-size:14px;color:#7c3aed;font-weight:600;margin-top:12px;cursor:pointer;border:1.5px dashed #c4b5fd;border-radius:12px;padding:11px}
+.mem-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.mem-stats .it{background:#fff;border-radius:12px;padding:12px 8px;text-align:center;box-shadow:0 2px 10px rgba(15,23,42,.05)}
+.mem-stats .it b{display:block;font-size:22px;font-weight:800;color:#7c3aed;line-height:1.2}
+.mem-stats .it span{font-size:11.5px;color:var(--sub)}
 .timer{background:rgba(255,255,255,.25);padding:4px 12px;border-radius:20px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.5px}
 .timer.warn{background:#fecaca;color:#991b1b}
 .sheet{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
@@ -132,7 +159,7 @@ const LS = 'hndk_v2';
 /* 官方来源校验：防止他人把本应用复制（fork）后篡改，冒充官方分享给同事 */
 const OFFICIAL_HOST = 'djz1225.github.io';
 const OFFICIAL_PATH = '/dashboard/quiz.html';
-const APP_VERSION = '2026-10-09-v3';
+const APP_VERSION = '2026-10-09-v4';
 const OFFICIAL_URL = 'https://' + OFFICIAL_HOST + OFFICIAL_PATH;
 (function sourceGuard(){
   try{
@@ -150,8 +177,8 @@ const OFFICIAL_URL = 'https://' + OFFICIAL_HOST + OFFICIAL_PATH;
 })();
 let state = load();
 function load(){
-  try{const s=JSON.parse(localStorage.getItem(LS)); if(s&&s.v===2) return s;}catch(e){}
-  return {v:2, stats:{total:0,right:0,days:{}}, wrong:[], pos:0, date:today(), exams:[]};
+  try{const s=JSON.parse(localStorage.getItem(LS)); if(s&&s.v===2){ if(!s.know)s.know={}; if(s.memHideKnown===undefined)s.memHideKnown=false; return s; }}catch(e){}
+  return {v:2, stats:{total:0,right:0,days:{}}, wrong:[], pos:0, date:today(), exams:[], know:{}, memHideKnown:false};
 }
 function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}}
 function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
@@ -272,6 +299,12 @@ function renderHome(){
     <span class="go">开始模考 ▶</span>
   </div>
 
+  <div class="memcard" onclick="startMemorize()" style="margin-top:12px">
+    <h3>📖 背题模式</h3>
+    <p>直接看题+答案 · 一键标记「已掌握/不熟」· 快速过题记忆</p>
+    <span class="go">进入背题 ▶</span>
+  </div>
+
   <div class="grid2" style="margin-top:14px">
     <div class="stat"><div class="n">${state.stats.total}</div><div class="l">累计答题</div></div>
     <div class="stat"><div class="n">${rate}%</div><div class="l">总正确率</div></div>
@@ -301,6 +334,97 @@ function setScope(v){fScope=v;fTag='';state.pos=0;save();render()}
 function setTag(v){fTag=v;state.pos=0;save();render()}
 function setMode(v){mode=v;save();render()}
 function startPractice(){nextQuestion();nav('practice')}
+
+/* ============ 背题模式 ============ */
+let mem={idx:0, revealed:true, list:null};
+function memList(){
+  const pl=pool(fScope,fTag);
+  const knows=state.know||{};
+  const hideKnown = state.memHideKnown;
+  let arr = hideKnown? pl.filter(i=>knows[i]!=='know') : pl;
+  return arr.length?arr:pl;
+}
+function startMemorize(){ mem.list=null; mem.idx=0; mem.revealed=true; nav('memorize'); }
+function memEnsure(){ if(!mem.list||!mem.list.length){ mem.list=memList(); if(mem.idx>=mem.list.length) mem.idx=0; } }
+function memMark(type){
+  memEnsure(); if(!mem.list.length)return;
+  const qi=mem.list[mem.idx]; state.know=state.know||{};
+  if(state.know[qi]===type) delete state.know[qi]; else state.know[qi]=type;
+  save(); renderMemorize();
+}
+function memJump(){ memEnsure();
+  const el=document.getElementById('memJump');
+  let v=parseInt(el.value,10); if(isNaN(v))return;
+  v=Math.max(1,Math.min(mem.list.length,v)); mem.idx=v-1; renderMemorize();
+}
+function memPrev(){ memEnsure(); if(mem.idx>0){mem.idx--;renderMemorize();} }
+function memNext(){
+  memEnsure(); if(!mem.list.length)return;
+  if(mem.idx<mem.list.length-1){mem.idx++;renderMemorize();}
+  else{ // 到底：提示
+    const b=document.getElementById('memEndTip'); if(b){b.textContent='🎉 已到最后一题';setTimeout(()=>b.textContent='',1500);} }
+}
+function toggleKnowFilter(){
+  state.memHideKnown=!state.memHideKnown; save(); mem.list=null; mem.idx=0; renderMemorize();
+}
+function renderMemorize(){
+  memEnsure();
+  const c=document.getElementById('main');
+  const total=memList().length; // 用于显示总数（受筛选影响）
+  const knows=state.know||{};
+  if(!mem.list.length){
+    c.innerHTML=`<div class="empty"><div class="ico">📖</div>该范围暂无题目</div>`;
+    document.getElementById('toolbar').innerHTML=`<button class="btn gray small" onclick="nav('home')">首页</button>
+      <button class="btn pri" onclick="startPractice()">正常刷题 ▶</button>`;
+    return;
+  }
+  const qi=mem.list[mem.idx]; const q=DATA[qi];
+  const stem=q[0],opts=q[1],ans=q[2],ok=q[3]; const isRw=q[4]==='rw';
+  const mark=knows[qi];
+  // 已掌握/不熟 计数（全库）
+  const allKnow=Object.values(knows).filter(v=>v==='know').length;
+  const allUn=Object.values(knows).filter(v=>v==='un').length;
+  let optsHtml='';
+  if(ok&&opts.length>=2){
+    opts.forEach((o,idx)=>{const L=String.fromCharCode(65+idx);
+      optsHtml+=`<div class="mem-opt ${L===ans?'correct':''}"><span class="k">${L}</span><span class="v">${esc(o)}</span></div>`;});
+  }else{
+    optsHtml=`<div class="fallback">（本题选项源文档格式不完整，仅显示答案）</div>`;
+  }
+  const hideCls = mem.revealed?'':'mem-hide';
+  c.innerHTML=`
+  <div class="mem-stats">
+    <div class="it"><b>${allKnow}</b><span>已掌握</span></div>
+    <div class="it"><b>${allUn}</b><span>不熟</span></div>
+    <div class="it"><b>${total}</b><span>当前范围</span></div>
+  </div>
+  <div class="mem-nav">
+    <div class="jump">跳到 <input id="memJump" type="number" min="1" max="${mem.list.length}" placeholder="${mem.idx+1}" onkeydown="if(event.key==='Enter')memJump()"> / ${mem.list.length} <span style="color:#0f766e;font-weight:600;cursor:pointer" onclick="memJump()">前往</span></div>
+    <div class="chip ${state.memHideKnown?'on':''}" style="margin:0;padding:6px 12px;font-size:12.5px" onclick="toggleKnowFilter()">隐藏已掌握</div>
+  </div>
+  <div class="card">
+    <div class="qmeta" style="justify-content:flex-start;gap:8px;flex-wrap:wrap">
+      <span class="tag ${isRw?'':'lc'}">${isRw?'人文医学':'临床业务'}</span>
+      <span class="tag sp">${esc(q[5])}</span>
+      ${mark==='know'?'<span class="crown" style="background:#dcfce7;color:#15803d">已掌握</span>':''}
+      ${mark==='un'?'<span class="crown" style="background:#fee2e2;color:#b91c1c">不熟</span>':''}
+    </div>
+    <div class="stem">${esc(stem)}</div>
+    <div class="${hideCls}">
+      <div class="opts">${optsHtml}</div>
+      <div class="mem-ans"><span class="lb">✅ 正确答案：${ans}</span>${ok?'':'（文本模式）'}</div>
+    </div>
+    ${mem.revealed?'<div class="reveal" onclick="mem.revealed=false;renderMemorize()">🙈 遮住答案自测</div>':'<div class="reveal" onclick="mem.revealed=true;renderMemorize()">👁 显示答案</div>'}
+    <div class="mem-mark">
+      <div class="b un ${mark==='un'?'on':''}" onclick="memMark('un')">✗ 不熟</div>
+      <div class="b know ${mark==='know'?'on':''}" onclick="memMark('know')">✓ 已掌握</div>
+    </div>
+    <div id="memEndTip" style="text-align:center;color:#16a34a;font-size:13px;margin-top:8px;height:16px"></div>
+  </div>`;
+  document.getElementById('toolbar').innerHTML=`<button class="btn gray small" onclick="memPrev()">← 上一题</button>
+    <button class="btn pri" onclick="memNext()">下一题 →</button>
+    <button class="btn gray small" onclick="nav('home')">首页</button>`;
+}
 
 /* ============ 模拟考试 ============ */
 let exam=null, examTimer=null;
@@ -553,6 +677,7 @@ function render(){
   else if(view==='wrong')renderWrong();
   else if(view==='stats')renderStats();
   else if(view==='share')renderShare();
+  else if(view==='memorize')renderMemorize();
   bumpProgress();
 }
 window.addEventListener('beforeunload',e=>{ if(exam&&!exam.finished){ e.preventDefault(); e.returnValue=''; } });
