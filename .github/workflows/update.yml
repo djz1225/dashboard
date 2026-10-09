@@ -2,7 +2,8 @@ name: update-dashboard
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    # 每日 3 次（UTC 23:00 / 07:00 / 15:00 = 北京 07:00 / 15:00 / 23:00）
+    - cron: "0 23,7,15 * * *"
   workflow_dispatch:
   push:
     paths:
@@ -17,7 +18,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-deploy:
@@ -38,3 +39,8 @@ jobs:
           path: site
       - uses: actions/deploy-pages@v4
         id: deploy
+        continue-on-error: true
+      - name: Retry deploy once
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        id: deploy_retry
