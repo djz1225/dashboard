@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """生成看板网站 v3：护眼配色 + 图表化 + 表格化，专科内容更丰富、易读"""
-import json, os, re, html
+import json, os, re, html, shutil
 
 OUT = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(OUT, "site")
@@ -238,6 +238,7 @@ body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",
 header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px;border-bottom:2px solid var(--acc);padding-bottom:16px;margin-bottom:8px}
 h1{font-size:26px;font-weight:800;color:var(--acc);letter-spacing:.5px}
 .updated{color:var(--mut);font-size:14px}
+.updated .live{color:#8fa287;font-size:12px;margin-left:6px}
 h2{font-size:19px;margin:30px 0 14px;color:#1d3a28;border-left:5px solid var(--acc);padding-left:12px}
 .grid{display:grid;gap:14px}
 .g4{grid-template-columns:repeat(4,1fr)}
@@ -341,20 +342,20 @@ td,th{padding:6px 5px}
 }
 """
 
-MAIN_TPL = """<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>每日追踪看板</title><style>__CSS__</style></head><body><div class="wrap">
-<header><h1>每日追踪看板</h1><div class="updated">数据更新：__UPDATED__</div></header>
+<header><h1>每日追踪看板</h1><div class="updated" id="updated">数据更新：__UPDATED__<span class="live">· 自动刷新中</span></div></header>
 
 <h2>一、大盘行情</h2>
-<div class="grid g4">__CNIDX__</div><div style="height:14px"></div><div class="grid g4">__USIDX__</div>
+<div class="grid g4" id="cnIdx">__CNIDX__</div><div style="height:14px"></div><div class="grid g4" id="usIdx">__USIDX__</div>
 
 <h2>二、板块涨跌榜（涨 / 跌 前 10）</h2>
 <div class="grid g2">
-<div class="tbl"><h3>A股 · 行业涨幅前 10</h3><table>__CNUP__</table></div>
-<div class="tbl"><h3>A股 · 行业跌幅前 10</h3><table>__CNDN__</table></div>
-<div class="tbl"><h3>美股 · 行业涨幅前 10</h3><table>__USUP__</table></div>
-<div class="tbl"><h3>美股 · 行业跌幅前 10</h3><table>__USDN__</table></div>
+<div class="tbl"><h3>A股 · 行业涨幅前 10</h3><table id="cnUp">__CNUP__</table></div>
+<div class="tbl"><h3>A股 · 行业跌幅前 10</h3><table id="cnDn">__CNDN__</table></div>
+<div class="tbl"><h3>美股 · 行业涨幅前 10</h3><table id="usUp">__USUP__</table></div>
+<div class="tbl"><h3>美股 · 行业跌幅前 10</h3><table id="usDn">__USDN__</table></div>
 </div>
 
 <h2>三、三专科指南 · 数据概览</h2>
@@ -367,7 +368,47 @@ MAIN_TPL = """<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <div class="grid g2">__ARTS__</div>
 
 <footer>行情来源：新浪财经（A股指数 / 行业板块、美股指数 / SPDR 11 行业 ETF）。专科内容由每日对比提要文件与文章库自动解析，点击标题/链接可查原文。</footer>
-</div></body></html>"""
+</div>
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  var last=null;
+  function sgn(p){return p>=0?'+':'';}
+  function cls(p){return p>=0?'up':'down';}
+  function fmt(n){var t=Number(n).toFixed(2).split('.');t[0]=t[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');return t.join('.');}
+  function idxHTML(items){
+    if(!items||!items.length)return '<div class="mut">获取中…</div>';
+    return items.map(function(it){var p=Number(it.pct);
+      return '<div class="icard"><div class="iname">'+it.name+'</div><div class="iprice">'+fmt(it.price)+'</div><div class="ipct '+cls(p)+'">'+sgn(p)+p.toFixed(2)+'%</div></div>';
+    }).join('');
+  }
+  function secHTML(items){
+    if(!items||!items.length)return '<tr><td colspan="3" class="mut">暂无数据</td></tr>';
+    return items.map(function(it,i){var p=Number(it.pct);
+      return '<tr><td class="rk">'+(i+1)+'</td><td class="nm">'+it.name+'</td><td class="pc '+cls(p)+'">'+sgn(p)+p.toFixed(2)+'%</td></tr>';
+    }).join('');
+  }
+  function set(id,html){var e=$(id);if(e)e.innerHTML=html;}
+  function apply(d){
+    var u=$('updated');if(u&&d.updated)u.innerHTML='数据更新：'+d.updated+'<span class="live">· 自动刷新中</span>';
+    set('cnIdx',idxHTML(d.cn_index));
+    set('usIdx',idxHTML(d.us_index));
+    set('cnUp',secHTML((d.cn_sectors||{}).up));
+    set('cnDn',secHTML((d.cn_sectors||{}).down));
+    set('usUp',secHTML((d.us_sectors||{}).up));
+    set('usDn',secHTML((d.us_sectors||{}).down));
+  }
+  function tick(){
+    fetch('data.json?_='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+      if(d&&d.updated!==last){last=d.updated;apply(d);}
+    }).catch(function(){});
+  }
+  setInterval(tick,90000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)tick();});
+  setTimeout(tick,4000);
+})();
+</script>
+</body></html>"""
 
 ATT_CSS = """
 :root{--bg:#eef3e8;--card:#fff;--ink:#20301f;--mut:#5a6b56;--line:#d3ddc7;--acc:#3f6b4f;}
@@ -464,6 +505,7 @@ def main():
                  .replace("__OVERVIEW__", overview(d.get("articles", [])))
                  .replace("__SPECS__", spec_cards(d.get("specialties", [])))
                  .replace("__ARTS__", art_table(d.get("articles", []))))
+    shutil.copy(os.path.join(OUT, "data.json"), os.path.join(SITE, "data.json"))
     with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as f:
         f.write(html_main)
     for s in d.get("specialties", []):
