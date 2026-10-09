@@ -267,7 +267,7 @@ function renderHome(){
     <div class="chip ${mode==='random'?'on':''}" onclick="setMode('random')">随机抽题</div>
   </div>
   <div class="quote">当前范围共 ${poolN} 题 · 「${['博观而约取，厚积而薄发。','今日事今日毕，两百题起。','千里之行，始于足下。','锲而不舍，金石可镂。','熟能生巧，勤能补拙。'][new Date().getDate()%5]}」</div>
-  <div class="footnote">数据保存在本机浏览器 · 清缓存会丢失 · 建议每日刷满 200 题</div>`;
+  <div class="footnote">数据保存在本机浏览器 · 清缓存会丢失 · 建议每日刷满 200 题<br><span style="color:#0f766e;font-weight:600" onclick="nav('share')">🔗 分享给同事 / 生成二维码</span></div>`;
   document.getElementById('toolbar').innerHTML=`<button class="btn gray small" onclick="nav('wrong')">错题本</button>
     <button class="btn pri" onclick="startPractice()">开始刷题 ▶</button>
     <button class="btn gray small" onclick="nav('stats')">统计</button>`;
@@ -380,26 +380,79 @@ function renderExamResult(){
 }
 
 /* ============ 错题本 ============ */
+let wrongFilter='all';
+function wrongGroups(){
+  const g={}; state.wrong.forEach(w=>{const k=w.sp||(w.src==='rw'?'人文综合':'临床综合'); (g[k]=g[k]||[]).push(w);});
+  return g;
+}
 function renderWrong(){
   const c=document.getElementById('main');
   if(!state.wrong.length){
+    document.getElementById('toolbar').innerHTML=`<button class="btn gray small" onclick="nav('home')">首页</button>
+      <button class="btn pri" onclick="nav('home')">去刷题 ▶</button>`;
     c.innerHTML=`<div class="empty"><div class="ico">📌</div>还没有错题<br>去刷题或模考吧，答错的题会自动收录</div>`;
-  }else{
-    c.innerHTML=`<div class="sect" style="margin-top:0">错题本 · ${state.wrong.length} 题（点击查看）</div>`+
-      state.wrong.map((w,idx)=>`<div class="wrongitem" onclick="reviewWrong(${idx})">
-        <div class="s">${esc(w.t)}</div>
-        <div class="m">${w.sp||''} · 你选 ${w.my||'未答'} · 正确 ${w.a}</div></div>`).join('');
+    return;
   }
+  const g=wrongGroups();
+  const keys=Object.keys(g).sort((a,b)=>g[b].length-g[a].length);
+  let chips=`<div class="chip ${wrongFilter==='all'?'on':''}" onclick="setWrongFilter('all')">全部 ${state.wrong.length}</div>`+
+    keys.map(k=>`<div class="chip ${wrongFilter===k?'on':''}" onclick="setWrongFilter('${k.replace(/'/g,"\\'")}')">${esc(k)} ${g[k].length}</div>`).join('');
+  const list = wrongFilter==='all'? state.wrong : g[wrongFilter];
+  c.innerHTML=`<div class="sect" style="margin-top:0">错题本 · ${state.wrong.length} 题</div>
+    <div class="chips-wrap">${chips}</div>
+    <div class="sect">${wrongFilter==='all'?'全部错题':esc(wrongFilter)+' · '+list.length+' 题'}（点击查看）</div>`+
+    list.map(w=>{const idx=state.wrong.indexOf(w);
+      return `<div class="wrongitem" onclick="reviewWrong(${idx})">
+        <div class="s">${esc(w.t)}</div>
+        <div class="m">${esc(w.sp||'')} · 你选 ${w.my||'未答'} · 正确 ${w.a}</div></div>`;}).join('');
   document.getElementById('toolbar').innerHTML=`<button class="btn gray small" onclick="nav('home')">首页</button>
     <button class="btn pri" onclick="practiceWrong()">刷错题 ▶</button>
     <button class="btn gray small" onclick="clearWrong()">清空</button>`;
 }
+function setWrongFilter(f){wrongFilter=f;renderWrong()}
 let wrongQueue=null;
 function reviewWrong(idx){const w=state.wrong[idx];cur=w.i;answered=false;sel=null;wrongQueue=null;nav('practice');}
-function practiceWrong(){if(!state.wrong.length)return;wrongQueue=state.wrong.map(w=>w.i);cur=wrongQueue[0];answered=false;sel=null;nav('practice');}
+function practiceWrong(){
+  if(!state.wrong.length)return;
+  const list = wrongFilter==='all'? state.wrong : wrongGroups()[wrongFilter];
+  if(!list||!list.length)return;
+  wrongQueue=list.map(w=>w.i);cur=wrongQueue[0];answered=false;sel=null;nav('practice');
+}
 function clearWrong(){if(confirm('确定清空全部错题记录？')){state.wrong=[];save();render()}}
 
 /* ============ 统计 ============ */
+function trendChart(exams){
+  const arr=exams.slice().reverse(); // 时间正序
+  if(arr.length<1) return '<div class="empty" style="padding:24px">做 1 次以上模考后显示趋势</div>';
+  const W=520,H=220,PL=38,PR=14,PT=18,PB=30;
+  const iw=W-PL-PR, ih=H-PT-PB;
+  const n=arr.length;
+  const X=i=> n===1? PL+iw/2 : PL+iw*i/(n-1);
+  const Y=v=> PT+ih*(1-Math.min(100,v)/100);
+  let path='',area='',dots='',labels='';
+  arr.forEach((e,i)=>{
+    const x=X(i), y=Y(e.score);
+    path+=(i===0?'M':'L')+x.toFixed(1)+' '+y.toFixed(1)+' ';
+    dots+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${e.pass?'#16a34a':'#dc2626'}"/>`;
+    labels+=`<text x="${x.toFixed(1)}" y="${H-9}" font-size="10" fill="#94a3b8" text-anchor="middle">${i+1}</text>`;
+  });
+  area=`M${X(0).toFixed(1)} ${Y(100).toFixed(1)} `+arr.map((e,i)=>`L${X(i).toFixed(1)} ${Y(e.score).toFixed(1)}`).join(' ')+` L${X(n-1).toFixed(1)} ${Y(100).toFixed(1)} Z`;
+  // 网格线 + 刻度
+  let grid='';
+  [0,25,50,75,100].forEach(v=>{
+    const y=Y(v);
+    grid+=`<line x1="${PL}" y1="${y}" x2="${W-PR}" y2="${y}" stroke="#eef2f6" stroke-width="1"/>`;
+    grid+=`<text x="${PL-7}" y="${y+3.5}" font-size="10" fill="#94a3b8" text-anchor="end">${v}</text>`;
+  });
+  const gy=Y(60);
+  const passLine=`<line x1="${PL}" y1="${gy}" x2="${W-PR}" y2="${gy}" stroke="#f59e0b" stroke-width="1.3" stroke-dasharray="5 4"/><text x="${W-PR}" y="${gy-4}" font-size="10" fill="#f59e0b" text-anchor="end">合格线60</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block">
+    ${grid}
+    <path d="${area}" fill="rgba(20,184,166,.14)"/>
+    <path d="${path}" fill="none" stroke="#0f766e" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+    ${passLine}${dots}${labels}
+  </svg>`;
+}
 function renderStats(){
   const days=Object.keys(state.stats.days).sort();
   const rate=state.stats.total?Math.round(state.stats.right/state.stats.total*100):0;
@@ -410,6 +463,7 @@ function renderStats(){
       <span style="flex:1;background:#eef2f6;border-radius:6px;height:16px;overflow:hidden"><i style="display:block;height:100%;width:${pct}%;background:${s.n>=DAILY_GOAL?'#16a34a':'#14b8a6'}"></i></span>
       <span style="flex:0 0 54px;text-align:right;color:#475569">${s.n}题${s.n>=DAILY_GOAL?' ✅':''}</span></div>`;});
   const exams=(state.exams||[]).slice(0,10);
+  const trend=trendChart(state.exams||[]);
   let examHtml=exams.length?exams.map(e=>{
     const dt=new Date(e.ts); const ds=(dt.getMonth()+1)+'/'+dt.getDate()+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
     return `<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eef2f6;font-size:14px">
@@ -423,14 +477,44 @@ function renderStats(){
     <div class="stat"><div class="n">${days.length}</div><div class="l">刷题天数</div></div>
     <div class="stat"><div class="n">${state.wrong.length}</div><div class="l">错题数</div></div>
   </div>
+  <div class="sect">模拟考试成绩趋势</div>
+  <div class="card" style="padding:12px 8px">${trend}</div>
   <div class="sect">近 14 天打卡</div>
   <div class="card" style="padding:14px">${hist||'<div class="empty" style="padding:20px">暂无记录</div>'}</div>
-  <div class="sect">模拟考试成绩</div>
+  <div class="sect">模拟考试成绩记录</div>
   <div class="card" style="padding:12px 16px">${examHtml}</div>
   <div class="quote">坚持每日 200 题，考前从容不慌。</div>`;
   document.getElementById('toolbar').innerHTML=`<button class="btn gray small" onclick="nav('home')">首页</button>
     <button class="btn pri" onclick="startPractice()">继续刷题 ▶</button>
-    <button class="btn gray small" onclick="nav('wrong')">错题本</button>`;
+    <button class="btn gray small" onclick="nav('share')">分享</button>`;
+}
+
+/* ============ 分享/二维码 ============ */
+const SHARE_URL='https://djz1225.github.io/dashboard/quiz.html';
+const QR_B64='iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAIAAADdBSngAAAE50lEQVR4nO3dS44bNwBAwTjwAXJTL32GLHNT30DZuw2DIPh5kquWhiW1Zh4IcNhNfnm9Xn9Bz9+3LwB+TZpESZMoaRIlTaKkSZQ0iZImUdIkSppESZOoryP/6Z/v33Zfx2/8+Pe/n/5l7nqe7/M08s4n32fO89NX/QxXGfnuRk2ipEmUNImSJlHSJGpohv50cnY5Z2ROuupbzM2I565n37eo/U6NmkRJkyhpEiVNoqRJ1OQM/Wnfuvbc++ybyc6Zm7OP2Lcafvd3atQkSppESZMoaRIlTaKWzdBPmrtne+7O81Xz37l19lX/5x0ZNYmSJlHSJEqaREmTqLecoa+aya5657n3eVr1Le7eLbCKUZMoaRIlTaKkSZQ0iVo2Qz85K1w125175xH7Pv3utzjJqEmUNImSJlHSJEqaRE3O0O/eR33ybvB9d5WfvMt91dz/JKMmUdIkSppESZMoaRL15fV63b6GBU6uUI/o71zXZ9QkSppESZMoaRIlTaImz0N/xzXZp9p69Kr1+tpT+U/OQ+eNSZMoaRIlTaKkSdTkGnptZ/K59eiTK+ar3uczfj4jjJpESZMoaRIlTaKkSdTlvdz3rRGvMneO+aoZ8d397laZ+/kYNYmSJlHSJEqaREmTqKE19H13Mq9S22Otv3vbySu0hs5HkSZR0iRKmkRJk6ihNfRVa9Z3n2te9ReDffPxEbW7DvbdY2DUJEqaREmTKGkSJU2iLt/lvm8me3dVfeR6Rsx91r7z4p/2/QaNmkRJkyhpEiVNoqRJ1LLT1k7ujbbqek4+LX7yboHaXyfmGDWJkiZR0iRKmkRJk6hlz6F/xgr13W9au6NgzqrvZdQkSppESZMoaRIlTaLeYA1936tGnNw7vXZq+Yh9q+pGTaKkSZQ0iZImUdIkaug59JE54MkzwededfJ69s2I755Ef/LeAKMmUdIkSppESZMoaRK1bKe4VWvNq2Z8J08TOzkfX/V/Tj47P8eoSZQ0iZImUdIkSppEvcFe7vvu/R551VP/CuecfDJ9hFGTKGkSJU2ipEmUNIladh56fz167rP2nUq271UnnzjY97cIoyZR0iRKmkRJkyhpErVsL/enfXuI1XaTe9q3R31tP/wn56Hz4aRJlDSJkiZR0iRqcoZ+cvZd28/85L3otV3ZT/4MjZpESZMoaRIlTaKkSdTG59Dn5tp356Srdl1b9VmrvOOqulGTKGkSJU2ipEmUNIladpd7bQba3/Ntn/7cf4RRkyhpEiVNoqRJlDSJGpqh19TOBZtz8u79k0/Br/p0oyZR0iRKmkRJkyhpEjV0l/vd2e6qVdqTK+Z357Yj9q372ymODydNoqRJlDSJkiZRk8+h392nfe5Vd88fn5uz390X7unk32qMmkRJkyhpEiVNoqRJ1LKd4u6eyDY31x6ZNa+axe9bZx9xd88356HzUaRJlDSJkiZR0iRq417uJ62aa8+989OqO+pP7oBX2+/OqEmUNImSJlHSJEqaRL3lDH3VWvPJndvvztnn3H0uwKhJlDSJkiZR0iRKmkQtm6HfXW992vc8+93d21bN6+d4Dh2kSZU0iZImUdIkatl56PvsWzWundHW373tyXno/HGkSZQ0iZImUdIk6i3PQ+dPYNQkSppESZMoaRIlTaKkSZQ0iZImUdIkSppESZOo/wEcjvaN3jwFKAAAAABJRU5ErkJggg==';
+function renderShare(){
+  document.getElementById('main').innerHTML=`
+  <div class="card" style="text-align:center">
+    <div style="font-size:17px;font-weight:700;margin-bottom:4px">扫码即用 · 分享给同事</div>
+    <div style="font-size:12.5px;color:#64748b;margin-bottom:14px">手机扫码打开刷题应用 · 可添加到主屏幕</div>
+    <img src="data:image/png;base64,${QR_B64}" alt="二维码" style="width:210px;height:210px;border:1px solid #e2e8f0;border-radius:12px">
+    <div style="font-size:12px;color:#94a3b8;margin-top:12px;word-break:break-all">${SHARE_URL}</div>
+    <button class="btn gray" style="margin-top:16px;width:100%" onclick="copyShare()">📋 复制链接</button>
+    <div id="copyTip" style="font-size:12.5px;color:#16a34a;margin-top:8px;height:16px"></div>
+  </div>
+  <div class="quote">把应用分享给同考的同事，一起冲刺 10/22。</div>`;
+  document.getElementById('toolbar').innerHTML=`<button class="btn gray small" onclick="nav('home')">首页</button>
+    <button class="btn pri" onclick="startPractice()">开始刷题 ▶</button>
+    <button class="btn gray small" onclick="nav('stats')">统计</button>`;
+}
+function copyShare(){
+  const done=()=>{const t=document.getElementById('copyTip'); if(t)t.textContent='✅ 已复制，去粘贴给同事吧';};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(SHARE_URL).then(done).catch(()=>fallbackCopy(done));}
+  else fallbackCopy(done);
+}
+function fallbackCopy(cb){
+  const ta=document.createElement('textarea');ta.value=SHARE_URL;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();try{document.execCommand('copy');cb();}catch(e){}document.body.removeChild(ta);
 }
 
 function render(){
@@ -442,6 +526,7 @@ function render(){
   else if(view==='examResult')renderExamResult();
   else if(view==='wrong')renderWrong();
   else if(view==='stats')renderStats();
+  else if(view==='share')renderShare();
   bumpProgress();
 }
 window.addEventListener('beforeunload',e=>{ if(exam&&!exam.finished){ e.preventDefault(); e.returnValue=''; } });
