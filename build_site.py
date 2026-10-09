@@ -506,6 +506,10 @@ def main():
                  .replace("__SPECS__", spec_cards(d.get("specialties", [])))
                  .replace("__ARTS__", art_table(d.get("articles", []))))
     shutil.copy(os.path.join(OUT, "data.json"), os.path.join(SITE, "data.json"))
+    _quiz = os.path.join(OUT, "quiz.html")
+    if os.path.exists(_quiz):
+        shutil.copy(_quiz, os.path.join(SITE, "quiz.html"))
+        print("site/quiz.html copied")
     with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as f:
         f.write(html_main)
     for s in d.get("specialties", []):
