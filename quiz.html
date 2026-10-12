@@ -100,6 +100,7 @@ main{flex:1;padding:14px 14px 96px}
 .memprog .mp-top b{color:#fff;font-size:14px}
 .memprog .mp-bar{height:7px;background:rgba(255,255,255,.3);border-radius:6px;overflow:hidden}
 .memprog .mp-bar i{display:block;height:100%;background:#fff;border-radius:6px}
+.mp-plan{margin-top:8px;font-size:12px;color:#f3e8ff;background:rgba(255,255,255,.16);border-radius:8px;padding:6px 10px;text-align:center}
 /* 背题模式 */
 .mem-opt{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border:1.6px solid var(--line);border-radius:12px;background:#fbfcfd;font-size:15.5px;line-height:1.6}
 .mem-opt.correct{border-color:#16a34a;background:#f0fdf4}
@@ -128,6 +129,13 @@ main{flex:1;padding:14px 14px 96px}
 .resumebar .acts{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap}
 .resumebar .acts span{color:#7c3aed;font-weight:600;cursor:pointer;border-bottom:1px dashed #a78bfa}
 .resumebar .acts span.x{color:#94a3b8;border-bottom:none;font-weight:500}
+.planbar{background:linear-gradient(135deg,#ecfeff,#f0fdfa);border:1px solid #a5f3ed;border-radius:14px;padding:13px 16px;margin-bottom:12px}
+.planbar .pb-h{font-size:13px;color:#0e7490}
+.planbar .pb-h b{color:#0891b2;font-size:15px}
+.planbar .pb-big{font-size:30px;font-weight:800;color:#0f766e;line-height:1.15;margin:2px 0}
+.planbar .pb-big span{font-size:14px;font-weight:600;color:#14b8a6;margin-left:4px}
+.planbar .pb-desc{font-size:12px;color:#0e7490;line-height:1.6}
+.planbar .pb-meta{font-size:11.5px;color:#5eafb8;margin-top:5px}
 .timer{background:rgba(255,255,255,.25);padding:4px 12px;border-radius:20px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.5px}
 .timer.warn{background:#fecaca;color:#991b1b}
 .sheet{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
@@ -153,8 +161,8 @@ main{flex:1;padding:14px 14px 96px}
   <header>
     <div class="hd">
       <div>
-        <h1>湖南医师定考 · 刷题</h1>
-        <div class="sub">2023—2025 周期 · 补考冲刺</div>
+        <h1 id="hdTitle">湖南医师定考</h1>
+        <div class="sub" id="hdSub">2023—2025 周期 · 补考冲刺</div>
       </div>
       <div class="badge" id="todayBadge">今日 0/200</div>
     </div>
@@ -171,7 +179,7 @@ const LS = 'hndk_v2';
 /* 官方来源校验：防止他人把本应用复制（fork）后篡改，冒充官方分享给同事 */
 const OFFICIAL_HOST = 'djz1225.github.io';
 const OFFICIAL_PATH = '/dashboard/quiz.html';
-const APP_VERSION = '2026-10-12-v7';
+const APP_VERSION = '2026-10-12-v8';
 const OFFICIAL_URL = 'https://' + OFFICIAL_HOST + OFFICIAL_PATH;
 (function sourceGuard(){
   try{
@@ -312,21 +320,19 @@ function renderHome(){
   </div>
 
   ${(function(){
-    // 背题进度：基于当前范围（全部/人文/临床）的总题数与断点位置
-    const pl=pool(fScope,fTag); const tot=pl.length;
-    const p=(state.memPos||{})[memScopeKey()];
-    let cur=0;
-    if(p){ const at=pl.indexOf(p.qi); cur = at>=0? at+1 : 0; }
-    const pct = tot? Math.round(cur/tot*100):0;
-    const scopeName = fTag? fTag : (fScope==='rw'?'人文医学':fScope==='lc'?'临床业务':'全部题库');
-    const hasProg = cur>0;
+    // 背题进度 + 智能建议
+    const plan=memPlan();
+    const pct = plan.tot? Math.round(plan.done/plan.tot*100):0;
+    const hasProg = plan.done>0;
+    const perDayTxt = plan.days<=0 ? '' : `距补考 ${plan.days} 天 · 建议 ${plan.perDay} 题/天`;
     return `<div class="memcard" onclick="startMemorize()" style="margin-top:12px">
       <h3>📖 背题模式</h3>
-      <p>直接看题+答案 · 一键标记「已掌握/不熟」· 快速过题记忆</p>
+      <p>直接看题+答案 · 一键标记「已掌握/不熟」· 自动记住进度</p>
       ${hasProg?`<div class="memprog">
-        <div class="mp-top"><span>${esc(scopeName)}进度</span><span><b>第 ${cur}</b> / ${tot} 题 · ${pct}%</span></div>
+        <div class="mp-top"><span>${esc(plan.scopeName)}进度</span><span><b>第 ${plan.done}</b> / ${plan.tot} 题 · ${pct}%</span></div>
         <div class="mp-bar"><i style="width:${pct}%"></i></div>
       </div>`:`<div class="memprog noprog">尚未开始背题 · 点击进入，进度会自动记住</div>`}
+      ${perDayTxt?`<div class="mp-plan">⏳ ${perDayTxt}</div>`:''}
       <span class="go">${hasProg?'继续背题 ▶':'进入背题 ▶'}</span>
     </div>`;
   })()}
@@ -475,6 +481,14 @@ function renderMemorize(){
   }
   const hideCls = mem.revealed?'':'mem-hide';
   const lastPos=getMemPos();
+  const plan=memPlan();
+  const planBar = `
+  <div class="planbar">
+    <div class="pb-h">⏳ 距补考 <b>${plan.days}</b> 天 · 建议每日背题</div>
+    <div class="pb-big">${plan.days<=0?'—':(plan.perDay>0?plan.perDay:'0')}<span>题 / 天</span></div>
+    <div class="pb-desc">${plan.days<=0?'考试已开始，稳住心态，刷错题即可':'按此节奏可在考前过完「'+esc(plan.scopeName)+'」全部 '+plan.tot+' 题</div>'}
+    <div class="pb-meta">${esc(plan.scopeName)}：已背 ${plan.done} · 剩余 ${plan.left}</div>
+  </div>`;
   const resumeBar = mem.resumed? `
   <div class="resumebar">
     <div class="tx">📌 已自动续到上次位置 <b>第 ${mem.idx+1} / ${mem.list.length} 题</b></div>
@@ -486,6 +500,7 @@ function renderMemorize(){
   </div>`:'';
   c.innerHTML=`
   ${resumeBar}
+  ${planBar}
   <div class="mem-stats">
     <div class="it"><b>${allKnow}</b><span>已掌握</span></div>
     <div class="it"><b>${allUn}</b><span>不熟</span></div>
@@ -802,6 +817,7 @@ function fallbackCopy(cb){
 function render(){
   const isExamView=(view==='exam'||view==='examResult');
   document.querySelector('header').style.display=isExamView?'none':'';
+  updateHeader();
   if(view==='home')renderHome();
   else if(view==='practice')renderPractice();
   else if(view==='exam')renderExam();
@@ -811,6 +827,38 @@ function render(){
   else if(view==='share')renderShare();
   else if(view==='memorize')renderMemorize();
   bumpProgress();
+}
+/* 每个页面抬头不同 */
+const HEADERS={
+  home:{t:'湖南医师定考',s:'2023—2025 周期 · 补考冲刺'},
+  practice:{t:'刷题模式',s:'逐题作答 · 科目分组 · 答错自动进错题本'},
+  memorize:{t:'背题模式',s:'看题+答案 · 标记已掌握/不熟 · 自动记住进度'},
+  wrong:{t:'错题本',s:'按科目分组 · 专项攻克'},
+  stats:{t:'学习统计',s:'掌握度 · 薄弱科目 · 成绩趋势'},
+  share:{t:'分享应用',s:'扫码即用 · 转发给同事'}
+};
+function updateHeader(){
+  const h=HEADERS[view]||HEADERS.home;
+  document.getElementById('hdTitle').textContent=h.t;
+  document.getElementById('hdSub').textContent=h.s;
+}
+/* 背题智能规划：按补考倒计时推荐每日背题数 */
+const EXAM_DATE='2026-10-22'; // 线上测评开始日（2026-10-22 至 10-30）
+function daysToExam(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  const ex=new Date(EXAM_DATE+'T00:00:00'); ex.setHours(0,0,0,0);
+  return Math.max(0, Math.ceil((ex-now)/86400000));
+}
+function memPlan(){
+  // 当前范围剩余未背题数（以断点之后计算：总数-已完成）
+  const pl=pool(fScope,fTag); const tot=pl.length;
+  const p=(state.memPos||{})[memScopeKey()];
+  let done=0; if(p){ const at=pl.indexOf(p.qi); done= at>=0? at+1 : 0; }
+  const left=Math.max(0, tot-done);
+  const days=daysToExam();
+  const safeDays=Math.max(1, days-1); // 考前一天留作复习
+  const perDay=Math.ceil(left/safeDays);
+  return {tot,done,left,days,perDay,scopeName: fTag? fTag : (fScope==='rw'?'人文医学':fScope==='lc'?'临床业务':'全部题库')};
 }
 window.addEventListener('beforeunload',e=>{ if(exam&&!exam.finished){ e.preventDefault(); e.returnValue=''; } });
 render();
