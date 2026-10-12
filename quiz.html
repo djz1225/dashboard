@@ -94,6 +94,12 @@ main{flex:1;padding:14px 14px 96px}
 .memcard h3{font-size:19px;font-weight:800;margin-bottom:6px}
 .memcard p{font-size:13px;opacity:.92;line-height:1.7}
 .memcard .go{display:inline-block;margin-top:14px;background:#fff;color:#7c3aed;font-weight:700;font-size:14px;padding:9px 20px;border-radius:22px}
+.memprog{margin-top:12px;background:rgba(255,255,255,.18);border-radius:10px;padding:9px 12px}
+.memprog.noprog{font-size:12px;color:#f3e8ff;text-align:center;padding:9px 12px;background:rgba(255,255,255,.14)}
+.memprog .mp-top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px}
+.memprog .mp-top b{color:#fff;font-size:14px}
+.memprog .mp-bar{height:7px;background:rgba(255,255,255,.3);border-radius:6px;overflow:hidden}
+.memprog .mp-bar i{display:block;height:100%;background:#fff;border-radius:6px}
 /* 背题模式 */
 .mem-opt{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border:1.6px solid var(--line);border-radius:12px;background:#fbfcfd;font-size:15.5px;line-height:1.6}
 .mem-opt.correct{border-color:#16a34a;background:#f0fdf4}
@@ -165,7 +171,7 @@ const LS = 'hndk_v2';
 /* 官方来源校验：防止他人把本应用复制（fork）后篡改，冒充官方分享给同事 */
 const OFFICIAL_HOST = 'djz1225.github.io';
 const OFFICIAL_PATH = '/dashboard/quiz.html';
-const APP_VERSION = '2026-10-12-v6';
+const APP_VERSION = '2026-10-12-v7';
 const OFFICIAL_URL = 'https://' + OFFICIAL_HOST + OFFICIAL_PATH;
 (function sourceGuard(){
   try{
@@ -305,11 +311,25 @@ function renderHome(){
     <span class="go">开始模考 ▶</span>
   </div>
 
-  <div class="memcard" onclick="startMemorize()" style="margin-top:12px">
-    <h3>📖 背题模式</h3>
-    <p>直接看题+答案 · 一键标记「已掌握/不熟」· 快速过题记忆</p>
-    <span class="go">进入背题 ▶</span>
-  </div>
+  ${(function(){
+    // 背题进度：基于当前范围（全部/人文/临床）的总题数与断点位置
+    const pl=pool(fScope,fTag); const tot=pl.length;
+    const p=(state.memPos||{})[memScopeKey()];
+    let cur=0;
+    if(p){ const at=pl.indexOf(p.qi); cur = at>=0? at+1 : 0; }
+    const pct = tot? Math.round(cur/tot*100):0;
+    const scopeName = fTag? fTag : (fScope==='rw'?'人文医学':fScope==='lc'?'临床业务':'全部题库');
+    const hasProg = cur>0;
+    return `<div class="memcard" onclick="startMemorize()" style="margin-top:12px">
+      <h3>📖 背题模式</h3>
+      <p>直接看题+答案 · 一键标记「已掌握/不熟」· 快速过题记忆</p>
+      ${hasProg?`<div class="memprog">
+        <div class="mp-top"><span>${esc(scopeName)}进度</span><span><b>第 ${cur}</b> / ${tot} 题 · ${pct}%</span></div>
+        <div class="mp-bar"><i style="width:${pct}%"></i></div>
+      </div>`:`<div class="memprog noprog">尚未开始背题 · 点击进入，进度会自动记住</div>`}
+      <span class="go">${hasProg?'继续背题 ▶':'进入背题 ▶'}</span>
+    </div>`;
+  })()}
 
   ${(function(){const un=(pool(fScope,fTag)).filter(i=>(state.know||{})[i]==='un').length;
     return un?`<div class="card" onclick="startMemorizeUn()" style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border:1.5px solid #fecaca;background:#fff7f7">
