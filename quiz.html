@@ -153,6 +153,12 @@ main{flex:1;padding:14px 14px 96px}
 .rlist .ri .a b{color:#16a34a}
 .rlist .ri .a i{color:#dc2626;font-style:normal}
 ::-webkit-scrollbar{width:0}
+@keyframes slideL{from{opacity:.25;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes slideR{from{opacity:.25;transform:translateX(-26px)}to{opacity:1;transform:none}}
+#main.slide-left{animation:slideL .22s ease}
+#main.slide-right{animation:slideR .22s ease}
+.swipe-hint{font-size:12px;color:#94a3b8;text-align:center;margin-top:10px}
+.swipe-hint b{color:#0f766e}
 </style>
 </head>
 <body>
@@ -179,7 +185,7 @@ const LS = 'hndk_v2';
 /* 官方来源校验：防止他人把本应用复制（fork）后篡改，冒充官方分享给同事 */
 const OFFICIAL_HOST = 'djz1225.github.io';
 const OFFICIAL_PATH = '/dashboard/quiz.html';
-const APP_VERSION = '2026-10-12-v8';
+const APP_VERSION = '2026-10-13-v9';
 const OFFICIAL_URL = 'https://' + OFFICIAL_HOST + OFFICIAL_PATH;
 (function sourceGuard(){
   try{
@@ -259,7 +265,8 @@ function renderPractice(){
     ${fb}
     <div class="ansbox" id="ansbox"></div>
   </div>
-  <div class="hint">点击选项作答 · 答错自动进错题本</div>`;
+  <div class="hint">点击选项作答 · 答错自动进错题本</div>
+  <div class="swipe-hint">← 左右滑动可切换上/下一题 →</div>`;
   if(answered&&ok){
     const box=document.getElementById('ansbox'); const right=sel===ans;
     document.querySelectorAll('.opt').forEach(el=>{const L=el.dataset.l;el.classList.add('dis');if(L===ans)el.classList.add('ok');if(L===sel&&sel!==ans)el.classList.add('bad');});
@@ -288,11 +295,65 @@ function choose(el,L){
   bumpProgress(); renderToolbar();
 }
 function renderToolbar(){
-  document.getElementById('toolbar').innerHTML=`<button class="btn gray small" onclick="nav('wrong')">错题本</button>
+  document.getElementById('toolbar').innerHTML=`<button class="btn gray small" onclick="doPrev()">← 上一题</button>
     <button class="btn pri" onclick="doNext()">${answered?'下一题 ▶':'跳过'}</button>
     <button class="btn gray small" onclick="nav('home')">首页</button>`;
 }
 function doNext(){answered=false;sel=null;nextQuestion();renderPractice();}
+function doPrev(){
+  if(wrongQueue&&wrongQueue.length){
+    let i=wrongQueue.indexOf(cur); i=(i-1+wrongQueue.length)%wrongQueue.length; cur=wrongQueue[i];
+    answered=false;sel=null; renderPractice(); return;
+  }
+  const p=pool(fScope,fTag); if(!p.length) return;
+  let idx=p.indexOf(cur); if(idx<0) idx=0;
+  idx=(idx-1+p.length)%p.length; cur=p[idx];
+  if(mode!=='random'){ state.pos=idx+1; save(); }
+  answered=false;sel=null; renderPractice();
+}
+
+/* ============ 左右滑动切题（全局手势） ============ */
+let swipeBound=false;
+function bindSwipe(){
+  const el=document.getElementById('main');
+  if(!el||swipeBound) return; swipeBound=true;
+  let sx=0, sy=0, active=false;
+  el.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1){active=false;return;}
+    // 起点落在输入框、按钮、可横向滚动区时不触发滑动
+    const t=e.target;
+    if(t&&(t.closest('input,textarea,button,.btn,.sheet,.chips-wrap,.mem-nav'))){active=false;return;}
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; active=true;
+  },{passive:true});
+  el.addEventListener('touchmove',e=>{
+    if(!active)return;
+    // 触摸落在输入框/可滚动答题卡时不拦截
+  },{passive:true});
+  el.addEventListener('touchend',e=>{
+    if(!active) return; active=false;
+    const t=e.changedTouches[0]; const dx=t.clientX-sx, dy=t.clientY-sy;
+    if(Math.abs(dx)<55) return;                    // 水平位移阈值
+    if(Math.abs(dx) < Math.abs(dy)*1.4) return;    // 偏离竖直方向则视为滚动
+    if(dx<0) swipeNext(); else swipePrev();
+  },{passive:true});
+}
+function flashMain(dir){
+  const m=document.getElementById('main'); if(!m)return;
+  m.classList.remove('slide-left','slide-right');
+  void m.offsetWidth;
+  m.classList.add(dir==='next'?'slide-left':'slide-right');
+  setTimeout(()=>m.classList.remove('slide-left','slide-right'),220);
+}
+function swipeNext(){
+  if(view==='practice'){ flashMain('next'); doNext(); }
+  else if(view==='memorize'){ flashMain('next'); memNext(); }
+  else if(view==='exam'){ flashMain('next'); examNext(); }
+}
+function swipePrev(){
+  if(view==='practice'){ flashMain('prev'); doPrev(); }
+  else if(view==='memorize'){ flashMain('prev'); memPrev(); }
+  else if(view==='exam'){ flashMain('prev'); examPrev(); }
+}
 
 /* ============ 首页 ============ */
 function renderHome(){
@@ -535,6 +596,7 @@ function renderMemorize(){
       <div class="b know ${mark==='know'?'on':''}" onclick="memMark('know')">✓ 已掌握</div>
     </div>
     <div id="memEndTip" style="text-align:center;color:#16a34a;font-size:13px;margin-top:8px;height:16px"></div>
+    <div class="swipe-hint">← 左右滑动可切换上/下一题 →</div>
   </div>`;
   document.getElementById('toolbar').innerHTML=`<button class="btn gray small" onclick="memPrev()">← 上一题</button>
     <button class="btn pri" onclick="memNext()">下一题 →</button>
@@ -826,6 +888,7 @@ function render(){
   else if(view==='stats')renderStats();
   else if(view==='share')renderShare();
   else if(view==='memorize')renderMemorize();
+  bindSwipe();
   bumpProgress();
 }
 /* 每个页面抬头不同 */
