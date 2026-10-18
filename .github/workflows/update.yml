@@ -10,6 +10,7 @@ on:
       - "specialties/**"
       - "articles.json"
       - "*.py"
+      - "quiz.html"
 
 permissions:
   contents: read
