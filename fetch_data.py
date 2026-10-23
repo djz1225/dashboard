@@ -235,6 +235,60 @@ def fetch_specialties(days=90):
         res.append(s)
     return res
 
+def _md_title(md):
+    for ln in md.splitlines():
+        if ln.startswith("## 主标题"):
+            return ln.split("：", 1)[-1].strip().lstrip("：").strip()
+    return ""
+
+def _key_from_name(fn):
+    """历史归档用文件名前缀定专科，比正文关键词更可靠（正文常提到其他专科）。"""
+    if fn.startswith("肾内科"):
+        return "肾内科", "肾内科"
+    if fn.startswith("内分泌"):
+        return "内分泌", "内分泌·体重管理"
+    if fn.startswith("心血管"):
+        return "心血管", "心血管"
+    return None, None
+
+def fetch_specialty_history():
+    """收集每科所有日期的提要（仅元信息 + md 全文用于建页），按日期倒序。
+    只扫描仓库内目录（specialties/ 与根目录），避免把外部临时目录里的
+    十日串联记忆卡等非每日提要文件混入历史。
+    输出：{"肾内科": [{"date","title","file"}, ...], ...}"""
+    seen = {}
+    repo_dirs = [os.path.join(ROOT, "specialties"), ROOT]
+    for base in repo_dirs:
+        if not os.path.isdir(base):
+            continue
+        for fn in sorted(os.listdir(base)):
+            if not fn.lower().endswith(".md"):
+                continue
+            if any(x in fn for x in ["记忆卡", "串联", "quiz"]):
+                continue
+            fp = os.path.join(base, fn)
+            try:
+                with open(fp, encoding="utf-8", errors="replace") as f:
+                    md = f.read()
+            except Exception:
+                continue
+            key, _disp = _key_from_name(fn)
+            if not key:
+                key, _disp = _guess_specialty(md)
+            if not key:
+                continue
+            dt = _file_date(fp, md)
+            k = (key, dt.isoformat())
+            if k in seen:
+                continue
+            seen[k] = {"date": dt.isoformat(), "title": _md_title(md), "file": fn}
+    hist = {}
+    for key, _disp in SPECS:
+        rows = [v for (kk, _d), v in seen.items() if kk == key]
+        rows.sort(key=lambda x: x["date"], reverse=True)
+        hist[key] = rows
+    return hist
+
 def load_articles():
     fp = os.path.join(OUT, "articles.json")
     if os.path.exists(fp):
@@ -254,6 +308,7 @@ def main():
         "cn_sectors": fetch_cn_sectors(),
         "us_sectors": fetch_us_sectors(),
         "specialties": fetch_specialties(),
+        "specialty_history": fetch_specialty_history(),
         "articles": load_articles(),
     }
     os.makedirs(OUT, exist_ok=True)
@@ -261,6 +316,8 @@ def main():
         json.dump(data, f, ensure_ascii=False, indent=2)
     for s in data["specialties"]:
         print(f'[{s["specialty"]}] {s["date"]} 条目{len(s["items"])} 标题:{s["title"][:40]}')
+    for k, rows in data["specialty_history"].items():
+        print(f"[history] {k}: {len(rows)} 篇 ({rows[-1]['date'] if rows else '-'} ~ {rows[0]['date'] if rows else '-'})")
 
 if __name__ == "__main__":
     main()
