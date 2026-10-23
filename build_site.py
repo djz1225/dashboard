@@ -363,6 +363,7 @@ MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 
 <h2>四、三专科指南 · 重点提要</h2>
 <div class="grid g2">__SPECS__</div>
+<div style="margin-top:6px">__HISTLINK__</div>
 
 <h2>五、三专科 · 最新发表文章</h2>
 <div class="grid g2">__ARTS__</div>
@@ -490,11 +491,147 @@ def find_links(source):
             links.append(url)
     return links[:3]
 
+# ---------- 往期提要（历史归档 + 上下篇导航） ----------
+SPEC_SLUG = {"肾内科": "kidney", "内分泌": "endocrine", "心血管": "cardio"}
+SPEC_DISP = {"肾内科": "肾内科", "内分泌": "内分泌·体重管理", "心血管": "心血管"}
+HIST_DIRS = [os.path.join(OUT, "specialties"), OUT, "/sandbox/workspace/outputs"]
+
+def slug_of(key):
+    return SPEC_SLUG.get(key, "other")
+
+def page_name(key, date):
+    return f's_{slug_of(key)}_{date.replace("-", "")}.html'
+
+def load_md(filename):
+    for base in HIST_DIRS:
+        fp = os.path.join(base, filename)
+        if os.path.isfile(fp):
+            try:
+                with open(fp, encoding="utf-8", errors="replace") as f:
+                    return f.read()
+            except Exception:
+                continue
+    return ""
+
+def find_source(md):
+    m = re.search(r"来源声明[:：]\s*(.*)", md or "")
+    if not m:
+        return ""
+    s = m.group(1).strip()
+    s = s.replace("**", "").replace("⭐", "").strip()
+    return s[:260]
+
+NAV_CSS = """
+.nav{display:flex;flex-direction:column;gap:10px;background:#f3f7ee;border:1px solid #d3ddc7;border-radius:12px;padding:12px 14px;margin:0 0 18px}
+.nav.bottom{margin:22px 0 0}
+.nav-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;color:#5a6b56}
+.nav-meta .nsp{background:#3f6b4f;color:#fff;border-radius:6px;padding:2px 10px;font-size:13.5px;font-weight:700}
+.nav-meta .npos{margin-left:auto;font-size:13px}
+.nav-btns{display:flex;flex-wrap:wrap;gap:10px}
+.nav-btns .nb{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 16px;border-radius:10px;border:1px solid #bcd3b0;background:#fff;color:#2f5e8c;font-size:15px;font-weight:600;text-decoration:none;flex:1 1 auto}
+.nav-btns .nb:hover{background:#eaf2e2}
+.nav-btns .nb.mid{color:#3f6b4f;background:#e4efe0;border-color:#bcd3b0;flex:0 0 auto}
+.nav-btns .nb.dis{color:#8fa287;background:#f1f4ee;border-style:dashed;cursor:not-allowed}
+@media(max-width:560px){
+.nav{padding:10px 10px;gap:8px}
+.nav-btns{gap:8px}
+.nav-btns .nb{flex:1 1 100%;padding:0 12px;font-size:14.5px}
+.nav-btns .nb.mid{flex:1 1 100%}
+.nav-meta{font-size:13px}
+}
+.hist-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;margin:16px 0 4px;padding:0 22px;border-radius:12px;
+background:#3f6b4f;color:#fff;font-size:16px;font-weight:700;text-decoration:none;box-shadow:0 2px 6px rgba(63,107,79,.25)}
+.hist-cta:hover{background:#345b42}
+@media(max-width:560px){.hist-cta{display:flex;width:100%;font-size:15px;padding:0 14px}}
+.histrow{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px;padding:6px 2px;border-bottom:1px dashed #e0e9d6;text-decoration:none;color:#2c3f2c;font-size:15px}
+.histrow:hover{background:#f3f7ee}
+.histrow .hd{color:#5a6b56;font-size:13.5px;white-space:nowrap;font-weight:700}
+.histrow .ht{flex:1 1 auto}
+@media(max-width:560px){.histrow{font-size:14.5px;flex-wrap:wrap}.histrow .hd{font-size:12.5px}}
+.hcols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:860px){.hcols{grid-template-columns:1fr}}
+"""
+
+def nav_bar(key, rows, idx, where="top"):
+    disp = SPEC_DISP.get(key, key)
+    cur = rows[idx]
+    older = rows[idx + 1] if idx + 1 < len(rows) else None      # 更早
+    newer = rows[idx - 1] if idx > 0 else None                   # 更晚
+    if older:
+        prev = f'<a class="nb" href="{page_name(key, older["date"])}" rel="prev">← 上一篇（{older["date"][5:]}）</a>'
+    else:
+        prev = '<span class="nb dis">← 已是最早</span>'
+    if newer:
+        nxt = f'<a class="nb" href="{page_name(key, newer["date"])}" rel="next">下一篇（{newer["date"][5:]}）→</a>'
+    else:
+        nxt = '<span class="nb dis">已是最新 →</span>'
+    cls = "nav" + (" bottom" if where == "bottom" else "")
+    return (f'<div class="{cls}">'
+            f'<div class="nav-meta"><span class="nsp">{esc(disp)}</span><span>{cur["date"]}</span>'
+            f'<span class="npos">第 {idx+1} / {len(rows)} 篇</span></div>'
+            f'<div class="nav-btns">{prev}<a class="nb mid" href="history.html">返回列表</a>{nxt}</div>'
+            f'</div>')
+
+def build_spec_page(key, rows, idx):
+    cur = rows[idx]
+    disp = SPEC_DISP.get(key, key)
+    md = load_md(cur.get("file", ""))
+    body = md_to_html(md) if md else '<div class="mut">原文文件缺失（' + esc(cur.get("file", "")) + '）</div>'
+    src = find_source(md)
+    links = find_links(src)
+    link_html = " ".join(f'<a href="{u}" target="_blank">原文出处 {i+1} ↗</a>' for i, u in enumerate(links))
+    title = cur.get("title") or f'{disp} · {cur["date"]} 重点提要'
+    return f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{esc(title)} · {esc(disp)} {cur["date"]}</title><style>{ATT_CSS}{NAV_CSS}</style></head><body><div class="wrap">
+{nav_bar(key, rows, idx, "top")}
+<h2>{esc(disp)} · 重点提要</h2>
+<p class="q">日期：{cur["date"]} ｜ 来源：每日对比提要文件自动解析（{esc(cur.get("file",""))}）</p>
+<div class="src"><b>内容出处：</b>{esc(src) if src else "见下方正文"}<br>{link_html}</div>
+{body}
+{nav_bar(key, rows, idx, "bottom")}
+<p style="margin-top:14px"><a class="back" href="index.html">← 返回看板首页</a> <a class="back" href="history.html" style="margin-left:16px">📚 往期提要列表</a></p>
+</div></body></html>"""
+
+def history_links(history):
+    total = sum(len(v) for v in (history or {}).values())
+    if not total:
+        return ""
+    return f'<a class="hist-cta" href="history.html">📚 往期提要（共 {total} 篇）→</a>'
+
+def build_history_page(history, specs):
+    cols = []
+    for key, disp in SPECS_ORDER:
+        rows = (history or {}).get(key, [])
+        lst = "".join(
+            f'<a class="histrow" href="{page_name(key, r["date"])}">'
+            f'<span class="hd">{esc(r["date"])}</span>'
+            f'<span class="ht">{esc(r.get("title") or disp + " 重点提要")}</span></a>'
+            for r in rows) or '<div class="mut">暂无提要</div>'
+        cols.append(f'<div class="scard" style="overflow:hidden"><div class="scard-h">'
+                    f'<span class="tag">{esc(disp)}</span><span class="sdate">共 {len(rows)} 篇</span></div>{lst}</div>')
+    total = sum(len(v) for v in (history or {}).values())
+    return f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>往期提要 · 三专科每日对比</title><style>{ATT_CSS}{MAIN_CSS}{NAV_CSS}
+.hcols .scard{{margin:0}}</style></head><body><div class="wrap" style="max-width:1180px">
+<header style="border-bottom:2px solid #3f6b4f"><h1 style="color:#3f6b4f">📚 往期提要</h1>
+<div class="updated">三专科每日对比提要 · 共 {total} 篇 · 按日期倒序</div></header>
+<div class="nav-btns" style="margin:18px 0">
+<a class="nb mid" href="index.html">← 返回看板首页</a>
+</div>
+<div class="hcols">{"".join(cols)}</div>
+<footer style="margin-top:22px">点击任一日期进入该篇提要，篇内提供「上一篇 / 下一篇」导航。</footer>
+</div></body></html>"""
+
+SPECS_ORDER = [("肾内科", "肾内科"), ("内分泌", "内分泌·体重管理"), ("心血管", "心血管")]
+
 def main():
     with open(os.path.join(OUT, "data.json"), encoding="utf-8") as f:
         d = json.load(f)
     os.makedirs(SITE, exist_ok=True)
-    html_main = (MAIN_TPL.replace("__CSS__", MAIN_CSS)
+    hist = d.get("specialty_history", {}) or {}
+    html_main = (MAIN_TPL.replace("__CSS__", MAIN_CSS + NAV_CSS)
                  .replace("__UPDATED__", d.get("updated", ""))
                  .replace("__CNIDX__", idx_cards(d.get("cn_index", [])))
                  .replace("__USIDX__", idx_cards(d.get("us_index", [])))
@@ -504,28 +641,30 @@ def main():
                  .replace("__USDN__", sec_rows(d.get("us_sectors", {}).get("down", [])))
                  .replace("__OVERVIEW__", overview(d.get("articles", [])))
                  .replace("__SPECS__", spec_cards(d.get("specialties", [])))
+                 .replace("__HISTLINK__", history_links(hist))
                  .replace("__ARTS__", art_table(d.get("articles", []))))
     shutil.copy(os.path.join(OUT, "data.json"), os.path.join(SITE, "data.json"))
-    _quiz = os.path.join(OUT, "quiz.html")
-    if os.path.exists(_quiz):
-        shutil.copy(_quiz, os.path.join(SITE, "quiz.html"))
-        print("site/quiz.html copied")
     with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as f:
         f.write(html_main)
     for s in d.get("specialties", []):
         with open(os.path.join(SITE, f'attachment_{s["key"]}.html'), "w", encoding="utf-8") as f:
             f.write(build_attachment(s))
-    print("site/index.html +", len(d.get("specialties", [])), "attachments ->", SITE)
+    n_pages = 0
+    for key, _disp in SPECS_ORDER:
+        rows = hist.get(key, [])
+        for i in range(len(rows)):
+            try:
+                html_page = build_spec_page(key, rows, i)
+            except Exception as e:
+                print("skip page", key, rows[i].get("date"), e)
+                continue
+            with open(os.path.join(SITE, page_name(key, rows[i]["date"])), "w", encoding="utf-8") as f:
+                f.write(html_page)
+            n_pages += 1
+    with open(os.path.join(SITE, "history.html"), "w", encoding="utf-8") as f:
+        f.write(build_history_page(hist, d.get("specialties", [])))
+    print("site/index.html +", len(d.get("specialties", [])), "attachments +", n_pages,
+          "history pages + history.html ->", SITE)
 
 if __name__ == "__main__":
     main()
-# trigger build: 2026-10-09 02:35 UTC
-# trigger build: 2026-10-09 02:59 UTC
-# trigger build: 2026-10-09 05:35 UTC
-# trigger build: 2026-10-09 09:20 UTC
-# trigger build: 2026-10-09 09:27 UTC
-# trigger build: 2026-10-09 13:36 UTC
-# trigger build: 2026-10-12 05:39 UTC
-# trigger build: 2026-10-12 05:46 UTC
-# trigger build: 2026-10-12 06:04 UTC
-# trigger build: 2026-10-13 15:49 UTC
