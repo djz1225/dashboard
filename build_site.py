@@ -522,32 +522,56 @@ def find_source(md):
     return s[:260]
 
 NAV_CSS = """
-.nav{display:flex;flex-direction:column;gap:10px;background:#f3f7ee;border:1px solid #d3ddc7;border-radius:12px;padding:12px 14px;margin:0 0 18px}
-.nav.bottom{margin:22px 0 0}
-.nav-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;color:#5a6b56}
-.nav-meta .nsp{background:#3f6b4f;color:#fff;border-radius:6px;padding:2px 10px;font-size:13.5px;font-weight:700}
-.nav-meta .npos{margin-left:auto;font-size:13px}
+.nav{position:relative;display:flex;flex-direction:column;gap:12px;background:linear-gradient(180deg,#fcfdfa 0%,#f5f8f0 100%);
+border:1px solid #e0e8d6;border-radius:16px;padding:14px 16px;margin:0 0 20px;
+box-shadow:0 1px 2px rgba(47,94,60,.04),0 10px 24px -16px rgba(47,94,60,.30)}
+.nav::before{content:"";position:absolute;left:0;top:15px;bottom:15px;width:3px;border-radius:0 3px 3px 0;
+background:linear-gradient(180deg,#7ab886,#3f6b4f)}
+.nav.bottom{margin:24px 0 0}
+.nav-meta{display:flex;flex-wrap:wrap;align-items:center;gap:9px;font-size:14px;color:#5c6d57}
+.nav-meta .nsp{background:linear-gradient(135deg,#54895f,#3f6b4f);color:#fff;border-radius:8px;padding:3px 11px;
+font-size:13px;font-weight:700;letter-spacing:.3px;box-shadow:0 2px 8px -3px rgba(63,107,79,.55)}
+.nav-meta .ndate{font-variant-numeric:tabular-nums;font-weight:600;color:#3d4f3a;letter-spacing:.2px}
+.nav-meta .npos{margin-left:auto;font-size:12.5px;color:#6b7d66;background:#eef4e7;border:1px solid #e2ead8;
+border-radius:999px;padding:3px 11px;font-variant-numeric:tabular-nums}
 .nav-btns{display:flex;flex-wrap:wrap;gap:10px}
-.nav-btns .nb{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 16px;border-radius:10px;border:1px solid #bcd3b0;background:#fff;color:#2f5e8c;font-size:15px;font-weight:600;text-decoration:none;flex:1 1 auto}
-.nav-btns .nb:hover{background:#eaf2e2}
-.nav-btns .nb.mid{color:#3f6b4f;background:#e4efe0;border-color:#bcd3b0;flex:0 0 auto}
-.nav-btns .nb.dis{color:#8fa287;background:#f1f4ee;border-style:dashed;cursor:not-allowed}
+.nav-btns .nb{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;min-width:44px;
+padding:0 18px;border-radius:11px;border:1px solid #cfddc2;background:#fff;color:#2f5e8c;font-size:14.5px;
+font-weight:600;text-decoration:none;flex:1 1 auto;-webkit-tap-highlight-color:transparent;
+transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease}
+.nav-btns .nb:hover{border-color:#9dbf8d;background:#f8fbf3;box-shadow:0 8px 18px -10px rgba(47,94,60,.55);transform:translateY(-1px)}
+.nav-btns .nb:active{transform:translateY(0);box-shadow:none;background:#f1f7ea}
+.nav-btns .nb.mid{flex:0 0 auto;color:#3f6b4f;background:#eff6e9;border-color:#d9e6cb;font-weight:700}
+.nav-btns .nb.mid:hover{background:#e6f1dc;border-color:#b9d3a6;color:#345b42}
+.nav-btns .nb.dis{color:#a8b5a1;background:repeating-linear-gradient(45deg,#f8faf5,#f8faf5 6px,#f2f5ee 6px,#f2f5ee 12px);
+border-color:#e1e8da;cursor:not-allowed;box-shadow:none;transform:none}
 @media(max-width:560px){
-.nav{padding:10px 10px;gap:8px}
+.nav{padding:12px 12px 12px 14px;gap:10px;border-radius:14px}
+.nav::before{top:12px;bottom:12px}
 .nav-btns{gap:8px}
-.nav-btns .nb{flex:1 1 100%;padding:0 12px;font-size:14.5px}
-.nav-btns .nb.mid{flex:1 1 100%}
-.nav-meta{font-size:13px}
+.nav-btns .nb{flex:1 1 calc(50% - 4px);padding:0 10px;font-size:14px;gap:4px}
+.nav-btns .nb.mid{flex:1 1 100%;order:-1}
+.nav-meta{font-size:13px;gap:7px}
+.nav-meta .npos{font-size:12px;padding:2px 9px}
 }
-.hist-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;margin:16px 0 4px;padding:0 22px;border-radius:12px;
-background:#3f6b4f;color:#fff;font-size:16px;font-weight:700;text-decoration:none;box-shadow:0 2px 6px rgba(63,107,79,.25)}
-.hist-cta:hover{background:#345b42}
+.hist-cta{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;margin:18px 0 6px;
+padding:0 24px;border-radius:13px;background:linear-gradient(135deg,#54895f,#3f6b4f);color:#fff;font-size:15.5px;
+font-weight:700;text-decoration:none;letter-spacing:.2px;
+box-shadow:0 3px 12px -5px rgba(63,107,79,.60),inset 0 1px 0 rgba(255,255,255,.16);
+transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
+.hist-cta:hover{filter:brightness(1.07);transform:translateY(-1px);box-shadow:0 10px 22px -10px rgba(63,107,79,.65)}
+.hist-cta:active{transform:translateY(0)}
 @media(max-width:560px){.hist-cta{display:flex;width:100%;font-size:15px;padding:0 14px}}
-.histrow{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px;padding:6px 2px;border-bottom:1px dashed #e0e9d6;text-decoration:none;color:#2c3f2c;font-size:15px}
-.histrow:hover{background:#f3f7ee}
-.histrow .hd{color:#5a6b56;font-size:13.5px;white-space:nowrap;font-weight:700}
-.histrow .ht{flex:1 1 auto}
-@media(max-width:560px){.histrow{font-size:14.5px;flex-wrap:wrap}.histrow .hd{font-size:12.5px}}
+.histrow{position:relative;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:46px;
+padding:8px 10px 8px 22px;border-bottom:1px solid #edf2e6;border-radius:9px;text-decoration:none;color:#2c3f2c;
+font-size:15px;transition:background .15s ease,transform .15s ease}
+.histrow::before{content:"";position:absolute;left:9px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;
+background:#c3d6b4;transition:background .15s ease}
+.histrow:hover{background:#f5f9f0;transform:translateX(2px)}
+.histrow:hover::before{background:#4e8259}
+.histrow .hd{color:#5a6b56;font-size:13.5px;white-space:nowrap;font-weight:700;font-variant-numeric:tabular-nums}
+.histrow .ht{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:560px){.histrow{font-size:14.5px;flex-wrap:wrap}.histrow .hd{font-size:12.5px}.histrow .ht{white-space:normal}}
 .hcols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 @media(max-width:860px){.hcols{grid-template-columns:1fr}}
 """
@@ -558,16 +582,16 @@ def nav_bar(key, rows, idx, where="top"):
     older = rows[idx + 1] if idx + 1 < len(rows) else None      # 更早
     newer = rows[idx - 1] if idx > 0 else None                   # 更晚
     if older:
-        prev = f'<a class="nb" href="{page_name(key, older["date"])}" rel="prev">← 上一篇（{older["date"][5:]}）</a>'
+        prev = f'<a class="nb prev" href="{page_name(key, older["date"])}" rel="prev">← 上一篇（{older["date"][5:]}）</a>'
     else:
-        prev = '<span class="nb dis">← 已是最早</span>'
+        prev = '<span class="nb prev dis">← 已是最早</span>'
     if newer:
-        nxt = f'<a class="nb" href="{page_name(key, newer["date"])}" rel="next">下一篇（{newer["date"][5:]}）→</a>'
+        nxt = f'<a class="nb next" href="{page_name(key, newer["date"])}" rel="next">下一篇（{newer["date"][5:]}）→</a>'
     else:
-        nxt = '<span class="nb dis">已是最新 →</span>'
+        nxt = '<span class="nb next dis">已是最新 →</span>'
     cls = "nav" + (" bottom" if where == "bottom" else "")
     return (f'<div class="{cls}">'
-            f'<div class="nav-meta"><span class="nsp">{esc(disp)}</span><span>{cur["date"]}</span>'
+            f'<div class="nav-meta"><span class="nsp">{esc(disp)}</span><span class="ndate">{cur["date"]}</span>'
             f'<span class="npos">第 {idx+1} / {len(rows)} 篇</span></div>'
             f'<div class="nav-btns">{prev}<a class="nb mid" href="history.html">返回列表</a>{nxt}</div>'
             f'</div>')
