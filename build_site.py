@@ -668,6 +668,14 @@ def main():
                  .replace("__HISTLINK__", history_links(hist))
                  .replace("__ARTS__", art_table(d.get("articles", []))))
     shutil.copy(os.path.join(OUT, "data.json"), os.path.join(SITE, "data.json"))
+    # 复制刷题小程序（quiz.html）到站点根目录
+    _quiz = os.path.join(OUT, "quiz.html")
+    if os.path.exists(_quiz):
+        shutil.copy(_quiz, os.path.join(SITE, "quiz.html"))
+        print("copied quiz.html ->", os.path.join(SITE, "quiz.html"))
+    else:
+        print("WARN: quiz.html not found in", OUT)
+
     with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as f:
         f.write(html_main)
     for s in d.get("specialties", []):
