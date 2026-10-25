@@ -11,6 +11,7 @@ on:
       - "articles.json"
       - "*.py"
       - "quiz.html"
+      - "xz/**"
 
 permissions:
   contents: read
