@@ -675,6 +675,14 @@ def main():
         print("copied quiz.html ->", os.path.join(SITE, "quiz.html"))
     else:
         print("WARN: quiz.html not found in", OUT)
+    # 复制西综306考研题库
+    _xz = os.path.join(OUT, "xz", "quiz.html")
+    if os.path.exists(_xz):
+        os.makedirs(os.path.join(SITE, "xz"), exist_ok=True)
+        shutil.copy(_xz, os.path.join(SITE, "xz", "quiz.html"))
+        print("copied xz/quiz.html")
+    else:
+        print("WARN: xz/quiz.html not found")
 
     with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as f:
         f.write(html_main)
