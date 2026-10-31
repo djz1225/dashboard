@@ -85,7 +85,7 @@ footer a{color:#3b6ea5;text-decoration:none}
   <div class="grid" id="grid"></div>
 
   <footer>
-    收录口径：仅保留多分 P（≥10 集）或总时长 ≥4 小时的成套课程；<span id="srcTxt">来源：哔哩哔哩公开搜索</span>。<br>
+    收录口径：只保留多分 P（≥10 集）或总时长 ≥4 小时的成套课程，且逐条经过视频详情校验（失效 / 私密自动剔除）；<span id="srcTxt">来源：哔哩哔哩公开搜索</span>。<br>
     数据文件 <a href="videos.json" target="_blank">videos.json</a> · <a href="quiz.html">西综 306 刷题</a> · <a href="../index.html">返回看板首页</a><br>
     版权归各 UP 主与机构所有，本站仅做导航索引，不存储视频文件。页面每 90 秒自动拉取最新数据。
   </footer>
@@ -151,7 +151,7 @@ footer a{color:#3b6ea5;text-decoration:none}
     if(!d||!d.items||!d.items.length)return;
     data=d; ALL=d.items; SUBJECTS=d.subjects||[];
     if(curSub!=='全部'&&!ALL.some(function(i){return i.subject===curSub;}))curSub='全部';
-    $('updTxt').textContent='数据更新：'+(d.updated||'—')+'　收录 '+d.total+' 套 · 每 90 秒自动刷新';
+    $('updTxt').textContent='数据更新：'+(d.updated||'—')+'（北京时间）　收录 '+d.total+' 套 · 页面每 90 秒自动刷新';
     $('srcTxt').textContent='来源：'+(d.source||'哔哩哔哩');
     buildSubs(); render();
   }
