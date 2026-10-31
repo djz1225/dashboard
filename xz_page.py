@@ -187,7 +187,7 @@ def render(data, offline=False):
 <header>
   <h1>考研西医综合（306）成套教学视频</h1>
   <div class="sub">收录 B 站公开的多分 P / 长系列精讲课程，剔除散课与失效视频</div>
-  <div class="upd">数据更新：{esc(data.get("updated",""))}（北京时间） · 共 {len(items)} 套 · 每天自动刷新</div>
+  <div class="upd">数据更新：{esc(data.get("updated",""))}（北京时间） · 共 {len(items)} 套 · 每天自动刷新{'' if offline else ' · <a href="videos_lite.html" style="color:#d6f5cf">网慢？用精简版 →</a>'}
 </header>
 
 <div class="toolbar">
@@ -221,6 +221,78 @@ def render(data, offline=False):
 """
 
 
+LITE_CSS = """
+:root{--bg:#eef3e8;--card:#fff;--ink:#20301f;--mut:#5a6b56;--line:#d3ddc7;--acc:#3f6b4f}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.6;padding:14px 10px 40px;margin:0;-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin:0 auto}
+header{background:linear-gradient(135deg,#4a7a58,#2f5540);color:#fff;border-radius:12px;padding:14px 15px}
+header h1{margin:0 0 4px;font-size:17px}
+header .upd{margin-top:6px;font-size:12px;opacity:.95}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:#f7faf3;color:#3d4f3a;border-radius:99px;padding:5px 11px;font-size:12.5px;cursor:pointer}
+.chip.on{background:#3f6b4f;color:#fff;border-color:#3f6b4f;font-weight:600}
+input{width:100%;min-height:38px;border:1px solid var(--line);border-radius:9px;padding:0 10px;font-size:14px;background:#fbfdf8;margin:6px 0}
+.item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:8px}
+.item .t{font-size:14px;font-weight:700;color:#1d3a28;line-height:1.45;display:block;text-decoration:none}
+.item .m{font-size:12px;color:var(--mut);margin-top:5px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:#eef4e7;border:1px solid #e2ead8;border-radius:5px;padding:0 6px;color:#40603f}
+.tag.s{background:#e8f0f8;border-color:#d6e4f2;color:#2f5d8a;font-weight:600}
+.stat{font-size:12px;color:var(--mut);margin:6px 0}
+footer{margin-top:16px;font-size:11.5px;color:var(--mut)}
+"""
+
+
+def render_lite(data):
+    items = data.get("items") or []
+    cnt = {}
+    for it in items:
+        cnt[it["subject"]] = cnt.get(it["subject"], 0) + 1
+    chips = [f'<span class="chip on" data-s="全部">全部 {len(items)}</span>']
+    for s, n in sorted(cnt.items(), key=lambda x: -x[1]):
+        chips.append(f'<span class="chip" data-s="{esc(s)}">{esc(s)} {n}</span>')
+    rows = []
+    for it in items:
+        hay = (it.get("title", "") + " " + (it.get("up") or "") + " "
+               + " ".join(it.get("teachers") or [])).lower()
+        rows.append(
+            f'<div class="item" data-s="{esc(it["subject"])}" data-t="{esc(hay)}">'
+            f'<a class="t" href="{esc(it.get("url"))}" target="_blank" rel="noopener">'
+            f'{esc(it.get("title"))}</a>'
+            f'<div class="m"><span class="tag s">{esc(it["subject"])}</span>'
+            f'<span>{int(it.get("pages") or 0)} 集</span>'
+            f'<span>{esc(it.get("dur_txt",""))}</span>'
+            f'<span>▶{fmt_play(it.get("play"))}</span>'
+            f'<span>{esc(it.get("date",""))}</span>'
+            f'<span>UP：{esc(it.get("up") or "")}</span></div></div>')
+    return f"""<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>考研西综306 · 教学视频（精简版）</title>
+<style>{LITE_CSS}</style></head><body><div class="wrap">
+<header><h1>考研西医综合（306）教学视频 · 精简版</h1>
+<div class="upd">数据更新：{esc(data.get("updated",""))} · 共 {len(items)} 套 · 无封面图，弱网秒开</div></header>
+<div class="chips" id="chips">{''.join(chips)}</div>
+<input id="q" placeholder="搜标题 / UP 主 / 老师">
+<div class="stat" id="stat">共 {len(items)} 套</div>
+<div id="list">{''.join(rows)}</div>
+<footer>点标题直接跳到 B 站课程页 · 版权归各 UP 主所有，本站仅做索引</footer>
+</div><script>
+(function(){{
+ var list=document.getElementById('list'),items=[].slice.call(list.children),
+     chips=document.getElementById('chips'),q=document.getElementById('q'),stat=document.getElementById('stat'),cur='全部';
+ function ap(){{var k=q.value.trim().toLowerCase(),n=0;
+  items.forEach(function(e){{var ok=(cur==='全部'||e.getAttribute('data-s')===cur)&&(!k||e.getAttribute('data-t').indexOf(k)>=0);e.style.display=ok?'':'none';if(ok)n++;}});
+  stat.textContent='共 '+n+' 套'+(k?'（'+q.value.trim()+'）':'');}}
+ chips.addEventListener('click',function(e){{var c=e.target.closest('.chip');if(!c)return;cur=c.getAttribute('data-s');
+  [].forEach.call(chips.children,function(x){{x.className='chip'+(x.getAttribute('data-s')===cur?' on':'');}});q.value='';ap();}});
+ q.addEventListener('input',function(){{if(this.value&&cur!=='全部'){{cur='全部';[].forEach.call(chips.children,function(x){{x.className='chip'+(x.getAttribute('data-s')==='全部'?' on':'');}});}}ap();}});
+}})();
+</script></body></html>
+"""
+
+
 def build(json_path, out_dir):
     """生成 xz/videos.html（含站内链接）与 xz/videos_offline.html（离线单文件）"""
     with open(json_path, encoding="utf-8") as f:
@@ -232,4 +304,7 @@ def build(json_path, out_dir):
         f.write(render(data, offline=False))
     with open(p2, "w", encoding="utf-8") as f:
         f.write(render(data, offline=True))
-    return p1, p2, len(data.get("items") or [])
+    p3 = os.path.join(out_dir, "videos_lite.html")
+    with open(p3, "w", encoding="utf-8") as f:
+        f.write(render_lite(data))
+    return p1, p3, len(data.get("items") or [])
