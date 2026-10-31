@@ -27,6 +27,35 @@ BAD_WORDS = ["中医", "中药", "兽医", "植物", "动物", "心理", "护理
              "推拿", "药理(中药)", "康复治疗", "药学", "检验技术", "影像技术",
              "公共卫生事业", "卫生事业管理", "食品", "农业", "林业", "畜牧"]
 
+# 第二轮「双一流」建设高校（节选常见校名，用于院校层次排序）
+DOUBLE_FIRST = {
+    "北京大学", "清华大学", "浙江大学", "南京大学", "武汉大学", "中山大学", "东南大学",
+    "华中科技大学", "西安交通大学", "山东大学", "中南大学", "郑州大学", "苏州大学",
+    "北京师范大学", "西北农林科技大学", "南京医科大学", "天津医科大学",
+    "南京中医药大学", "广州中医药大学", "成都中医药大学", "南京林业大学",
+    "北京体育大学", "复旦大学", "上海交通大学", "四川大学", "同济大学", "南开大学",
+    "厦门大学", "吉林大学", "中国科学技术大学", "哈尔滨工业大学", "首都师范大学",
+}
+# 高职高专（职业院校 / 高等专科学校）
+VOC_KEYS = ["职业技术学院", "职业学院", "高等专科学校", "专科学校", "卫生学校",
+            "职业大学", "高等职业学校"]
+
+TIER_LABEL = {1: "双一流", 2: "本科院校", 3: "高职高专", 4: "网络平台"}
+
+
+def tier_of(school):
+    """1=双一流 2=普通本科 3=高职高专"""
+    s = (school or "").strip()
+    if not s:
+        return 2
+    if any(k in s for k in VOC_KEYS):
+        return 3
+    for u in DOUBLE_FIRST:
+        if u in s:
+            return 1
+    return 2
+
+
 SUBJ_MAP = [("诊断", ["诊断学", "诊断"]), ("内科", ["内科学", "内科"]),
             ("外科", ["外科学", "外科"]), ("病理", ["病理学", "病理"]),
             ("生化", ["生物化学", "生化"]), ("生理", ["生理学", "生理"])]
@@ -136,6 +165,8 @@ def fetch_mooc(keywords=None, page_size=20):
                 "date": ts_ms_to_date(d.get("firstPublishTime") or tp.get("startTime")),
                 "subject": classify(name),
                 "kind": "mooc",
+                "school_clean": school,
+                "tier": tier_of(school),
             })
         time.sleep(0.5)
     return out
@@ -185,6 +216,8 @@ def fetch_xuetangx(keywords=None, pages=2):
                     "date": ts_ms_to_date(it.get("created")),
                     "subject": classify(name),
                     "kind": "mooc",
+                    "school_clean": school,
+                    "tier": tier_of(school),
                 })
             time.sleep(0.4)
     return out

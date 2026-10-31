@@ -232,6 +232,8 @@ def collect():
         c["url"] = f"https://www.bilibili.com/video/{bv}"
         c["source"] = "B站"
         c["kind"] = "video"
+        c["school"] = ""
+        c["tier"] = 4
         c["date"] = datetime.datetime.utcfromtimestamp(c["pubdate"]).strftime("%Y-%m-%d")
         c["dur_txt"] = fmt_dur(c["dur"])
         c.pop("dur_hint", None)
@@ -373,6 +375,8 @@ def merge_open_courses(items):
             "subject": x["subject"], "url": x["url"], "date": x["date"],
             "score": round(base, 3), "pinned": [],
             "source": x["source"], "kind": "mooc",
+            "school": x.get("school_clean") or "",
+            "tier": int(x.get("tier") or 2),
         })
         added += 1
     print(f"[open] 合并公开课 {added} 套（候选 {len(extra)}）")

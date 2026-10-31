@@ -1,9 +1,9 @@
 {
- "updated": "2026-10-31 22:41",
+ "updated": "2026-10-31 23:10",
  "source": "哔哩哔哩（公开搜索 + 视频详情有效性校验）",
- "total": 141,
+ "total": 139,
  "min_date": "2025-01-01",
- "hidden_old": 32,
+ "hidden_old": 30,
  "subjects": [
   "全程系统课",
   "生理",
@@ -44,6 +44,8 @@
    "url": "https://www.bilibili.com/video/BV1ja411r7wx",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2021-12-30",
    "dur_txt": "50小时16分",
    "score": 4.704,
@@ -56,7 +58,7 @@
    "title": "2022考研西综.隋准-诊断学完整版，，持续更新",
    "up": "shley_",
    "mid": 38729847,
-   "play": 178805,
+   "play": 178806,
    "pubdate": 1619318216,
    "cover": "https://i1.hdslb.com/bfs/archive/4b446e397059628e5cb4c827a0c7c622e8afd0da.png",
    "pages": 38,
@@ -79,6 +81,8 @@
    "url": "https://www.bilibili.com/video/BV11K4y1R7dQ",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2021-04-25",
    "dur_txt": "39小时35分",
    "score": 4.125,
@@ -91,7 +95,7 @@
    "title": "15隋准内科 最经典成名作（已更新三大篇）",
    "up": "医学喵的医学笔记",
    "mid": 13524807,
-   "play": 145924,
+   "play": 145925,
    "pubdate": 1611880193,
    "cover": "https://i0.hdslb.com/bfs/archive/ad19551984e9b895adf4dcc61059975cf9099635.jpg",
    "pages": 66,
@@ -114,6 +118,8 @@
    "url": "https://www.bilibili.com/video/BV1sV411B7gq",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2021-01-29",
    "dur_txt": "44小时48分",
    "score": 4.045,
@@ -149,6 +155,8 @@
    "url": "https://www.bilibili.com/video/BV1Zh411y7YC",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2021-01-26",
    "dur_txt": "48小时10分",
    "score": 3.848,
@@ -184,6 +192,8 @@
    "url": "https://www.bilibili.com/video/BV1U34y1o7FA",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2021-10-30",
    "dur_txt": "67小时04分",
    "score": 3.803,
@@ -219,6 +229,8 @@
    "url": "https://www.bilibili.com/video/BV1ff4y1B72K",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2020-10-22",
    "dur_txt": "38小时11分",
    "score": 3.433,
@@ -254,6 +266,8 @@
    "url": "https://www.bilibili.com/video/BV1NX4y1g76P",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2021-04-06",
    "dur_txt": "33小时15分",
    "score": 2.944,
@@ -266,7 +280,7 @@
    "title": "15隋准诊断学 最经典版成名作",
    "up": "医学喵的医学笔记",
    "mid": 13524807,
-   "play": 210000,
+   "play": 210001,
    "pubdate": 1611735614,
    "cover": "https://i0.hdslb.com/bfs/archive/da787035bd4532cf739e387b9abb0ffdb966ba25.jpg",
    "pages": 20,
@@ -289,6 +303,8 @@
    "url": "https://www.bilibili.com/video/BV1954y1s7NX",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2021-01-27",
    "dur_txt": "25小时38分",
    "score": 2.781,
@@ -325,6 +341,8 @@
    "url": "https://www.bilibili.com/video/BV1DU4y1s7QF",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2021-02-03",
    "dur_txt": "36小时15分",
    "score": 2.696,
@@ -360,6 +378,8 @@
    "url": "https://www.bilibili.com/video/BV1a7411J77W",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2020-02-15",
    "dur_txt": "23小时42分",
    "score": 2.397,
@@ -372,7 +392,7 @@
    "title": "【医学考研】2027考研-2027西医综合-2027西综-306西医综合-2027研究生考试-临床医学学硕",
    "up": "2027考试备考",
    "mid": 3706928314189889,
-   "play": 19473,
+   "play": 19485,
    "pubdate": 1783577922,
    "cover": "https://i2.hdslb.com/bfs/archive/061b90a613bf028ed10df7779190f89a0b325f8a.jpg",
    "pages": 81,
@@ -393,6 +413,8 @@
    "url": "https://www.bilibili.com/video/BV13mMj69Eke",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-07-09",
    "dur_txt": "106小时49分",
    "score": 6.454,
@@ -426,6 +448,8 @@
    "url": "https://www.bilibili.com/video/BV1N7hi6xEyB",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-09-21",
    "dur_txt": "47小时08分",
    "score": 6.373,
@@ -436,12 +460,12 @@
    "title": "26/27考研内科学|十版教材（完整版）|西医综合306（复旦马威）",
    "up": "医学考研-马威老师",
    "mid": 668479419,
-   "play": 165961,
+   "play": 165971,
    "pubdate": 1756532759,
    "cover": "https://i2.hdslb.com/bfs/archive/6cd02e5aa1bbd11c755a9e9fd2a434680e95fda7.jpg",
    "pages": 49,
    "dur": 226923,
-   "fav": 5541,
+   "fav": 5542,
    "parts": [
     "26考研内科学 - 呼吸系统 01",
     "26考研内科学 - 呼吸系统 02",
@@ -459,6 +483,8 @@
    "url": "https://www.bilibili.com/video/BV1UNhizCEgz",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-08-30",
    "dur_txt": "63小时02分",
    "score": 6.118,
@@ -469,7 +495,7 @@
    "title": "《病理学》十版~你的西医综合蜕变之旅！",
    "up": "西综小公举",
    "mid": 362243115,
-   "play": 41239,
+   "play": 41241,
    "pubdate": 1751723082,
    "cover": "https://i0.hdslb.com/bfs/archive/30d411038bd4eaca37c184044f0a8a271d5cc0e5.jpg",
    "pages": 96,
@@ -490,6 +516,8 @@
    "url": "https://www.bilibili.com/video/BV12x3RzVEcS",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-07-05",
    "dur_txt": "63小时54分",
    "score": 6.009,
@@ -500,7 +528,7 @@
    "title": "生物化学-考研生物化学-27考研",
    "up": "学生化的秃哥哥",
    "mid": 358012574,
-   "play": 994934,
+   "play": 994958,
    "pubdate": 1770263177,
    "cover": "https://i2.hdslb.com/bfs/archive/f0f5990d9ab17dc83624fae5808e3a7f819f0150.jpg",
    "pages": 74,
@@ -521,6 +549,8 @@
    "url": "https://www.bilibili.com/video/BV1X6FhzxEh3",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-02-05",
    "dur_txt": "19小时23分",
    "score": 5.747,
@@ -531,7 +561,7 @@
    "title": "27 / 28 《生理学》考研精讲 | 第十版教材（完整版）| 西医综合306 | 复旦大学马威老师主讲",
    "up": "没冇耳朵的兔子",
    "mid": 470781994,
-   "play": 56297,
+   "play": 56299,
    "pubdate": 1776584700,
    "cover": "https://i1.hdslb.com/bfs/archive/d60682a58d2689a4d97901582636047e12161ac4.jpg",
    "pages": 26,
@@ -554,6 +584,8 @@
    "url": "https://www.bilibili.com/video/BV158doBsEEb",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-04-19",
    "dur_txt": "48小时11分",
    "score": 5.384,
@@ -564,12 +596,12 @@
    "title": "天天师兄西综知识点抽背",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 49710,
+   "play": 49712,
    "pubdate": 1783258800,
    "cover": "https://i1.hdslb.com/bfs/archive/59086a0a48966421976e9044f1b09d595af9df86.jpg",
    "pages": 39,
    "dur": 148413,
-   "fav": 1939,
+   "fav": 1940,
    "parts": [
     "4.1 循环【生理】",
     "4.2 循环【生理】",
@@ -587,6 +619,8 @@
    "url": "https://www.bilibili.com/video/BV1EjTi6XEJt",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-07-05",
    "dur_txt": "41小时13分",
    "score": 5.338,
@@ -597,12 +631,12 @@
    "title": "【西医综合】2027徐琦外科学 徐琦病理学 徐琦诊断学基础课程含讲义完整版|侯英健生理学",
    "up": "橘柚小只",
    "mid": 3546948189555412,
-   "play": 55810,
+   "play": 55822,
    "pubdate": 1787619600,
    "cover": "https://i1.hdslb.com/bfs/archive/f989c0a820d1ca1dfb1c8dcc8708fc24e909e07d.jpg",
    "pages": 37,
    "dur": 107621,
-   "fav": 3185,
+   "fav": 3186,
    "parts": [
     "外科-普通外科-颈部疾病1",
     "外科-普通外科-颈部疾病3",
@@ -621,6 +655,8 @@
    "url": "https://www.bilibili.com/video/BV1H2hN6NEZK",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-08-25",
    "dur_txt": "29小时53分",
    "score": 5.085,
@@ -631,7 +667,7 @@
    "title": "一天刷完人卫第10版《内科学》核心考点+考法 磨耳朵带背 三色笔记 思维导图 临床医学 西综 临床综合考研",
    "up": "考研你终硕",
    "mid": 336036831,
-   "play": 69910,
+   "play": 69913,
    "pubdate": 1757680800,
    "cover": "https://i2.hdslb.com/bfs/archive/fdb57b1c6e8063ee418f012eeff95f3806ca799a.jpg",
    "pages": 94,
@@ -652,6 +688,8 @@
    "url": "https://www.bilibili.com/video/BV1MwHkzBEEw",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-09-12",
    "dur_txt": "18小时33分",
    "score": 4.935,
@@ -662,7 +700,7 @@
    "title": "【西医综合】27/28西综考研最新天天师兄精讲基础班-带 读（最全完整版附讲义）",
    "up": "爱丽萨Alissa",
    "mid": 1010073185,
-   "play": 28740,
+   "play": 28744,
    "pubdate": 1789216835,
    "cover": "https://i2.hdslb.com/bfs/archive/5fba3950f369a03ad1ea6bd24d9aedcb613cb950.jpg",
    "pages": 28,
@@ -685,6 +723,8 @@
    "url": "https://www.bilibili.com/video/BV1mKYd6HEV2",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-09-12",
    "dur_txt": "28小时31分",
    "score": 4.928,
@@ -718,6 +758,8 @@
    "url": "https://www.bilibili.com/video/BV1EjTi6XEnd",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-07-05",
    "dur_txt": "33小时39分",
    "score": 4.715,
@@ -728,12 +770,12 @@
    "title": "3小时背完 | 生化所有代谢图基因图：口诀理顺+虐耳速通 | 生化带背 | 生化| 西医综合 | 26考研 | 每天磨耳朵听 | 睡前必听",
    "up": "小王学医笔记",
    "mid": 3546682310527443,
-   "play": 257151,
+   "play": 257169,
    "pubdate": 1755313198,
    "cover": "https://i0.hdslb.com/bfs/archive/e621be3aa3594a97401a7ded8798ebc2740cd80b.jpg",
    "pages": 70,
    "dur": 22526,
-   "fav": 10028,
+   "fav": 10029,
    "parts": [
     "以图带动知识点前言",
     "1-1：糖酵解代谢图理顺",
@@ -749,6 +791,8 @@
    "url": "https://www.bilibili.com/video/BV1GPbtzxEkR",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-08-16",
    "dur_txt": "6小时15分",
    "score": 4.712,
@@ -759,12 +803,12 @@
    "title": "（西医综合）2027侯英健精讲基础班 |侯英健生理学-侯英健病理生理-生物化学配套完整版讲义",
    "up": "橘柚小只",
    "mid": 3546948189555412,
-   "play": 65728,
+   "play": 65751,
    "pubdate": 1788588372,
    "cover": "https://i1.hdslb.com/bfs/archive/2773032e129506bd2ccb690bf1f3bee6f4281648.jpg",
    "pages": 29,
    "dur": 69943,
-   "fav": 2913,
+   "fav": 2914,
    "parts": [
     "[2.2.1.1.1]--绪论1",
     "[2.2.1.3.3]--细胞的电活动-静息电位1",
@@ -782,6 +826,8 @@
    "url": "https://www.bilibili.com/video/BV16vty6NEUn",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-09-05",
    "dur_txt": "19小时25分",
    "score": 4.674,
@@ -792,7 +838,7 @@
    "title": "天天师兄内科挖空讲义带读",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 46074,
+   "play": 46085,
    "pubdate": 1785826200,
    "cover": "https://i1.hdslb.com/bfs/archive/2e834c398d123539639445ddd2b0db094732c5fb.jpg",
    "pages": 57,
@@ -815,6 +861,8 @@
    "url": "https://www.bilibili.com/video/BV1yg396sEek",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-08-04",
    "dur_txt": "22小时21分",
    "score": 4.638,
@@ -825,7 +873,7 @@
    "title": "一天刷完人卫第10版《外科学》核心考点+考法 磨耳朵带背 三色笔记 思维导图 临床医学 西综 临床综合考研 外科",
    "up": "考研你终硕",
    "mid": 336036831,
-   "play": 78981,
+   "play": 78982,
    "pubdate": 1757932800,
    "cover": "https://i2.hdslb.com/bfs/archive/4ea224d0b10b4f492aa2af50b8633c918eb83d2e.jpg",
    "pages": 74,
@@ -846,6 +894,8 @@
    "url": "https://www.bilibili.com/video/BV129puz2ECq",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-09-15",
    "dur_txt": "16小时44分",
    "score": 4.562,
@@ -856,7 +906,7 @@
    "title": "生物化学带背，考研生物化学-全部都是考试的重点哦",
    "up": "学生化的秃哥哥",
    "mid": 358012574,
-   "play": 412139,
+   "play": 412154,
    "pubdate": 1741425186,
    "cover": "https://i2.hdslb.com/bfs/archive/205b09a45ef2d91ac19be08c442813421189c15e.png",
    "pages": 69,
@@ -877,6 +927,8 @@
    "url": "https://www.bilibili.com/video/BV1SuRWY4EhL",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-03-08",
    "dur_txt": "14小时24分",
    "score": 4.507,
@@ -887,7 +939,7 @@
    "title": "10版《生理学》天花板级讲授~306满分",
    "up": "西综小公举",
    "mid": 362243115,
-   "play": 125878,
+   "play": 125895,
    "pubdate": 1762917678,
    "cover": "https://i2.hdslb.com/bfs/archive/d635845fd06ed27cf6b96aa3fae8606e24782581.jpg",
    "pages": 36,
@@ -908,6 +960,8 @@
    "url": "https://www.bilibili.com/video/BV1uQk2BpEWS",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-11-12",
    "dur_txt": "25小时46分",
    "score": 4.319,
@@ -939,6 +993,8 @@
    "url": "https://www.bilibili.com/video/BV1ofQJYRESY",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-03-12",
    "dur_txt": "21小时34分",
    "score": 4.197,
@@ -949,7 +1005,7 @@
    "title": "（2027西医综合）第十版西综 徐琦诊断学-徐琦外科学-徐琦病理学完整版视频课程",
    "up": "朝露日晞a",
    "mid": 3546913416678028,
-   "play": 20306,
+   "play": 20310,
    "pubdate": 1786608667,
    "cover": "https://i0.hdslb.com/bfs/archive/90c078e69bc1626b2b8eaf7449ce045a92580c2b.jpg",
    "pages": 18,
@@ -972,9 +1028,11 @@
    "url": "https://www.bilibili.com/video/BV1LWgn6CETC",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-08-13",
    "dur_txt": "13小时19分",
-   "score": 4.088,
+   "score": 4.087,
    "pinned": []
   },
   {
@@ -1002,7 +1060,9 @@
    "score": 4.0,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "中山大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1029,7 +1089,9 @@
    "score": 4.0,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "中南大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1056,7 +1118,9 @@
    "score": 4.0,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "中国医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -1083,7 +1147,9 @@
    "score": 4.0,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "山东大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1110,14 +1176,16 @@
    "score": 4.0,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "华中科技大学",
+   "tier": 1
   },
   {
    "bvid": "",
    "title": "生物化学（浙江工业大学）",
    "up": "中国大学MOOC · 浙江工业大学",
    "mid": "",
-   "play": 170339,
+   "play": 170338,
    "fav": 0,
    "pubdate": 0,
    "cover": "https://nos.netease.com/edu-image/ed82fe649d5d4d87a795a7d5b03db9d3.jpg",
@@ -1137,7 +1205,9 @@
    "score": 4.0,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "浙江工业大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -1164,7 +1234,9 @@
    "score": 4.0,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "华中科技大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1191,14 +1263,16 @@
    "score": 4.0,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "南京大学",
+   "tier": 1
   },
   {
    "bvid": "BV1ofyUBGErh",
    "title": "《生物化学》课程精讲",
    "up": "没冇耳朵的兔子",
    "mid": 470781994,
-   "play": 24404,
+   "play": 24405,
    "pubdate": 1761731515,
    "cover": "https://i0.hdslb.com/bfs/archive/898ba2cb27cda0455a8f5cc9f50425184c9d62e6.jpg",
    "pages": 55,
@@ -1219,40 +1293,11 @@
    "url": "https://www.bilibili.com/video/BV1ofyUBGErh",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-10-29",
    "dur_txt": "36小时14分",
    "score": 3.965,
-   "pinned": []
-  },
-  {
-   "bvid": "BV1UFdsBREjN",
-   "title": "27医学考研病理学合集（持续更新）",
-   "up": "医学考研-马威老师",
-   "mid": 668479419,
-   "play": 9377,
-   "pubdate": 1776523818,
-   "cover": "https://i2.hdslb.com/bfs/archive/e4fa4f0073adf622669abf2192571acc634f41eb.jpg",
-   "pages": 25,
-   "dur": 121822,
-   "fav": 307,
-   "parts": [
-    "第一章适应与损伤 1.1",
-    "第一章适应与损伤 1.2",
-    "第二章 损伤与修复 2.1",
-    "第二章 损伤与修复 2.2",
-    "第三章 局部血液循环障碍 3.1",
-    "第三章 局部血液循环障碍 3.2",
-    "第四章 炎症 4.1",
-    "第四章 炎症 4.2"
-   ],
-   "subject": "病理",
-   "teachers": [],
-   "url": "https://www.bilibili.com/video/BV1UFdsBREjN",
-   "source": "B站",
-   "kind": "video",
-   "date": "2026-04-18",
-   "dur_txt": "33小时50分",
-   "score": 3.784,
    "pinned": []
   },
   {
@@ -1281,6 +1326,8 @@
    "url": "https://www.bilibili.com/video/BV1hJQiY4ECt",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-03-17",
    "dur_txt": "17小时11分",
    "score": 3.773,
@@ -1291,7 +1338,7 @@
    "title": "天天师兄生理挖空讲义带读",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 44867,
+   "play": 44875,
    "pubdate": 1783257600,
    "cover": "https://i2.hdslb.com/bfs/archive/5c0eb638d60018e370d547d2b7fb72042b13f0e2.jpg",
    "pages": 35,
@@ -1314,6 +1361,8 @@
    "url": "https://www.bilibili.com/video/BV1tGTy6tE1B",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-07-05",
    "dur_txt": "10小时32分",
    "score": 3.76,
@@ -1324,7 +1373,7 @@
    "title": "天天师兄外科挖空讲义带读",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 27709,
+   "play": 27723,
    "pubdate": 1786880430,
    "cover": "https://i1.hdslb.com/bfs/archive/d737df1349d476a5dc0e58ea29f4f23a4e8efc47.jpg",
    "pages": 39,
@@ -1347,6 +1396,8 @@
    "url": "https://www.bilibili.com/video/BV12ogM6aEMu",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-08-16",
    "dur_txt": "8小时28分",
    "score": 3.737,
@@ -1357,7 +1408,7 @@
    "title": "西综考研 生化代谢带背全系列",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 186799,
+   "play": 186823,
    "pubdate": 1754494592,
    "cover": "https://i2.hdslb.com/bfs/archive/7347f348291edc763c1412935df372be5e50226b.jpg",
    "pages": 31,
@@ -1378,6 +1429,8 @@
    "url": "https://www.bilibili.com/video/BV1vTtAzpE53",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-08-06",
    "dur_txt": "1小时38分",
    "score": 3.605,
@@ -1406,14 +1459,16 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "华中科技大学",
+   "tier": 1
   },
   {
    "bvid": "",
    "title": "基础生物化学（西北农林科技大学）",
    "up": "中国大学MOOC · 西北农林科技大学",
    "mid": "",
-   "play": 70379,
+   "play": 70378,
    "fav": 0,
    "pubdate": 0,
    "cover": "https://mooc-image.nosdn.127.net/e8d5e5fc98794124bda3a4f9757fae61.png",
@@ -1433,7 +1488,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "西北农林科技大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1460,7 +1517,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "北京体育大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1487,7 +1546,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "山东医药大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -1514,7 +1575,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "南京大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1541,7 +1604,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "山东医药大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -1568,7 +1633,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "江苏医药职业学院",
+   "tier": 3
   },
   {
    "bvid": "",
@@ -1595,7 +1662,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "南京中医药大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1622,7 +1691,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "山东大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1649,7 +1720,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "成都中医药大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1675,7 +1748,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "南京医科大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1702,7 +1777,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "西安交通大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1726,7 +1803,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "中国医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -1751,7 +1830,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "北京大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1778,7 +1859,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "天津医科大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1802,7 +1885,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "山东大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1829,7 +1914,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "广州中医药大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -1856,7 +1943,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "山东医药大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -1883,7 +1972,9 @@
    "score": 3.6,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "南方医科大学",
+   "tier": 2
   },
   {
    "bvid": "BV1z2R3YkEJq",
@@ -1911,6 +2002,8 @@
    "url": "https://www.bilibili.com/video/BV1z2R3YkEJq",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-03-11",
    "dur_txt": "10小时42分",
    "score": 3.55,
@@ -1921,7 +2014,7 @@
    "title": "【2027西医综合】侯英健生理学 侯英健生物化学含讲义完整课程合集",
    "up": "橘柚小只",
    "mid": 3546948189555412,
-   "play": 6954,
+   "play": 6955,
    "pubdate": 1787628185,
    "cover": "https://i1.hdslb.com/bfs/archive/614ef91294a60685c00980db46dff4a434445191.jpg",
    "pages": 11,
@@ -1944,6 +2037,8 @@
    "url": "https://www.bilibili.com/video/BV186h36YEZ5",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-08-25",
    "dur_txt": "10小时21分",
    "score": 3.52,
@@ -1954,7 +2049,7 @@
    "title": "天天师兄生理思维导图挖空带读",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 13574,
+   "play": 13575,
    "pubdate": 1787968498,
    "cover": "https://i0.hdslb.com/bfs/archive/718000385ba16cc5222e4b06d73c659b654546f4.jpg",
    "pages": 35,
@@ -1977,6 +2072,8 @@
    "url": "https://www.bilibili.com/video/BV1HB466XEwM",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-08-29",
    "dur_txt": "5小时04分",
    "score": 3.438,
@@ -1987,7 +2084,7 @@
    "title": "天天师兄病理挖空讲义带读",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 36381,
+   "play": 36392,
    "pubdate": 1784264916,
    "cover": "https://i2.hdslb.com/bfs/archive/ebef2faf7bca6dd10713210036a3efb94de0e8a3.jpg",
    "pages": 27,
@@ -2010,6 +2107,8 @@
    "url": "https://www.bilibili.com/video/BV1XbKE6oEpq",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-07-17",
    "dur_txt": "5小时04分",
    "score": 3.399,
@@ -2043,6 +2142,8 @@
    "url": "https://www.bilibili.com/video/BV19CgM63EwB",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-08-16",
    "dur_txt": "3小时03分",
    "score": 3.373,
@@ -2053,7 +2154,7 @@
    "title": "27小亮外科讲义挖空带读",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 8607,
+   "play": 8609,
    "pubdate": 1788579721,
    "cover": "https://i0.hdslb.com/bfs/archive/ebf4e92fd4d87272e0fe956462482d5491c3b711.jpg",
    "pages": 20,
@@ -2076,6 +2177,8 @@
    "url": "https://www.bilibili.com/video/BV16Zt16MEre",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-09-05",
    "dur_txt": "12小时28分",
    "score": 3.359,
@@ -2107,6 +2210,8 @@
    "url": "https://www.bilibili.com/video/BV1CvDLBGEXi",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-04-08",
    "dur_txt": "13小时23分",
    "score": 3.332,
@@ -2137,7 +2242,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "锦州医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -2164,7 +2271,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "四川中医药高等专科学校",
+   "tier": 3
   },
   {
    "bvid": "",
@@ -2188,7 +2297,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "江苏护理职业学院",
+   "tier": 3
   },
   {
    "bvid": "",
@@ -2215,7 +2326,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "西安交通大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -2239,7 +2352,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "西南医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -2266,7 +2381,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "山东大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -2293,7 +2410,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "武汉大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -2317,7 +2436,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "南方医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -2341,7 +2462,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "哈尔滨医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -2365,7 +2488,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "西南医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -2392,7 +2517,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "山东第二医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -2416,7 +2543,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "浙江大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -2443,7 +2572,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "成都中医药大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -2468,7 +2599,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "浙江大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -2495,7 +2628,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "东南大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -2522,7 +2657,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "铜川职业技术学院",
+   "tier": 3
   },
   {
    "bvid": "",
@@ -2549,7 +2686,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "四川中医药高等专科学校",
+   "tier": 3
   },
   {
    "bvid": "",
@@ -2573,7 +2712,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "西南医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -2600,7 +2741,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "河南中医药大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -2625,7 +2768,9 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "华中科技大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -2649,14 +2794,16 @@
    "score": 3.25,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "西南医科大学",
+   "tier": 2
   },
   {
    "bvid": "BV1fFQ3YPEXm",
    "title": "26考研西医综合-病理学（持续更新）",
    "up": "医学考研-马威老师",
    "mid": 668479419,
-   "play": 25545,
+   "play": 25547,
    "pubdate": 1741945451,
    "cover": "https://i2.hdslb.com/bfs/archive/1b393db31cca926dc1ef2d31b933b2605218e76f.jpg",
    "pages": 30,
@@ -2677,6 +2824,8 @@
    "url": "https://www.bilibili.com/video/BV1fFQ3YPEXm",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-03-14",
    "dur_txt": "24小时55分",
    "score": 3.23,
@@ -2687,7 +2836,7 @@
    "title": "天天师兄生化挖空讲义带读",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 9930,
+   "play": 9933,
    "pubdate": 1787969605,
    "cover": "https://i2.hdslb.com/bfs/archive/e8d41c93805e9ca7c1dc692ad336f715382ab34e.jpg",
    "pages": 18,
@@ -2710,6 +2859,8 @@
    "url": "https://www.bilibili.com/video/BV1We466xEyS",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-08-29",
    "dur_txt": "7小时48分",
    "score": 3.17,
@@ -2720,7 +2871,7 @@
    "title": "天天师兄：生理口诀带背 | 虐耳带背 |生理学 | 西医综合 | 26考研 | 每天磨耳朵听 | 睡前必听",
    "up": "小王学医笔记",
    "mid": 3546682310527443,
-   "play": 76893,
+   "play": 76898,
    "pubdate": 1757349012,
    "cover": "https://i0.hdslb.com/bfs/archive/4e841880ac9b0bf65099eae841214adebc37a344.jpg",
    "pages": 12,
@@ -2743,6 +2894,8 @@
    "url": "https://www.bilibili.com/video/BV1qzYFzaEkq",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-09-08",
    "dur_txt": "1小时48分",
    "score": 3.151,
@@ -2776,6 +2929,8 @@
    "url": "https://www.bilibili.com/video/BV1rcCbB4E57",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-11-13",
    "dur_txt": "4小时07分",
    "score": 3.127,
@@ -2807,9 +2962,11 @@
    "url": "https://www.bilibili.com/video/BV16tMuzeERs",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-06-13",
    "dur_txt": "3小时29分",
-   "score": 3.122,
+   "score": 3.121,
    "pinned": []
   },
   {
@@ -2817,12 +2974,12 @@
    "title": "天天师兄生化思维导图挖空带读",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 8021,
+   "play": 8022,
    "pubdate": 1788574285,
    "cover": "https://i1.hdslb.com/bfs/archive/e10c3d059ccd7438b59fe88f00d757a029e0678b.jpg",
    "pages": 18,
    "dur": 14022,
-   "fav": 356,
+   "fav": 357,
    "parts": [
     "1.1 无氧氧化+氧化磷酸化",
     "2 磷酸戊糖途径",
@@ -2840,6 +2997,8 @@
    "url": "https://www.bilibili.com/video/BV1ATtC6vE7D",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-09-05",
    "dur_txt": "3小时53分",
    "score": 3.028,
@@ -2850,7 +3009,7 @@
    "title": "小亮生化挖空讲义带读",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 5367,
+   "play": 5368,
    "pubdate": 1789180763,
    "cover": "https://i1.hdslb.com/bfs/archive/c7eb31bef969e249e1b788c7efff38df6fa51bb6.jpg",
    "pages": 12,
@@ -2873,6 +3032,8 @@
    "url": "https://www.bilibili.com/video/BV1e7YS6SEiW",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-09-12",
    "dur_txt": "6小时33分",
    "score": 2.977,
@@ -2883,7 +3044,7 @@
    "title": "天天师兄内科思维导图挖空带读",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 10212,
+   "play": 10217,
    "pubdate": 1790932162,
    "cover": "https://i1.hdslb.com/bfs/archive/37da38f88427c19f0de0b81de43336d9e15e0717.jpg",
    "pages": 12,
@@ -2906,6 +3067,8 @@
    "url": "https://www.bilibili.com/video/BV1caa26SEtr",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-10-02",
    "dur_txt": "2小时06分",
    "score": 2.957,
@@ -2933,7 +3096,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "中南大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -2958,7 +3123,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "郑州大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -2985,7 +3152,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "武汉大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3012,7 +3181,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "南京林业大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3039,7 +3210,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "重庆三峡医药高等专科学校",
+   "tier": 3
   },
   {
    "bvid": "",
@@ -3065,7 +3238,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "东南大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3092,7 +3267,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "东南大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3118,7 +3295,37 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "安康职业技术学院",
+   "tier": 3
+  },
+  {
+   "bvid": "",
+   "title": "高级生物化学（南通大学）",
+   "up": "学堂在线 · 南通大学",
+   "mid": "",
+   "play": 1684,
+   "fav": 0,
+   "pubdate": 0,
+   "cover": "https://qn1-next.xuetangonline.com/FvvNJPBHHJHMkiVvNXewmIZDa6aA",
+   "pages": 0,
+   "dur": 0,
+   "dur_txt": "MOOC 课程",
+   "parts": [],
+   "teachers": [
+    "顾建兰",
+    "储丹丹",
+    "程金妹"
+   ],
+   "subject": "生化",
+   "url": "https://www.xuetangx.com/course/ntuP10011017182",
+   "date": "",
+   "score": 2.9,
+   "pinned": [],
+   "source": "学堂在线",
+   "kind": "mooc",
+   "school": "南通大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3142,7 +3349,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "蚌埠医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3169,7 +3378,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "漳州卫生职业学院",
+   "tier": 3
   },
   {
    "bvid": "",
@@ -3196,7 +3407,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "郑州大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3223,7 +3436,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "郑州大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3250,7 +3465,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "安康职业技术学院",
+   "tier": 3
   },
   {
    "bvid": "",
@@ -3277,7 +3494,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "佳木斯大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3301,7 +3520,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "北京大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3328,7 +3549,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "武汉大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3355,7 +3578,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "中国航天员科研训练中心",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3377,7 +3602,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3404,7 +3631,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "邢台医学院",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3431,7 +3660,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "首都医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3458,7 +3689,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "武汉大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3485,7 +3718,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "南京中医药大学研究生院",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3512,7 +3747,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "苏州大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3539,7 +3776,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "南方医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3566,7 +3805,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "大连医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3593,7 +3834,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "长春中医药大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3615,7 +3858,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3639,7 +3884,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "福建医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3666,7 +3913,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "山西医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3693,7 +3942,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "福建医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3720,34 +3971,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "中国大学MOOC",
-   "kind": "mooc"
-  },
-  {
-   "bvid": "",
-   "title": "高级生物化学（西北农林科技大学）",
-   "up": "学堂在线 · 西北农林科技大学",
-   "mid": "",
-   "play": 178,
-   "fav": 0,
-   "pubdate": 0,
-   "cover": "https://qn1-next.xuetangonline.com/FrhEXm5KWN5GC7gNroU6MCbt0GTR",
-   "pages": 0,
-   "dur": 0,
-   "dur_txt": "MOOC 课程",
-   "parts": [],
-   "teachers": [
-    "武永军",
-    "陈鹏",
-    "韩召奋",
-    "张新梅"
-   ],
-   "subject": "生化",
-   "url": "https://www.xuetangx.com/course/NWSUAFP09011013772",
-   "date": "",
-   "score": 2.9,
-   "pinned": [],
-   "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "北京师范大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3774,7 +4000,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "武汉大学",
+   "tier": 1
   },
   {
    "bvid": "",
@@ -3798,7 +4026,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "南方医科大学",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3825,7 +4055,9 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "内蒙古科技大学包头医学院",
+   "tier": 2
   },
   {
    "bvid": "",
@@ -3852,14 +4084,16 @@
    "score": 2.9,
    "pinned": [],
    "source": "学堂在线",
-   "kind": "mooc"
+   "kind": "mooc",
+   "school": "中山大学",
+   "tier": 1
   },
   {
    "bvid": "BV1ZETi6JEuF",
    "title": "小亮病理讲义挖空带读",
    "up": "小凯的医学之路",
    "mid": 499067704,
-   "play": 9437,
+   "play": 9439,
    "pubdate": 1782894600,
    "cover": "https://i1.hdslb.com/bfs/archive/b403a5d14eb323ac09f02602aed6470c077713a3.jpg",
    "pages": 12,
@@ -3882,6 +4116,8 @@
    "url": "https://www.bilibili.com/video/BV1ZETi6JEuF",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2026-07-01",
    "dur_txt": "6小时24分",
    "score": 2.863,
@@ -3892,7 +4128,7 @@
    "title": "西医综合（306）真题精讲17-20年",
    "up": "北医何老师15386986851",
    "mid": 327887933,
-   "play": 7178,
+   "play": 7179,
    "pubdate": 1756202845,
    "cover": "https://i0.hdslb.com/bfs/archive/d611ca9668f878eef44ecf6beb18cc420180f6c4.jpg",
    "pages": 8,
@@ -3913,40 +4149,11 @@
    "url": "https://www.bilibili.com/video/BV1q1vNzSErn",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-08-26",
    "dur_txt": "21小时22分",
    "score": 2.697,
-   "pinned": []
-  },
-  {
-   "bvid": "BV11MGq61Ek9",
-   "title": "《病理学》教材精讲【完整版】",
-   "up": "迈德森-Medicine",
-   "mid": 527659289,
-   "play": 5893,
-   "pubdate": 1779522808,
-   "cover": "https://i0.hdslb.com/bfs/archive/2e13b69b7a0f211c9521de50e6506aaa98c9b074.jpg",
-   "pages": 15,
-   "dur": 19480,
-   "fav": 467,
-   "parts": [
-    "第1章、细胞和组织的适应与损伤",
-    "第2章、损伤的修复",
-    "第3章、局部血液循环障碍",
-    "第4章、炎症",
-    "第5章、免疫性疾病",
-    "第6章、肿瘤",
-    "第9章、心血管系统疾病",
-    "第10章、呼吸系统疾病"
-   ],
-   "subject": "病理",
-   "teachers": [],
-   "url": "https://www.bilibili.com/video/BV11MGq61Ek9",
-   "source": "B站",
-   "kind": "video",
-   "date": "2026-05-23",
-   "dur_txt": "5小时24分",
-   "score": 2.48,
    "pinned": []
   },
   {
@@ -3975,6 +4182,8 @@
    "url": "https://www.bilibili.com/video/BV14xTrzwEHW",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-06-10",
    "dur_txt": "2小时56分",
    "score": 2.372,
@@ -3985,7 +4194,7 @@
    "title": "3.5小时刷完26西医综合考研历年真题生理学1200个考点逐题总结带背 磨耳朵 2026考研 临床医学综合 西医 西综",
    "up": "考研你终硕",
    "mid": 336036831,
-   "play": 17379,
+   "play": 17380,
    "pubdate": 1749466800,
    "cover": "https://i0.hdslb.com/bfs/archive/cfc0d9f3c0f5658115f5acca00c55d1552d53b21.jpg",
    "pages": 13,
@@ -4006,6 +4215,8 @@
    "url": "https://www.bilibili.com/video/BV1oMTazQE2w",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-06-09",
    "dur_txt": "3小时45分",
    "score": 2.346,
@@ -4037,6 +4248,8 @@
    "url": "https://www.bilibili.com/video/BV1bauqzbEYB",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-07-14",
    "dur_txt": "13小时13分",
    "score": 2.275,
@@ -4047,7 +4260,7 @@
    "title": "【10版内科学】 课本带读（持续更新中....）",
    "up": "Dr_牛学长",
    "mid": 160089803,
-   "play": 70115,
+   "play": 70116,
    "pubdate": 1740412426,
    "cover": "https://i0.hdslb.com/bfs/archive/88802ef57a02dedd42cc0dad7915d3493d9b9bd3.jpg",
    "pages": 13,
@@ -4068,6 +4281,8 @@
    "url": "https://www.bilibili.com/video/BV1HTPte2E7C",
    "source": "B站",
    "kind": "video",
+   "school": "",
+   "tier": 4,
    "date": "2025-02-24",
    "dur_txt": "3小时22分",
    "score": 1.807,

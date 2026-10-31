@@ -49,6 +49,9 @@ input[type=search]:focus{border-color:#9dbf8d;background:#fff}
 .tag.tc{background:#fdf1e3;border-color:#f4e0c7;color:#8a5a20}
 .tag.pin{background:#c0392b;border-color:#a93226;color:#fff;font-weight:700}
 .tag.src{background:#eaf1fb;border-color:#cfdff5;color:#2f5d8a;font-weight:600}
+.tag.t1{background:#fff4d6;border-color:#f0dca6;color:#8a6d1a;font-weight:700}
+.tag.t2{background:#eef4e7;border-color:#e2ead8;color:#40603f}
+.tag.t3{background:#f2f2f2;border-color:#e2e2e2;color:#6b6b6b}
 .card.pinned{border-color:#e0b04a;box-shadow:0 0 0 2px rgba(224,176,74,.28)}
 .parts{font-size:12px;color:#6b7d66;line-height:1.5}
 .foot{margin-top:auto;display:flex;align-items:center;gap:8px;padding-top:3px}
@@ -97,10 +100,14 @@ JS = """
   }
   function sortBy(){
     var k=sel.value, arr=cards.slice();
-    var idx={score:5,date:1,play:2,dur:3,pages:4}[k]||5;
+    var idx={score:5,date:1,play:2,dur:3,pages:4,tier:7}[k]||5;
     arr.sort(function(a,b){
       var x=a.getAttribute('data-k').split('|'), y=b.getAttribute('data-k').split('|');
-      if(y[6]!==x[6])return y[6]==='1'?1:-1;   // 置顶始终在前
+      if(k!=='tier'&&y[6]!==x[6])return y[6]==='1'?1:-1;   // 置顶在前（院校层次排序除外）
+      if(k==='tier'){                          // 档次数字越小越好，同级按热度
+        var t=(parseFloat(x[idx])||4)-(parseFloat(y[idx])||4);
+        return t||(parseFloat(y[2])||0)-(parseFloat(x[2])||0);
+      }
       return (parseFloat(y[idx])||0)-(parseFloat(x[idx])||0);
     });
     arr.forEach(function(c){grid.appendChild(c);});
@@ -156,6 +163,9 @@ def card_html(it):
         tags.append(f'<span class="tag tc">{esc(t)}</span>')
     tags.append(f'<span class="tag">{esc(it.get("date","") or "MOOC")}</span>')
     if is_mooc:
+        _t = int(it.get("tier") or 2)
+        _tl = {1: "双一流", 2: "本科", 3: "高职高专"}.get(_t, "本科")
+        tags.append(f'<span class="tag t{_t}">{_tl}</span>')
         tags.append(f'<span class="tag src">{esc(it.get("source","MOOC"))}</span>')
     cover = it.get("cover") or ""
     img = (f'<img loading="lazy" referrerpolicy="no-referrer" src="{esc(cover)}" alt="">'
@@ -164,7 +174,8 @@ def card_html(it):
     # data-k = 科目|日期|播放|时长|分P|评分 ；data-t = 搜索用串（小写）
     k = "|".join([it["subject"], str(_ts(it.get("date", ""))), str(int(it.get("play") or 0)),
                   str(int(it.get("dur") or 0)), str(int(it.get("pages") or 0)),
-                  str(it.get("score", 0)), "1" if it.get("pinned") else "0"])
+                  str(it.get("score", 0)), "1" if it.get("pinned") else "0",
+                  str(it.get("tier") or 4)])
     hay = (it.get("title", "") + " " + up + " " + " ".join(it.get("teachers") or [])).lower()
     bv = it.get("bvid") or ""
     play = (it.get("url") if is_mooc else (f"play/{esc(bv)}.html" if bv else it.get("url"))) or ""
@@ -251,8 +262,9 @@ def render(data, offline=False):
     <input type="search" id="q" placeholder="搜标题 / UP 主 / 老师，如 贺银成">
     <select class="sortsel" id="sort">
       <option value="score">按推荐度</option>
+      <option value="play" selected>按学习人数 / 播放量</option>
+      <option value="tier">按院校层次（双一流优先）</option>
       <option value="new">最新发布</option>
-      <option value="play">播放量</option>
       <option value="dur">总时长</option>
       <option value="pages">分P最多</option>
     </select>
@@ -305,6 +317,10 @@ input{width:100%;min-height:38px;border:1px solid var(--line);border-radius:9px;
 .tag.pin{background:#c0392b;border-color:#a93226;color:#fff;font-weight:700}
 .item.pinned{border-color:#e0b04a;box-shadow:0 0 0 2px rgba(224,176,74,.25)}
 .stat{font-size:12px;color:var(--mut);margin:6px 0}
+.sortsel{width:100%;min-height:38px;border:1px solid var(--line);border-radius:9px;background:#fbfdf8;color:var(--ink);padding:0 10px;font-size:13.5px;margin-bottom:4px}
+.tag.t1{background:#fff4d6;border-color:#f0dca6;color:#8a6d1a;font-weight:700}
+.tag.t2{background:#eef4e7;border-color:#e2ead8;color:#40603f}
+.tag.t3{background:#f2f2f2;border-color:#e2e2e2;color:#6b6b6b}
 .tip{background:#fff6e5;border:1px solid #f2d8a8;color:#7a5312;border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.65;margin:8px 0;display:none}
 .tip.show{display:block}
 .acts{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
@@ -350,6 +366,10 @@ def render_lite(data):
         _pc = " pinned" if it.get("pinned") else ""
         _badge = '<span class="tag pin">置顶</span>' if it.get("pinned") else ""
         _src = f'<span class="tag src">{esc(it.get("source","公开课"))}</span>' if im else ""
+        if im:
+            _t = int(it.get("tier") or 2)
+            _src = (f'<span class="tag t{_t}">{ {1:"双一流",2:"本科",3:"高职高专"}.get(_t,"本科") }</span>'
+                    + _src)
         _cnt = "" if im else f'<span>{int(it.get("pages") or 0)} 集</span>'
         _who = "开设" if im else "UP"
         _pv = "学习" if im else ""
@@ -362,7 +382,7 @@ def render_lite(data):
         _sattr = "◆公开课" if im else "◆B站"
         _tgt = ' target="_blank" rel="noopener"' if im else ""
         rows.append(
-            f'<div class="item{_pc}" data-s="{esc(it["subject"])}" data-org="{_sattr}" data-pin="{"1" if it.get("pinned") else "0"}" data-t="{esc(hay)}">'
+            f'<div class="item{_pc}" data-s="{esc(it["subject"])}" data-org="{_sattr}" data-pin="{"1" if it.get("pinned") else "0"}" data-t="{esc(hay)}" data-play="{int(it.get("play") or 0)}" data-tier="{int(it.get("tier") or 4)}" data-score="{it.get("score",0)}">'
             f'<a class="t" href="{play}"{_tgt}>{esc(it.get("title"))}</a>'
             f'<div class="m">{_badge}<span class="tag s">{esc(it["subject"])}</span>{_src}'
             f'{_cnt}'
@@ -383,6 +403,11 @@ def render_lite(data):
 <div class="tip" id="tip">点标题直接进<b>站内播放页</b>（内嵌播放器+选集，不用跳 App）。若播放器空白，点「复制BV」到哔哩哔哩 App 搜索，或右上角「…」→「在浏览器打开」。</div>
 <div class="chips" id="chips">{''.join(chips)}</div>
 <input id="q" placeholder="搜标题 / UP 主 / 老师">
+<select id="sort" class="sortsel">
+  <option value="play" selected>按学习人数 / 播放量排序</option>
+  <option value="tier">按院校层次（双一流优先）</option>
+  <option value="score">按推荐度排序</option>
+</select>
 <div class="stat" id="stat">共 {len(items)} 套</div>
 <div id="list">{''.join(rows)}</div>
 <footer>点标题进入站内播放页（选集）· 版权归各 UP 主所有，本站仅做索引</footer>
@@ -395,6 +420,25 @@ def render_lite(data):
      (cur.indexOf('◆')===0?e.getAttribute('data-org')===cur:e.getAttribute('data-s')===cur));
    var ok=base&&(!k||e.getAttribute('data-t').indexOf(k)>=0);e.style.display=ok?'':'none';if(ok)n++;}});
   stat.textContent='共 '+n+' 套'+(k?'（'+q.value.trim()+'）':'');}}
+ var sel=document.getElementById('sort');
+ function doSort(){{
+   if(!sel)return;
+   var k=sel.value, arr=items.slice();
+   arr.sort(function(a,b){{
+     var pa=+a.getAttribute('data-pin'), pb=+b.getAttribute('data-pin');
+     if(k!=='tier'&&pa!==pb)return pb-pa;           // 置顶在前（院校层次排序除外）
+     if(k==='tier'){{
+       var ta=+a.getAttribute('data-tier'), tb=+b.getAttribute('data-tier');
+       if(ta!==tb)return ta-tb;                     // 双一流优先
+       return (+b.getAttribute('data-play'))-(+a.getAttribute('data-play'));
+     }}
+     if(k==='score')return (+b.getAttribute('data-score'))-(+a.getAttribute('data-score'));
+     return (+b.getAttribute('data-play'))-(+a.getAttribute('data-play'));
+   }});
+   arr.forEach(function(x){{list.appendChild(x);}});
+ }}
+ if(sel)sel.addEventListener('change',doSort);
+ doSort();
  chips.addEventListener('click',function(e){{var c=e.target.closest('.chip');if(!c)return;cur=c.getAttribute('data-s');
   [].forEach.call(chips.children,function(x){{var v=x.getAttribute('data-s');
     var cls='chip'+(v==='★置顶'?' pin':(v.indexOf('◆')===0?' src':''))+(v===cur?' on':'');
