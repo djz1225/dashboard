@@ -46,6 +46,9 @@ input[type=search]:focus{border-color:#9dbf8d;background:#fff}
 .plays{font-size:12px;color:var(--mut)}
 .go{margin-left:auto;display:inline-flex;align-items:center;min-height:36px;padding:0 13px;border-radius:9px;background:#eff6e9;border:1px solid #d9e6cb;color:#345b42;font-weight:700;font-size:13px;text-decoration:none}
 .go:hover{background:#e6f1dc}
+.mini{font-size:11.5px;color:#5a6b56;background:#f4f8ef;border:1px solid #e2ead8;border-radius:6px;padding:3px 7px;cursor:pointer;text-decoration:none}
+.tip{background:#fff6e5;border:1px solid #f2d8a8;color:#7a5312;border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.6;margin:10px 0;display:none}
+.tip.show{display:block}
 .empty{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:28px;text-align:center;color:var(--mut);font-size:14px}
 footer{margin-top:22px;font-size:12px;color:var(--mut);line-height:1.75}
 footer a{color:#3b6ea5;text-decoration:none}
@@ -110,6 +113,15 @@ JS = """
     apply();
   });
   sel.addEventListener('change',sortBy);
+  if(/MicroMessenger/i.test(navigator.userAgent))document.getElementById('tip').className='tip show';
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('[data-cp]'):null; if(!b)return;
+    var v=b.getAttribute('data-cp'), t=b.textContent;
+    function done(){b.textContent='已复制 ✓';setTimeout(function(){b.textContent=t;},1400);}
+    function fb(){var i=document.createElement('textarea');i.value=v;i.style.position='fixed';i.style.opacity='0';
+      document.body.appendChild(i);i.select();try{document.execCommand('copy');done();}catch(x){prompt('长按复制',v);}document.body.removeChild(i);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(done).catch(fb);}else{fb();}
+  });
   apply();
 })();
 """
@@ -138,6 +150,7 @@ def card_html(it):
                   str(int(it.get("dur") or 0)), str(int(it.get("pages") or 0)),
                   str(it.get("score", 0))])
     hay = (it.get("title", "") + " " + up + " " + " ".join(it.get("teachers") or [])).lower()
+    bv = it.get("bvid") or os.path.basename(it.get("url") or "")
     return (
         f'<article class="card" data-s="{esc(it["subject"])}" data-t="{esc(hay)}" data-k="{esc(k)}">'
         f'<a class="cover" href="{esc(it.get("url"))}" target="_blank" rel="noopener">{img}'
@@ -146,6 +159,8 @@ def card_html(it):
         f'<div class="body"><div class="ttl">{esc(it.get("title"))}</div>'
         f'<div class="meta">{"".join(tags)}<span class="tag">UP：{esc(up)}</span></div>'
         f'<div class="foot"><span class="plays">▶ {fmt_play(it.get("play"))} 播放</span>'
+        f'<a class="mini" href="bilibili://video/{esc(bv)}">App打开</a>'
+        f'<span class="mini" data-cp="{esc(bv)}">复制BV</span>'
         f'<a class="go" href="{esc(it.get("url"))}" target="_blank" rel="noopener">去学习 ↗</a>'
         f'</div></div></article>'
     )
@@ -205,6 +220,7 @@ def render(data, offline=False):
   <div class="row"><span class="stat" id="stat">共 {len(items)} 套课程</span></div>
 </div>
 
+<div class="tip" id="tip">微信里点「去学习」可能被拦：可点<b>复制BV</b>，再到哔哩哔哩 App 搜索框粘贴；或用右上角「…」→「在浏览器打开」。</div>
 <div class="grid" id="grid">
 {cards}
 </div>
@@ -240,6 +256,12 @@ input{width:100%;min-height:38px;border:1px solid var(--line);border-radius:9px;
 .tag{background:#eef4e7;border:1px solid #e2ead8;border-radius:5px;padding:0 6px;color:#40603f}
 .tag.s{background:#e8f0f8;border-color:#d6e4f2;color:#2f5d8a;font-weight:600}
 .stat{font-size:12px;color:var(--mut);margin:6px 0}
+.tip{background:#fff6e5;border:1px solid #f2d8a8;color:#7a5312;border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.65;margin:8px 0;display:none}
+.tip.show{display:block}
+.acts{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.acts button,.acts a{flex:0 0 auto;border:1px solid #d9e6cb;background:#eff6e9;color:#345b42;border-radius:7px;padding:4px 10px;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;line-height:1.5}
+.acts button:active,.acts a:active{background:#e2efd6}
+.acts .bv{color:#8a8f8b;background:none;border:none;font-weight:400;padding:4px 0;font-size:11.5px}
 footer{margin-top:16px;font-size:11.5px;color:var(--mut)}
 """
 
@@ -256,16 +278,22 @@ def render_lite(data):
     for it in items:
         hay = (it.get("title", "") + " " + (it.get("up") or "") + " "
                + " ".join(it.get("teachers") or [])).lower()
+        bv = (it.get("bvid") or os.path.basename(it.get("url") or "")) or ""
+        url = it.get("url") or ""
         rows.append(
             f'<div class="item" data-s="{esc(it["subject"])}" data-t="{esc(hay)}">'
-            f'<a class="t" href="{esc(it.get("url"))}" target="_blank" rel="noopener">'
+            f'<a class="t" href="{esc(url)}" target="_blank" rel="noopener">'
             f'{esc(it.get("title"))}</a>'
             f'<div class="m"><span class="tag s">{esc(it["subject"])}</span>'
             f'<span>{int(it.get("pages") or 0)} 集</span>'
             f'<span>{esc(it.get("dur_txt",""))}</span>'
             f'<span>▶{fmt_play(it.get("play"))}</span>'
             f'<span>{esc(it.get("date",""))}</span>'
-            f'<span>UP：{esc(it.get("up") or "")}</span></div></div>')
+            f'<span>UP：{esc(it.get("up") or "")}</span></div>'
+            f'<div class="acts"><span class="bv">{esc(bv)}</span>'
+            f'<button data-cp="{esc(bv)}">复制BV号</button>'
+            f'<a href="bilibili://video/{esc(bv)}">用B站App打开</a>'
+            f'<a href="{esc(url)}" target="_blank" rel="noopener">网页打开</a></div></div>')
     return f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -273,6 +301,7 @@ def render_lite(data):
 <style>{LITE_CSS}</style></head><body><div class="wrap">
 <header><h1>考研西医综合（306）教学视频 · 精简版</h1>
 <div class="upd">数据更新：{esc(data.get("updated",""))} · 共 {len(items)} 套 · 无封面图，弱网秒开</div></header>
+<div class="tip" id="tip">在微信里点「网页打开」可能被拦。<b>最稳做法：复制 BV 号 → 打开哔哩哔哩 App → 搜索框粘贴</b>；或点右上角「…」→ 选「在浏览器打开」。</div>
 <div class="chips" id="chips">{''.join(chips)}</div>
 <input id="q" placeholder="搜标题 / UP 主 / 老师">
 <div class="stat" id="stat">共 {len(items)} 套</div>
@@ -288,6 +317,14 @@ def render_lite(data):
  chips.addEventListener('click',function(e){{var c=e.target.closest('.chip');if(!c)return;cur=c.getAttribute('data-s');
   [].forEach.call(chips.children,function(x){{x.className='chip'+(x.getAttribute('data-s')===cur?' on':'');}});q.value='';ap();}});
  q.addEventListener('input',function(){{if(this.value&&cur!=='全部'){{cur='全部';[].forEach.call(chips.children,function(x){{x.className='chip'+(x.getAttribute('data-s')==='全部'?' on':'');}});}}ap();}});
+ if(/MicroMessenger/i.test(navigator.userAgent))document.getElementById('tip').className='tip show';
+ document.getElementById('list').addEventListener('click',function(e){{
+   var b=e.target.closest('button[data-cp]');if(!b)return;
+   var v=b.getAttribute('data-cp'),t=b.textContent;
+   function done(){{b.textContent='已复制 ✓';setTimeout(function(){{b.textContent=t;}},1400);}}
+   if(navigator.clipboard&&navigator.clipboard.writeText){{navigator.clipboard.writeText(v).then(done).catch(fb);}}else{{fb();}}
+   function fb(){{var i=document.createElement('textarea');i.value=v;i.style.position='fixed';i.style.opacity='0';document.body.appendChild(i);i.select();try{{document.execCommand('copy');done();}}catch(x){{prompt('长按复制',v);}}document.body.removeChild(i);}}
+ }});
 }})();
 </script></body></html>
 """
