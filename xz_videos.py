@@ -206,6 +206,7 @@ def collect():
         c["cover"] = fix_cover(d.get("pic")) or c["cover"]
         parts = [clean(p.get("part")) for p in pages if p.get("part")]
         c["parts"] = parts[:8]
+        c["parts_all"] = parts[:300]
         # 成套门槛：多分 P（≥10 集）或总时长 ≥4 小时
         if not (c["pages"] >= 10 or c["dur"] >= 4 * 3600):
             continue
@@ -295,6 +296,7 @@ def refresh(verbose=True, max_age_hours=6):
     if len(items) < 5:
         print(f"[xz-videos] 仅 {len(items)} 条，低于阈值，沿用旧数据")
         return 0
+    parts_map = {it["bvid"]: it.pop("parts_all", []) for it in items if it.get("bvid")}
     data = {
         "updated": now_bj().strftime("%Y-%m-%d %H:%M"),
         "source": "哔哩哔哩（公开搜索 + 视频详情有效性校验）",
@@ -307,6 +309,9 @@ def refresh(verbose=True, max_age_hours=6):
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
     os.replace(tmp, JSON_PATH)
+    # 分P标题单独存，供站内播放页选集使用
+    with open(os.path.join(XZ, "videos_parts.json"), "w", encoding="utf-8") as f:
+        json.dump(parts_map, f, ensure_ascii=False, separators=(",", ":"))
     if verbose:
         print(f"[xz-videos] 写入 {JSON_PATH}: {len(items)} 套")
         for it in items[:8]:

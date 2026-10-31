@@ -710,7 +710,11 @@ def main():
             import xz_page
             _p1, _p2, _n = xz_page.build(_vj, os.path.join(SITE, "xz"))
             shutil.copy(_vj, os.path.join(SITE, "xz", "videos.json"))
-            print(f"built xz/videos.html (SSR, {_n} items) + xz/videos_offline.html")
+            _pj = os.path.join(OUT, "xz", "videos_parts.json")
+            _np = xz_page.build_play_pages(_vj, _pj, os.path.join(SITE, "xz"))
+            if os.path.exists(_pj):
+                shutil.copy(_pj, os.path.join(SITE, "xz", "videos_parts.json"))
+            print(f"built xz/videos.html (SSR, {_n} items) + {_np} play pages")
         except Exception as e:
             print("WARN: xz page build failed:", type(e).__name__, e)
     else:

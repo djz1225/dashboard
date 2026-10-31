@@ -151,17 +151,17 @@ def card_html(it):
                   str(it.get("score", 0))])
     hay = (it.get("title", "") + " " + up + " " + " ".join(it.get("teachers") or [])).lower()
     bv = it.get("bvid") or os.path.basename(it.get("url") or "")
+    play = f"play/{esc(bv)}.html" if bv else it.get("url")
     return (
         f'<article class="card" data-s="{esc(it["subject"])}" data-t="{esc(hay)}" data-k="{esc(k)}">'
-        f'<a class="cover" href="{esc(it.get("url"))}" target="_blank" rel="noopener">{img}'
+        f'<a class="cover" href="{play}">{img}'
         f'<span class="pg">{int(it.get("pages") or 0)} P</span>'
         f'<span class="dur">{esc(it.get("dur_txt",""))}</span></a>'
         f'<div class="body"><div class="ttl">{esc(it.get("title"))}</div>'
         f'<div class="meta">{"".join(tags)}<span class="tag">UP：{esc(up)}</span></div>'
         f'<div class="foot"><span class="plays">▶ {fmt_play(it.get("play"))} 播放</span>'
-        f'<a class="mini" href="bilibili://video/{esc(bv)}">App打开</a>'
-        f'<span class="mini" data-cp="{esc(bv)}">复制BV</span>'
-        f'<a class="go" href="{esc(it.get("url"))}" target="_blank" rel="noopener">去学习 ↗</a>'
+        f'<a class="mini" href="{esc(it.get("url"))}" target="_blank" rel="noopener">B站原页</a>'
+        f'<a class="go" href="{play}">站内播放 ▶</a>'
         f'</div></div></article>'
     )
 
@@ -280,20 +280,19 @@ def render_lite(data):
                + " ".join(it.get("teachers") or [])).lower()
         bv = (it.get("bvid") or os.path.basename(it.get("url") or "")) or ""
         url = it.get("url") or ""
+        play = f"play/{bv}.html" if bv else url
         rows.append(
             f'<div class="item" data-s="{esc(it["subject"])}" data-t="{esc(hay)}">'
-            f'<a class="t" href="{esc(url)}" target="_blank" rel="noopener">'
-            f'{esc(it.get("title"))}</a>'
+            f'<a class="t" href="{play}">{esc(it.get("title"))}</a>'
             f'<div class="m"><span class="tag s">{esc(it["subject"])}</span>'
             f'<span>{int(it.get("pages") or 0)} 集</span>'
             f'<span>{esc(it.get("dur_txt",""))}</span>'
             f'<span>▶{fmt_play(it.get("play"))}</span>'
             f'<span>{esc(it.get("date",""))}</span>'
             f'<span>UP：{esc(it.get("up") or "")}</span></div>'
-            f'<div class="acts"><span class="bv">{esc(bv)}</span>'
-            f'<button data-cp="{esc(bv)}">复制BV号</button>'
-            f'<a href="bilibili://video/{esc(bv)}">用B站App打开</a>'
-            f'<a href="{esc(url)}" target="_blank" rel="noopener">网页打开</a></div></div>')
+            f'<div class="acts"><a class="play" href="{play}">站内播放 ▶</a>'
+            f'<a href="{esc(url)}" target="_blank" rel="noopener">B站原页</a>'
+            f'<button data-cp="{esc(bv)}">复制BV</button></div></div>')
     return f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -301,7 +300,7 @@ def render_lite(data):
 <style>{LITE_CSS}</style></head><body><div class="wrap">
 <header><h1>考研西医综合（306）教学视频 · 精简版</h1>
 <div class="upd">数据更新：{esc(data.get("updated",""))} · 共 {len(items)} 套 · 无封面图，弱网秒开</div></header>
-<div class="tip" id="tip">在微信里点「网页打开」可能被拦。<b>最稳做法：复制 BV 号 → 打开哔哩哔哩 App → 搜索框粘贴</b>；或点右上角「…」→ 选「在浏览器打开」。</div>
+<div class="tip" id="tip">点标题直接进<b>站内播放页</b>（内嵌播放器+选集，不用跳 App）。若播放器空白，点「复制BV」到哔哩哔哩 App 搜索，或右上角「…」→「在浏览器打开」。</div>
 <div class="chips" id="chips">{''.join(chips)}</div>
 <input id="q" placeholder="搜标题 / UP 主 / 老师">
 <div class="stat" id="stat">共 {len(items)} 套</div>
@@ -345,3 +344,145 @@ def build(json_path, out_dir):
     with open(p3, "w", encoding="utf-8") as f:
         f.write(render_lite(data))
     return p1, p3, len(data.get("items") or [])
+
+
+# ============ 站内播放页：内嵌 B 站官方播放器 + 分P选集 ============
+PLAY_CSS = """
+:root{--bg:#eef3e8;--card:#fff;--ink:#20301f;--mut:#5a6b56;--line:#d3ddc7}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;padding:0 0 30px;-webkit-text-size-adjust:100%}
+.top{background:#2f5540;color:#fff;padding:9px 12px;font-size:13px;display:flex;gap:10px;align-items:center}
+.top a{color:#d6f5cf;text-decoration:none;font-weight:600}
+.top .ttl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.95}
+.pwrap{position:relative;width:100%;background:#000;aspect-ratio:16/9}
+.pwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.cover-guide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:16px;text-align:center;background:linear-gradient(135deg,#3d5f49,#22392c);color:#fff}
+.cg-t{font-size:14px;font-weight:700}
+.cg-s{font-size:11.5px;opacity:.78;line-height:1.6;max-width:420px}
+.cg-b{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.big{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.14);color:#fff;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none}
+.big:hover{background:rgba(255,255,255,.24)}
+.big.ghost{background:rgba(143,240,168,.2);border-color:rgba(143,240,168,.55)}
+.bar{padding:10px 12px;background:var(--card);border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
+.bar b{font-size:13.5px}
+.btn{border:1px solid #d9e6cb;background:#eff6e9;color:#345b42;border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;text-decoration:none;cursor:pointer}
+.btn:disabled{opacity:.42}
+.eps{max-width:1080px;margin:10px auto 0;padding:0 10px}
+.eps h3{font-size:14px;margin:12px 4px 8px;color:#3d4f3a}
+.eplist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.ep{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:12.5px;line-height:1.35;cursor:pointer;color:#33452f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ep:hover{border-color:#9dbf8d}
+.ep.on{background:#3f6b4f;color:#fff;border-color:#3f6b4f;font-weight:600}
+@media(max-width:600px){.eplist{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:5px}.ep{font-size:12px;padding:6px 8px}}
+"""
+
+PLAY_JS = """
+(function(){
+ var META=window.__META__||{}, PARTS=window.__PARTS__||[];
+ var i=0, f=document.getElementById('pl'), t=document.getElementById('cur'),
+     pv=document.getElementById('prev'), nx=document.getElementById('next'),
+     list=document.getElementById('eplist');
+ if(location.hash){var h=parseInt(location.hash.slice(1),10);if(h>0&&h<=PARTS.length)i=h-1;}
+ var tried=false;
+ function load(n){
+   i=n;
+   if(tried){
+     f.src='https://player.bilibili.com/player.html?bvid='+META.bvid+'&page='+(n+1)+
+           '&high_quality=1&danmaku=1&autoplay=1';
+   }
+   var g=document.getElementById('gobili');
+   g.href='https://www.bilibili.com/video/'+META.bvid+'?p='+(n+1);
+   var name=PARTS[n]||('第 '+(n+1)+' 集');
+   t.textContent='第 '+(n+1)+'/'+PARTS.length+' 集 · '+name;
+   pv.disabled=(n===0); nx.disabled=(n>=PARTS.length-1);
+   history.replaceState(null,'','#'+(n+1));
+   document.title=name+' · '+META.title;
+   [].forEach.call(list.children,function(c,k){c.className='ep'+(k===n?' on':'');});
+   if(list.children[n]&&list.children[n].scrollIntoView)list.children[n].scrollIntoView({block:'nearest'});
+   window.scrollTo({top:0,behavior:'auto'});
+ }
+ list.addEventListener('click',function(e){var c=e.target.closest('.ep');if(c)load(+c.getAttribute('data-i'));});
+ pv.addEventListener('click',function(){if(i>0)load(i-1)});
+ nx.addEventListener('click',function(){if(i<PARTS.length-1)load(i+1)});
+ document.addEventListener('keydown',function(e){
+   if(e.key==='ArrowLeft'&&i>0)load(i-1);
+   if(e.key==='ArrowRight'&&i<PARTS.length-1)load(i+1);});
+ document.getElementById('tryplay').addEventListener('click',function(){
+   tried=true;
+   document.querySelector('.cover-guide').style.display='none';
+   f.style.display='block';
+   f.src='https://player.bilibili.com/player.html?bvid='+META.bvid+'&page='+(i+1)+
+         '&high_quality=1&danmaku=1&autoplay=1';
+ });
+ document.getElementById('copy').addEventListener('click',function(){
+   var b=this, o=b.textContent, v=META.bvid;
+   function done(){b.textContent='已复制 ✓';setTimeout(function(){b.textContent=o},1400);}
+   function fb(){var x=document.createElement('textarea');x.value=v;x.style.position='fixed';x.style.opacity='0';
+     document.body.appendChild(x);x.select();try{document.execCommand('copy');done();}catch(e){prompt('长按复制',v);}document.body.removeChild(x);}
+   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(done).catch(fb);}else{fb();}
+ });
+ load(i);
+})();
+"""
+
+
+def render_play(meta, parts):
+    bv = meta.get("bvid") or ""
+    eps = "".join(
+        f'<div class="ep" data-i="{k}">{k+1}. {esc(p)}</div>'
+        for k, p in enumerate(parts))
+    if not parts:
+        parts = ["正片"]
+        eps = '<div class="ep on" data-i="0">1. 正片</div>'
+    head = json.dumps({"bvid": bv, "title": meta.get("title", "")}, ensure_ascii=False)
+    pj = json.dumps(parts, ensure_ascii=False)
+    return f"""<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>{esc(meta.get("title"))}</title>
+<style>{PLAY_CSS}</style></head><body>
+<div class="top"><a href="../videos_lite.html">← 列表</a>
+  <span class="ttl">{esc(meta.get("title"))}</span></div>
+<div class="pwrap" id="pw"><div class="cover-guide">
+  <div class="cg-t">选集后点「去B站看本集」，或用下方「站内试播」</div>
+  <div class="cg-s">B 站官方播放器对第三方页面常有限制，站内试播可能提示「视频链接失效」</div>
+  <div class="cg-b"><button class="big" id="tryplay">站内试播（可能受限）</button>
+  <a class="big ghost" id="gobili" target="_blank" rel="noopener">去B站看本集 ↗</a></div>
+</div><iframe id="pl" style="display:none" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" scrolling="no"></iframe></div>
+<div class="bar">
+  <button class="btn" id="prev">← 上一集</button>
+  <button class="btn" id="next">下一集 →</button>
+  <b id="cur">加载中…</b>
+  <span style="margin-left:auto"></span>
+  <button class="btn" id="copy">复制BV号</button>
+  <a class="btn" href="https://www.bilibili.com/video/{esc(bv)}" target="_blank" rel="noopener">B站原页</a>
+  <a class="btn" href="bilibili://video/{esc(bv)}">用App打开</a>
+</div>
+<div class="eps"><h3>选集（共 {len(parts)} 集）</h3><div class="eplist" id="eplist">{eps}</div></div>
+<script>window.__META__={head};window.__PARTS__={pj};</script>
+<script>{PLAY_JS}</script>
+</body></html>
+"""
+
+
+def build_play_pages(videos_json, parts_json, out_dir):
+    """为每套课生成 xz/play/BVxxx.html（内嵌播放器 + 选集）"""
+    with open(videos_json, encoding="utf-8") as f:
+        data = json.load(f)
+    parts_map = {}
+    if os.path.exists(parts_json):
+        with open(parts_json, encoding="utf-8") as f:
+            parts_map = json.load(f)
+    pd = os.path.join(out_dir, "play")
+    os.makedirs(pd, exist_ok=True)
+    n = 0
+    for it in data.get("items") or []:
+        bv = it.get("bvid") or ""
+        if not bv:
+            continue
+        parts = parts_map.get(bv) or it.get("parts") or []
+        with open(os.path.join(pd, bv + ".html"), "w", encoding="utf-8") as f:
+            f.write(render_play(it, parts))
+        n += 1
+    return n
