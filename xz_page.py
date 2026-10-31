@@ -41,6 +41,8 @@ input[type=search]:focus{border-color:#9dbf8d;background:#fff}
 .tag{background:#eef4e7;border:1px solid #e2ead8;border-radius:5px;padding:0 6px;color:#40603f}
 .tag.sub{background:#e8f0f8;border-color:#d6e4f2;color:#2f5d8a;font-weight:600}
 .tag.tc{background:#fdf1e3;border-color:#f4e0c7;color:#8a5a20}
+.tag.pin{background:#c0392b;border-color:#a93226;color:#fff;font-weight:700}
+.card.pinned{border-color:#e0b04a;box-shadow:0 0 0 2px rgba(224,176,74,.28)}
 .parts{font-size:12px;color:#6b7d66;line-height:1.5}
 .foot{margin-top:auto;display:flex;align-items:center;gap:8px;padding-top:3px}
 .plays{font-size:12px;color:var(--mut)}
@@ -91,6 +93,7 @@ JS = """
     var idx={score:5,date:1,play:2,dur:3,pages:4}[k]||5;
     arr.sort(function(a,b){
       var x=a.getAttribute('data-k').split('|'), y=b.getAttribute('data-k').split('|');
+      if(y[6]!==x[6])return y[6]==='1'?1:-1;   // 置顶始终在前
       return (parseFloat(y[idx])||0)-(parseFloat(x[idx])||0);
     });
     arr.forEach(function(c){grid.appendChild(c);});
@@ -137,7 +140,10 @@ def fmt_play(n):
 
 
 def card_html(it):
-    tags = [f'<span class="tag sub">{esc(it["subject"])}</span>']
+    tags = []
+    if it.get("pinned"):
+        tags.append('<span class="tag pin">置顶</span>')
+    tags.append(f'<span class="tag sub">{esc(it["subject"])}</span>')
     for t in (it.get("teachers") or [])[:3]:
         tags.append(f'<span class="tag tc">{esc(t)}</span>')
     tags.append(f'<span class="tag">{esc(it.get("date",""))}</span>')
@@ -148,12 +154,13 @@ def card_html(it):
     # data-k = 科目|日期|播放|时长|分P|评分 ；data-t = 搜索用串（小写）
     k = "|".join([it["subject"], str(_ts(it.get("date", ""))), str(int(it.get("play") or 0)),
                   str(int(it.get("dur") or 0)), str(int(it.get("pages") or 0)),
-                  str(it.get("score", 0))])
+                  str(it.get("score", 0)), "1" if it.get("pinned") else "0"])
     hay = (it.get("title", "") + " " + up + " " + " ".join(it.get("teachers") or [])).lower()
     bv = it.get("bvid") or os.path.basename(it.get("url") or "")
     play = f"play/{esc(bv)}.html" if bv else it.get("url")
+    _pincls = " pinned" if it.get("pinned") else ""
     return (
-        f'<article class="card" data-s="{esc(it["subject"])}" data-t="{esc(hay)}" data-k="{esc(k)}">'
+        f'<article class="card{_pincls}" data-s="{esc(it["subject"])}" data-t="{esc(hay)}" data-k="{esc(k)}">'
         f'<a class="cover" href="{play}">{img}'
         f'<span class="pg">{int(it.get("pages") or 0)} P</span>'
         f'<span class="dur">{esc(it.get("dur_txt",""))}</span></a>'
@@ -249,12 +256,16 @@ header .upd{margin-top:6px;font-size:12px;opacity:.95}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;border:1px solid var(--line);background:#f7faf3;color:#3d4f3a;border-radius:99px;padding:5px 11px;font-size:12.5px;cursor:pointer}
 .chip.on{background:#3f6b4f;color:#fff;border-color:#3f6b4f;font-weight:600}
+.chip.pin{background:#fdecea;color:#a93226;border-color:#f1b8b2;font-weight:700}
+.chip.pin.on{background:#c0392b;color:#fff;border-color:#c0392b}
 input{width:100%;min-height:38px;border:1px solid var(--line);border-radius:9px;padding:0 10px;font-size:14px;background:#fbfdf8;margin:6px 0}
 .item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:8px}
 .item .t{font-size:14px;font-weight:700;color:#1d3a28;line-height:1.45;display:block;text-decoration:none}
 .item .m{font-size:12px;color:var(--mut);margin-top:5px;display:flex;flex-wrap:wrap;gap:6px}
 .tag{background:#eef4e7;border:1px solid #e2ead8;border-radius:5px;padding:0 6px;color:#40603f}
 .tag.s{background:#e8f0f8;border-color:#d6e4f2;color:#2f5d8a;font-weight:600}
+.tag.pin{background:#c0392b;border-color:#a93226;color:#fff;font-weight:700}
+.item.pinned{border-color:#e0b04a;box-shadow:0 0 0 2px rgba(224,176,74,.25)}
 .stat{font-size:12px;color:var(--mut);margin:6px 0}
 .tip{background:#fff6e5;border:1px solid #f2d8a8;color:#7a5312;border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.65;margin:8px 0;display:none}
 .tip.show{display:block}
@@ -271,7 +282,10 @@ def render_lite(data):
     cnt = {}
     for it in items:
         cnt[it["subject"]] = cnt.get(it["subject"], 0) + 1
+    npin = sum(1 for it in items if it.get("pinned"))
     chips = [f'<span class="chip on" data-s="全部">全部 {len(items)}</span>']
+    if npin:
+        chips.append(f'<span class="chip pin" data-s="★置顶">★置顶 {npin}</span>')
     for s, n in sorted(cnt.items(), key=lambda x: -x[1]):
         chips.append(f'<span class="chip" data-s="{esc(s)}">{esc(s)} {n}</span>')
     rows = []
@@ -281,10 +295,12 @@ def render_lite(data):
         bv = (it.get("bvid") or os.path.basename(it.get("url") or "")) or ""
         url = it.get("url") or ""
         play = f"play/{bv}.html" if bv else url
+        _pc = " pinned" if it.get("pinned") else ""
+        _badge = '<span class="tag pin">置顶</span>' if it.get("pinned") else ""
         rows.append(
-            f'<div class="item" data-s="{esc(it["subject"])}" data-t="{esc(hay)}">'
+            f'<div class="item{_pc}" data-s="{esc(it["subject"])}" data-pin="{"1" if it.get("pinned") else "0"}" data-t="{esc(hay)}">'
             f'<a class="t" href="{play}">{esc(it.get("title"))}</a>'
-            f'<div class="m"><span class="tag s">{esc(it["subject"])}</span>'
+            f'<div class="m">{_badge}<span class="tag s">{esc(it["subject"])}</span>'
             f'<span>{int(it.get("pages") or 0)} 集</span>'
             f'<span>{esc(it.get("dur_txt",""))}</span>'
             f'<span>▶{fmt_play(it.get("play"))}</span>'
@@ -311,10 +327,12 @@ def render_lite(data):
  var list=document.getElementById('list'),items=[].slice.call(list.children),
      chips=document.getElementById('chips'),q=document.getElementById('q'),stat=document.getElementById('stat'),cur='全部';
  function ap(){{var k=q.value.trim().toLowerCase(),n=0;
-  items.forEach(function(e){{var ok=(cur==='全部'||e.getAttribute('data-s')===cur)&&(!k||e.getAttribute('data-t').indexOf(k)>=0);e.style.display=ok?'':'none';if(ok)n++;}});
+  items.forEach(function(e){{var base=(cur==='全部')?true:(cur==='★置顶'?e.getAttribute('data-pin')==='1':e.getAttribute('data-s')===cur);
+   var ok=base&&(!k||e.getAttribute('data-t').indexOf(k)>=0);e.style.display=ok?'':'none';if(ok)n++;}});
   stat.textContent='共 '+n+' 套'+(k?'（'+q.value.trim()+'）':'');}}
  chips.addEventListener('click',function(e){{var c=e.target.closest('.chip');if(!c)return;cur=c.getAttribute('data-s');
-  [].forEach.call(chips.children,function(x){{x.className='chip'+(x.getAttribute('data-s')===cur?' on':'');}});q.value='';ap();}});
+  [].forEach.call(chips.children,function(x){{var pin=x.getAttribute('data-s')==='★置顶';
+    x.className='chip'+(pin?' pin':'')+(x.getAttribute('data-s')===cur?' on':'');}});q.value='';ap();}});
  q.addEventListener('input',function(){{if(this.value&&cur!=='全部'){{cur='全部';[].forEach.call(chips.children,function(x){{x.className='chip'+(x.getAttribute('data-s')==='全部'?' on':'');}});}}ap();}});
  if(/MicroMessenger/i.test(navigator.userAgent))document.getElementById('tip').className='tip show';
  document.getElementById('list').addEventListener('click',function(e){{

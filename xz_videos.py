@@ -28,9 +28,10 @@ KEYWORDS = [
     "生物化学 考研 精讲", "外科学 考研 精讲", "内科学 十版 精讲",
     "病理学 十版 精讲", "生理学 十版 精讲", "徐琦 外科", "天天师兄 外科",
     "外科学 精读", "外科学全 精讲", "西医内科学 全讲", "外科 带读 考研",
+    "隋准", "隋准 内科", "隋准 诊断", "隋准 生理", "隋准 全程",
 ]
 
-SUBJECTS = ["全程系统课", "生理", "生化", "病理", "内科", "外科", "真题精讲", "冲刺带背"]
+SUBJECTS = ["全程系统课", "生理", "生化", "病理", "内科", "外科", "诊断", "真题精讲", "冲刺带背"]
 TEACHERS = ["贺银成", "天天师兄", "刘忠保", "昭昭", "徐琦", "唐子益", "马威", "侯英健",
             "小亮", "傲视天鹰", "隋准", "张蕴新", "李睿", "杨净", "王强", "王逸", "刘毓琳"]
 
@@ -45,15 +46,21 @@ BAD = ["主治", "同等学力", "执业", "护理", "中医", "中药", "口腔
        "期末", "助理医师", "医学教育网", "精品课", "全文逐字逐句", "听书",
        "事业单位", "综应", "公务员", "三支一扶", "转本", "对口"]
 
-SUBJ_KEYS = [("内科", ["内科", "诊断学"]), ("外科", ["外科"]),
-             ("病理", ["病理"]), ("生化", ["生化", "生物化学"]),
-             ("生理", ["生理"])]
+SUBJ_KEYS = [("诊断", ["诊断学", "诊断"]), ("内科", ["内科"]), ("外科", ["外科"]),
+             ("病理", ["病理"]), ("生化", ["生化", "生物化学"]), ("生理", ["生理"])]
+
+# 置顶主讲（可增删）：命中的课程排在列表最前，并带置顶徽标
+PIN_TEACHERS = ["隋准"]
+PIN_MAX_PER = 10          # 每位置顶老师最多收录条数（按评分取）
 
 
 def relevant(title, parts=()):
-    """相关性：必须指向考研西综/306，或带考研语境的医学五大科目课程。"""
+    """相关性：必须指向考研西综/306，或带考研语境的医学五大科目课程。
+    命中置顶主讲（如隋准）的课程直接放行——成套门槛与噪声词仍会过滤碎片。"""
     if any(b in title for b in BAD):
         return False
+    if any(t in title for t in PIN_TEACHERS):
+        return True
     if re.search(r"西综|西医综合|306|临床医学综合", title):
         return True
     txt = title + " " + " ".join(list(parts)[:6])
@@ -183,7 +190,7 @@ def collect():
 
     print(f"[cand] {len(cand)} raw candidates")
     # 只校验最可能入选的候选，控制请求量与风控风险
-    top = sorted(cand.values(), key=lambda x: (-x["play"], -x["dur_hint"]))[:130]
+    top = sorted(cand.values(), key=lambda x: (-x["play"], -x["dur_hint"]))[:170]
 
     items = []
     for c in top:
@@ -212,7 +219,8 @@ def collect():
             continue
         if not relevant(c["title"], parts):
             continue
-        if not re.search(r"西综|西医综合|306|临床医学综合", c["title"]) and \
+        _pin_title = any(t in c["title"] for t in PIN_TEACHERS)
+        if not _pin_title and not re.search(r"西综|西医综合|306|临床医学综合", c["title"]) and \
            not re.search(r"生理|生化|生物化学|病理|内科|外科|诊断",
                          c["title"] + " " + " ".join(parts[:6])):
             continue
@@ -243,6 +251,8 @@ def collect():
         if it["teachers"]:
             base += 0.25
         it["score"] = round(base, 3)
+        hay_all = t + " " + " ".join(it.get("teachers") or []) + " " + (it.get("up") or "")
+        it["pinned"] = [x for x in PIN_TEACHERS if x in hay_all]
 
     # 去重：同一套课被多方搬运时，按「前 8 个分 P 名」为指纹只留播放最高者
     def norm(t):
@@ -256,15 +266,34 @@ def collect():
 
     # 分科配额：保证各科都有位置，避免长真题/带背挤掉系统课
     QUOTA = {"全程系统课": 14, "内科": 12, "外科": 12, "生理": 10, "生化": 10,
-             "病理": 10, "真题精讲": 8, "冲刺带背": 8}
-    picked, used = [], {}
-    for it in sorted(best.values(), key=lambda x: (-x["score"], -x["play"])):
+             "病理": 10, "诊断": 10, "真题精讲": 8, "冲刺带背": 8}
+    ranked = sorted(best.values(), key=lambda x: (-x["score"], -x["play"]))
+
+    # 置顶老师的课程优先入选，且不占用分科配额（每位最多 PIN_MAX_PER 条）
+    pin_cnt = {}
+    picked = []
+    for it in ranked:
+        if not it.get("pinned"):
+            continue
+        key = it["pinned"][0]
+        if pin_cnt.get(key, 0) >= PIN_MAX_PER:
+            continue
+        pin_cnt[key] = pin_cnt.get(key, 0) + 1
+        picked.append(it)
+
+    used = {}
+    for it in ranked:
+        if it.get("pinned"):
+            continue
         s = it["subject"]
         if used.get(s, 0) >= QUOTA.get(s, 8):
             continue
         used[s] = used.get(s, 0) + 1
         picked.append(it)
-    return picked[:70]
+
+    # 置顶项排最前，其余按评分
+    picked.sort(key=lambda x: (not x.get("pinned"), -x["score"], -x["play"]))
+    return picked[:80]
 
 
 BJ = datetime.timezone(datetime.timedelta(hours=8))
