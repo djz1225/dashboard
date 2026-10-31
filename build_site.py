@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """生成看板网站 v3：护眼配色 + 图表化 + 表格化，专科内容更丰富、易读"""
-import json, os, re, html, shutil
+import json, os, re, html, shutil, sys
 
 OUT = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(OUT, "site")
@@ -239,6 +239,10 @@ header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:fle
 h1{font-size:26px;font-weight:800;color:var(--acc);letter-spacing:.5px}
 .updated{color:var(--mut);font-size:14px}
 .updated .live{color:#8fa287;font-size:12px;margin-left:6px}
+.toolnav{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.toolnav a{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:10px;
+  background:#f2f7ec;border:1px solid #dbe7cf;color:#345b42;font-weight:700;font-size:13.5px;text-decoration:none}
+.toolnav a:hover{background:#e9f2df;border-color:#b9d3a6}
 h2{font-size:19px;margin:30px 0 14px;color:#1d3a28;border-left:5px solid var(--acc);padding-left:12px}
 .grid{display:grid;gap:14px}
 .g4{grid-template-columns:repeat(4,1fr)}
@@ -345,7 +349,8 @@ td,th{padding:6px 5px}
 MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>每日追踪看板</title><style>__CSS__</style></head><body><div class="wrap">
-<header><h1>每日追踪看板</h1><div class="updated" id="updated">数据更新：__UPDATED__<span class="live">· 自动刷新中</span></div></header>
+<header><h1>每日追踪看板</h1><div class="updated" id="updated">数据更新：__UPDATED__<span class="live">· 自动刷新中</span></div>
+<div class="toolnav"><a href="xz/videos.html">🎬 考研西综 306 成套视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="quiz.html">🩺 医师定考刷题</a></div></header>
 
 <h2>一、大盘行情</h2>
 <div class="grid g4" id="cnIdx">__CNIDX__</div><div style="height:14px"></div><div class="grid g4" id="usIdx">__USIDX__</div>
@@ -650,7 +655,21 @@ def build_history_page(history, specs):
 
 SPECS_ORDER = [("肾内科", "肾内科"), ("内分泌", "内分泌·体重管理"), ("心血管", "心血管")]
 
+def refresh_xz_videos():
+    """每次构建自动刷新「考研西综 306 成套视频」数据；失败则沿用旧 videos.json"""
+    if os.environ.get("XZ_VIDEOS_REFRESH", "1") == "0":
+        return
+    try:
+        sys.path.insert(0, OUT)
+        import xz_videos
+        n = xz_videos.refresh(verbose=True)
+        print(f"[xz-videos] refreshed {n} items")
+    except Exception as e:
+        print(f"[xz-videos] refresh skipped: {type(e).__name__}: {e}")
+
+
 def main():
+    refresh_xz_videos()
     with open(os.path.join(OUT, "data.json"), encoding="utf-8") as f:
         d = json.load(f)
     os.makedirs(SITE, exist_ok=True)
@@ -683,6 +702,15 @@ def main():
         print("copied xz/quiz.html")
     else:
         print("WARN: xz/quiz.html not found")
+    # 复制西综成套教学视频导航页（xz/videos.html + videos.json）
+    for _name in ("videos.html", "videos.json"):
+        _src = os.path.join(OUT, "xz", _name)
+        if os.path.exists(_src):
+            os.makedirs(os.path.join(SITE, "xz"), exist_ok=True)
+            shutil.copy(_src, os.path.join(SITE, "xz", _name))
+            print("copied xz/" + _name)
+        else:
+            print("WARN: xz/" + _name + " not found")
 
     with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as f:
         f.write(html_main)
