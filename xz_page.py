@@ -78,12 +78,15 @@ JS = """
   var q=document.getElementById('q'), sel=document.getElementById('sort');
   var stat=document.getElementById('stat'), subRow=document.getElementById('subRow');
   var cur='全部', total=cards.length;
+  var examOnly=document.getElementById('onlyExam');
   function apply(){
     var kw=(q.value||'').trim().toLowerCase();
+    var only=examOnly&&examOnly.checked;
     var shown=0;
     cards.forEach(function(c){
       var ok=(cur==='全部'||c.getAttribute('data-s')===cur);
       if(ok&&kw){ ok=(c.getAttribute('data-t')||'').indexOf(kw)>=0; }
+      if(ok&&only){ ok=c.getAttribute('data-k').split('|')[8]==='0'; }
       c.style.display=ok?'':'none';
       if(ok)shown++;
     });
@@ -130,6 +133,7 @@ JS = """
     apply();
   });
   sel.addEventListener('change',sortBy);
+  if(examOnly)examOnly.addEventListener('change',apply);
   if(/MicroMessenger/i.test(navigator.userAgent))document.getElementById('tip').className='tip show';
   document.addEventListener('click',function(e){
     var b=e.target.closest?e.target.closest('[data-cp]'):null; if(!b)return;
@@ -175,7 +179,8 @@ def card_html(it):
     k = "|".join([it["subject"], str(_ts(it.get("date", ""))), str(int(it.get("play") or 0)),
                   str(int(it.get("dur") or 0)), str(int(it.get("pages") or 0)),
                   str(it.get("score", 0)), "1" if it.get("pinned") else "0",
-                  str(it.get("tier") or 4)])
+                  str(it.get("tier") or 4),
+                  "0" if it.get("exam") == "core" else "1"])
     hay = (it.get("title", "") + " " + up + " " + " ".join(it.get("teachers") or [])).lower()
     bv = it.get("bvid") or ""
     play = (it.get("url") if is_mooc else (f"play/{esc(bv)}.html" if bv else it.get("url"))) or ""
@@ -260,6 +265,7 @@ def render(data, offline=False):
   <div class="row" id="subRow">{''.join(chips)}</div>
   <div class="row">
     <input type="search" id="q" placeholder="搜标题 / UP 主 / 老师，如 贺银成">
+    <label class="sw"><input type="checkbox" id="onlyExam"> 仅显示 306 考纲科目</label>
     <select class="sortsel" id="sort">
       <option value="score">按推荐度</option>
       <option value="play" selected>按学习人数 / 播放量</option>
@@ -317,6 +323,8 @@ input{width:100%;min-height:38px;border:1px solid var(--line);border-radius:9px;
 .tag.pin{background:#c0392b;border-color:#a93226;color:#fff;font-weight:700}
 .item.pinned{border-color:#e0b04a;box-shadow:0 0 0 2px rgba(224,176,74,.25)}
 .stat{font-size:12px;color:var(--mut);margin:6px 0}
+.sw{display:flex;align-items:center;gap:7px;font-size:13px;color:#3d4f3a;background:#f4f8ef;border:1px solid #e2ead8;border-radius:9px;padding:8px 10px;margin:6px 0;cursor:pointer;user-select:none}
+.sw input{width:16px;height:16px;accent-color:#3f6b4f;margin:0}
 .sortsel{width:100%;min-height:38px;border:1px solid var(--line);border-radius:9px;background:#fbfdf8;color:var(--ink);padding:0 10px;font-size:13.5px;margin-bottom:4px}
 .tag.t1{background:#fff4d6;border-color:#f0dca6;color:#8a6d1a;font-weight:700}
 .tag.t2{background:#eef4e7;border-color:#e2ead8;color:#40603f}
@@ -382,7 +390,7 @@ def render_lite(data):
         _sattr = "◆公开课" if im else "◆B站"
         _tgt = ' target="_blank" rel="noopener"' if im else ""
         rows.append(
-            f'<div class="item{_pc}" data-s="{esc(it["subject"])}" data-org="{_sattr}" data-pin="{"1" if it.get("pinned") else "0"}" data-t="{esc(hay)}" data-play="{int(it.get("play") or 0)}" data-tier="{int(it.get("tier") or 4)}" data-score="{it.get("score",0)}">'
+            f'<div class="item{_pc}" data-s="{esc(it["subject"])}" data-org="{_sattr}" data-pin="{"1" if it.get("pinned") else "0"}" data-t="{esc(hay)}" data-play="{int(it.get("play") or 0)}" data-tier="{int(it.get("tier") or 4)}" data-score="{it.get("score",0)}" data-exam="{"0" if it.get("exam")=="core" else "1"}">'
             f'<a class="t" href="{play}"{_tgt}>{esc(it.get("title"))}</a>'
             f'<div class="m">{_badge}<span class="tag s">{esc(it["subject"])}</span>{_src}'
             f'{_cnt}'
@@ -403,6 +411,7 @@ def render_lite(data):
 <div class="tip" id="tip">点标题直接进<b>站内播放页</b>（内嵌播放器+选集，不用跳 App）。若播放器空白，点「复制BV」到哔哩哔哩 App 搜索，或右上角「…」→「在浏览器打开」。</div>
 <div class="chips" id="chips">{''.join(chips)}</div>
 <input id="q" placeholder="搜标题 / UP 主 / 老师">
+<label class="sw"><input type="checkbox" id="onlyExam"> 仅显示 306 考纲科目</label>
 <select id="sort" class="sortsel">
   <option value="play" selected>按学习人数 / 播放量排序</option>
   <option value="tier">按院校层次（双一流优先）</option>
@@ -415,10 +424,13 @@ def render_lite(data):
 (function(){{
  var list=document.getElementById('list'),items=[].slice.call(list.children),
      chips=document.getElementById('chips'),q=document.getElementById('q'),stat=document.getElementById('stat'),cur='全部';
- function ap(){{var k=q.value.trim().toLowerCase(),n=0;
+ var ex=document.getElementById('onlyExam');
+ function ap(){{var k=q.value.trim().toLowerCase(),n=0,only=ex&&ex.checked;
   items.forEach(function(e){{var base=(cur==='全部')?true:(cur==='★置顶'?e.getAttribute('data-pin')==='1':
      (cur.indexOf('◆')===0?e.getAttribute('data-org')===cur:e.getAttribute('data-s')===cur));
-   var ok=base&&(!k||e.getAttribute('data-t').indexOf(k)>=0);e.style.display=ok?'':'none';if(ok)n++;}});
+   var ok=base&&(!k||e.getAttribute('data-t').indexOf(k)>=0);
+   if(ok&&only)ok=e.getAttribute('data-exam')==='0';
+   e.style.display=ok?'':'none';if(ok)n++;}});
   stat.textContent='共 '+n+' 套'+(k?'（'+q.value.trim()+'）':'');}}
  var sel=document.getElementById('sort');
  function doSort(){{
@@ -438,6 +450,7 @@ def render_lite(data):
    arr.forEach(function(x){{list.appendChild(x);}});
  }}
  if(sel)sel.addEventListener('change',doSort);
+ if(ex)ex.addEventListener('change',ap);
  doSort();
  chips.addEventListener('click',function(e){{var c=e.target.closest('.chip');if(!c)return;cur=c.getAttribute('data-s');
   [].forEach.call(chips.children,function(x){{var v=x.getAttribute('data-s');

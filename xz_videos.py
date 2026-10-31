@@ -234,6 +234,7 @@ def collect():
         c["kind"] = "video"
         c["school"] = ""
         c["tier"] = 4
+        c["exam"] = "core" if re.search(r"西综|西医综合|306|生理|生化|病理|内科|外科|诊断|真题|带背", c["title"]) else "sub"
         c["date"] = datetime.datetime.utcfromtimestamp(c["pubdate"]).strftime("%Y-%m-%d")
         c["dur_txt"] = fmt_dur(c["dur"])
         c.pop("dur_hint", None)
@@ -377,6 +378,7 @@ def merge_open_courses(items):
             "source": x["source"], "kind": "mooc",
             "school": x.get("school_clean") or "",
             "tier": int(x.get("tier") or 2),
+            "exam": x.get("exam") or "core",
         })
         added += 1
     print(f"[open] 合并公开课 {added} 套（候选 {len(extra)}）")

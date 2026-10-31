@@ -56,6 +56,52 @@ def tier_of(school):
     return 2
 
 
+# ---------- 306 临床医学综合能力（西医）考纲科目判定 ----------
+# 考纲五门：生理学、生物化学、病理学、内科学（含诊断学）、外科学
+CORE_RULES = [
+    ("病理", ["病理"], ["肿瘤病理", "分子病理", "病理技术"]),
+    ("生理", ["生理"], ["运动生理", "植物生理", "动物生理", "生理学基础)",
+                         "病理生理"]),
+    ("生化", ["生物化学", "生化"], ["实验", "植物", "动物", "食品", "工业"]),
+    ("内科", ["内科学", "内科"], ["小儿内科", "儿科", "中西医", "中医", "康复"]),
+    ("外科", ["外科学", "外科"], ["小儿外科", "儿科", "中西医", "中医", "护理"]),
+    ("诊断", ["诊断学"], ["影像诊断", "放射诊断", "超声诊断", "检验诊断", "中医诊断",
+                          "心理诊断", "儿科影像", "实验诊断"]),
+]
+# 明确不在 306 考纲内的课程
+OFF_SYLLABUS = ["解剖", "药理学", "医学统计", "卫生统计", "传染病学", "流行病学",
+                "医学影像学", "影像学", "耳鼻咽喉", "妇产科", "妇科学", "产科学",
+                "儿科学", "眼科学", "皮肤性病", "精神病学", "神经病学", "核医学",
+                "沟通", "英语", "导论", "概论", "概要", "护理", "口腔", "中医",
+                "针灸", "推拿", "康复", "营养", "卫生事业", "医学伦理", "医患",
+                "研讨会", "成立大会", "论坛", "蓝皮书", "思政", "人文", "文献检索"]
+# 属考纲科目下的专题分支（可看，但非系统全程课）
+SUB_TOPIC = ["胸外", "神经外", "血管外", "肝胆胰", "微创", "烧伤", "泌尿外",
+             "骨科学", "肿瘤病理", "临床技能", "前沿", "进展", "黑科技", "整合课程",
+             "病例分析", "实验", "结构生物化学", "高级生物化学", "分子病理",
+             "重力生理", "航天生理"]
+
+
+def exam_level(title):
+    """返回 (level, 说明)。level: core=考纲核心系统课 / sub=考纲专题分支 / no=不在考纲
+    另返回 subject_hint（用于归类）。"""
+    t = title or ""
+    hit_subj = None
+    for subj, keys, excludes in CORE_RULES:
+        if any(k in t for k in keys):
+            if any(e in t for e in excludes):
+                continue
+            hit_subj = subj
+            break
+    if any(k in t for k in OFF_SYLLABUS) and not hit_subj:
+        return "no", "非306考纲科目", None
+    if not hit_subj:
+        return "no", "非306考纲科目", None
+    if any(k in t for k in SUB_TOPIC):
+        return "sub", "考纲专题分支", hit_subj
+    return "core", "考纲核心科目", hit_subj
+
+
 SUBJ_MAP = [("诊断", ["诊断学", "诊断"]), ("内科", ["内科学", "内科"]),
             ("外科", ["外科学", "外科"]), ("病理", ["病理学", "病理"]),
             ("生化", ["生物化学", "生化"]), ("生理", ["生理学", "生理"])]
@@ -167,6 +213,8 @@ def fetch_mooc(keywords=None, page_size=20):
                 "kind": "mooc",
                 "school_clean": school,
                 "tier": tier_of(school),
+                "exam": exam_level(name)[0],
+                "exam_note": exam_level(name)[1],
             })
         time.sleep(0.5)
     return out
@@ -218,6 +266,8 @@ def fetch_xuetangx(keywords=None, pages=2):
                     "kind": "mooc",
                     "school_clean": school,
                     "tier": tier_of(school),
+                    "exam": exam_level(name)[0],
+                    "exam_note": exam_level(name)[1],
                 })
             time.sleep(0.4)
     return out
