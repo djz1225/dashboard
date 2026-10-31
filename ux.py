@@ -31,6 +31,7 @@ UX_CSS = """
 .snav a:hover{background:#e6efdd;border-color:#cfe0bf}
 .snav a.on{background:linear-gradient(135deg,#54895f,#3f6b4f);color:#fff;border-color:#3f6b4f;
   box-shadow:0 4px 12px -7px rgba(63,107,79,.9)}
+.snav.scrolled{box-shadow:0 6px 16px -14px rgba(40,70,40,.75);border-bottom-color:#cfdcc4}
 
 /* ===== 2. 回到顶部 ===== */
 #toTop{position:fixed;right:20px;bottom:24px;z-index:90;width:46px;height:46px;border-radius:50%;
@@ -91,9 +92,13 @@ table.itbl tbody tr:hover{background:#eaf3f2}
 
 /* ===== 7-a. 移动端 ===== */
 @media(max-width:560px){
-  .snav{margin:0 0 12px;padding:7px 0;gap:5px}
+  .snav{margin:0 0 12px;padding:8px 26px 8px 2px;gap:5px;
+    -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 22px),transparent 100%);
+    mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 22px),transparent 100%)}
   .snav a{font-size:12.5px;padding:5px 11px}
-  #toTop{width:40px;height:40px;right:12px;bottom:14px;font-size:17px}
+  #toTop{width:44px;height:44px;right:12px;bottom:16px;font-size:18px;
+    background:linear-gradient(135deg,rgba(84,137,95,.96),rgba(63,107,79,.96));color:#fff;border-color:#3f6b4f;
+    box-shadow:0 10px 22px -8px rgba(63,107,79,.8),0 1px 3px rgba(40,70,40,.25)}
   .updated{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
   .updated .live{margin-left:0;font-size:11.5px;padding:2px 8px}
   .updated .rel{font-size:11.5px;padding:2px 8px;margin-left:2px}
@@ -129,6 +134,7 @@ UX_JS = r"""
     if(toTop){
       if(y>400)toTop.classList.add('on');else toTop.classList.remove('on');
     }
+    if(snav)snav.classList[y>8?'add':'remove']('scrolled');
     if(links.length){
       var idx=-1;
       for(var i=0;i<targets.length;i++){
