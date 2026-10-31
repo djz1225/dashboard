@@ -702,29 +702,19 @@ def main():
         print("copied xz/quiz.html")
     else:
         print("WARN: xz/quiz.html not found")
-    # 西综成套教学视频导航页：videos.html 内联构建时数据（fetch 失败可兜底），另出离线单文件版
-    _vh = os.path.join(OUT, "xz", "videos.html")
+    # 西综成套教学视频导航页：服务端直出卡片（弱网/断网也能看到内容）
     _vj = os.path.join(OUT, "xz", "videos.json")
-    if os.path.exists(_vh) and os.path.exists(_vj):
-        with open(_vh, encoding="utf-8") as f:
-            _h = f.read()
-        with open(_vj, encoding="utf-8") as f:
-            _j = f.read()
-        _inline = "<script>window.__XZ_DATA__=" + _j + ";</script>\n</head>"
-        _page = _h.replace("</head>", _inline, 1)
-        os.makedirs(os.path.join(SITE, "xz"), exist_ok=True)
-        with open(os.path.join(SITE, "xz", "videos.html"), "w", encoding="utf-8") as f:
-            f.write(_page)
-        shutil.copy(_vj, os.path.join(SITE, "xz", "videos.json"))
-        # 离线单文件：去掉对 videos.json / 站内其他页面的依赖，可存手机直接打开
-        _off = (_page.replace('<a href="videos.json" target="_blank">videos.json</a> · ', "")
-                     .replace('<a href="quiz.html">西综 306 刷题</a> · <a href="../index.html">返回看板首页</a>',
-                              "离线单文件版 · 数据截至上方时间"))
-        with open(os.path.join(SITE, "xz", "videos_offline.html"), "w", encoding="utf-8") as f:
-            f.write(_off)
-        print("built xz/videos.html (inline data) + xz/videos_offline.html")
+    if os.path.exists(_vj):
+        try:
+            sys.path.insert(0, OUT)
+            import xz_page
+            _p1, _p2, _n = xz_page.build(_vj, os.path.join(SITE, "xz"))
+            shutil.copy(_vj, os.path.join(SITE, "xz", "videos.json"))
+            print(f"built xz/videos.html (SSR, {_n} items) + xz/videos_offline.html")
+        except Exception as e:
+            print("WARN: xz page build failed:", type(e).__name__, e)
     else:
-        print("WARN: xz/videos.html or videos.json not found")
+        print("WARN: xz/videos.json not found")
 
     with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as f:
         f.write(html_main)
