@@ -3,6 +3,9 @@
 """生成看板网站 v3：护眼配色 + 图表化 + 表格化，专科内容更丰富、易读"""
 import json, os, re, html, shutil, sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import ux  # 统一交互/视觉增强组件（见 ux.py）
+
 OUT = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(OUT, "site")
 
@@ -107,7 +110,7 @@ def idx_cards(items):
         cls = "up" if pct >= 0 else "down"
         out.append(f'<div class="icard"><div class="iname">{it["name"]}</div>'
                    f'<div class="iprice">{it["price"]:,.2f}</div>'
-                   f'<div class="ipct {cls}">{sign}{pct:.2f}%</div></div>')
+                   f'<div class="ipct">{ux.pct_chip(pct)}</div></div>')
     return "\n".join(out)
 
 def sec_rows(items):
@@ -118,7 +121,7 @@ def sec_rows(items):
         pct = it["pct"]; sign = "+" if pct >= 0 else ""
         cls = "up" if pct >= 0 else "down"
         out.append(f'<tr><td class="rk">{i}</td><td class="nm">{it["name"]}</td>'
-                   f'<td class="pc {cls}">{sign}{pct:.2f}%</td></tr>')
+                   f'<td class="pc">{ux.pct_chip(pct)}</td></tr>')
     return "\n".join(out)
 
 # ---------- 专科提要（要点表格化） ----------
@@ -348,14 +351,16 @@ td,th{padding:6px 5px}
 
 MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+__THEME__
 <title>每日追踪看板</title><style>__CSS__</style></head><body><div class="wrap">
-<header><h1>每日追踪看板</h1><div class="updated" id="updated">数据更新：__UPDATED__<span class="live">· 自动刷新中</span></div>
+<header><h1>每日追踪看板</h1><div class="updated" id="updated">__UPDATEDBADGE__</div>
 <div class="toolnav"><a href="xz/videos.html">🎬 考研西综 306 成套视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="quiz.html">🩺 医师定考刷题</a></div></header>
+__SNAV__
 
-<h2>一、大盘行情</h2>
+<h2 id="s1">一、大盘行情</h2>
 <div class="grid g4" id="cnIdx">__CNIDX__</div><div style="height:14px"></div><div class="grid g4" id="usIdx">__USIDX__</div>
 
-<h2>二、板块涨跌榜（涨 / 跌 前 10）</h2>
+<h2 id="s2">二、板块涨跌榜（涨 / 跌 前 10）</h2>
 <div class="grid g2">
 <div class="tbl"><h3>A股 · 行业涨幅前 10</h3><table id="cnUp">__CNUP__</table></div>
 <div class="tbl"><h3>A股 · 行业跌幅前 10</h3><table id="cnDn">__CNDN__</table></div>
@@ -363,40 +368,45 @@ MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <div class="tbl"><h3>美股 · 行业跌幅前 10</h3><table id="usDn">__USDN__</table></div>
 </div>
 
-<h2>三、三专科指南 · 数据概览</h2>
+<h2 id="s3">三、三专科指南 · 数据概览</h2>
 <div class="grid g2">__OVERVIEW__</div>
 
-<h2>四、三专科指南 · 重点提要</h2>
+<h2 id="s4">四、三专科指南 · 重点提要</h2>
 <div class="grid g2">__SPECS__</div>
 <div style="margin-top:6px">__HISTLINK__</div>
 
-<h2>五、三专科 · 最新发表文章</h2>
+<h2 id="s5">五、三专科 · 最新发表文章</h2>
 <div class="grid g2">__ARTS__</div>
 
 <footer>行情来源：新浪财经（A股指数 / 行业板块、美股指数 / SPDR 11 行业 ETF）。专科内容由每日对比提要文件与文章库自动解析，点击标题/链接可查原文。</footer>
 </div>
+__TOTOP__
 <script>
 (function(){
   function $(id){return document.getElementById(id);}
   var last=null;
-  function sgn(p){return p>=0?'+':'';}
-  function cls(p){return p>=0?'up':'down';}
+  function sgn(p){return p>0?'+':'';}
+  function ar(p){return p>0?'▲':(p<0?'▼':'—');}
+  function cls(p){return p>0?'up':(p<0?'down':'flat');}
+  function pill(p){p=Number(p);return '<span class="pill '+cls(p)+'"><span class="ar">'+ar(p)+'</span>'+sgn(p)+p.toFixed(2)+'%</span>';}
   function fmt(n){var t=Number(n).toFixed(2).split('.');t[0]=t[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');return t.join('.');}
   function idxHTML(items){
     if(!items||!items.length)return '<div class="mut">获取中…</div>';
-    return items.map(function(it){var p=Number(it.pct);
-      return '<div class="icard"><div class="iname">'+it.name+'</div><div class="iprice">'+fmt(it.price)+'</div><div class="ipct '+cls(p)+'">'+sgn(p)+p.toFixed(2)+'%</div></div>';
+    return items.map(function(it){
+      return '<div class="icard"><div class="iname">'+it.name+'</div><div class="iprice">'+fmt(it.price)+'</div><div class="ipct">'+pill(it.pct)+'</div></div>';
     }).join('');
   }
   function secHTML(items){
     if(!items||!items.length)return '<tr><td colspan="3" class="mut">暂无数据</td></tr>';
-    return items.map(function(it,i){var p=Number(it.pct);
-      return '<tr><td class="rk">'+(i+1)+'</td><td class="nm">'+it.name+'</td><td class="pc '+cls(p)+'">'+sgn(p)+p.toFixed(2)+'%</td></tr>';
+    return items.map(function(it,i){
+      return '<tr><td class="rk">'+(i+1)+'</td><td class="nm">'+it.name+'</td><td class="pc">'+pill(it.pct)+'</td></tr>';
     }).join('');
   }
   function set(id,html){var e=$(id);if(e)e.innerHTML=html;}
   function apply(d){
-    var u=$('updated');if(u&&d.updated)u.innerHTML='数据更新：'+d.updated+'<span class="live">· 自动刷新中</span>';
+    var u=$('updated');
+    if(u&&d.updated){u.innerHTML='数据更新：<b>'+d.updated+'</b><span class="live">自动刷新中</span><span class="rel" data-bjtime="'+d.updated+'">刚刚</span>';
+      if(window.__uxRefreshRel)window.__uxRefreshRel();}
     set('cnIdx',idxHTML(d.cn_index));
     set('usIdx',idxHTML(d.us_index));
     set('cnUp',secHTML((d.cn_sectors||{}).up));
@@ -414,6 +424,7 @@ MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
   setTimeout(tick,4000);
 })();
 </script>
+<script>__UXJS__</script>
 </body></html>"""
 
 ATT_CSS = """
@@ -481,13 +492,14 @@ def build_attachment(s):
     src = esc(s.get("source", "")) if s.get("source") else ""
     return f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{esc(s["specialty"])} · 原文详解</title><style>{ATT_CSS}</style></head><body><div class="wrap">
+{ux.theme_meta()}
+<title>{esc(s["specialty"])} · 原文详解</title><style>{ATT_CSS}{ux.UX_CSS}</style></head><body><div class="wrap">
 <h2>{esc(s["specialty"])} · 重点提要原文详解</h2>
 <p class="q">日期：{s["date"]} ｜ 来源：每日对比提要文件自动解析</p>
 <div class="src"><b>内容出处：</b>{src or "见下方正文"}<br>{link_html}</div>
 {body}
 <a class="back" href="index.html">← 返回看板</a>
-</div></body></html>"""
+</div>{ux.TO_TOP_HTML}<script>{ux.UX_JS}</script></body></html>"""
 
 def find_links(source):
     links = []
@@ -612,7 +624,8 @@ def build_spec_page(key, rows, idx):
     title = cur.get("title") or f'{disp} · {cur["date"]} 重点提要'
     return f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{esc(title)} · {esc(disp)} {cur["date"]}</title><style>{ATT_CSS}{NAV_CSS}</style></head><body><div class="wrap">
+{ux.theme_meta()}
+<title>{esc(title)} · {esc(disp)} {cur["date"]}</title><style>{ATT_CSS}{NAV_CSS}{ux.UX_CSS}</style></head><body><div class="wrap">
 {nav_bar(key, rows, idx, "top")}
 <h2>{esc(disp)} · 重点提要</h2>
 <p class="q">日期：{cur["date"]} ｜ 来源：每日对比提要文件自动解析（{esc(cur.get("file",""))}）</p>
@@ -620,7 +633,7 @@ def build_spec_page(key, rows, idx):
 {body}
 {nav_bar(key, rows, idx, "bottom")}
 <p style="margin-top:14px"><a class="back" href="index.html">← 返回看板首页</a> <a class="back" href="history.html" style="margin-left:16px">📚 往期提要列表</a></p>
-</div></body></html>"""
+</div>{ux.TO_TOP_HTML}<script>{ux.UX_JS}</script></body></html>"""
 
 def history_links(history):
     total = sum(len(v) for v in (history or {}).values())
@@ -642,7 +655,8 @@ def build_history_page(history, specs):
     total = sum(len(v) for v in (history or {}).values())
     return f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>往期提要 · 三专科每日对比</title><style>{ATT_CSS}{MAIN_CSS}{NAV_CSS}
+{ux.theme_meta()}
+<title>往期提要 · 三专科每日对比</title><style>{ATT_CSS}{MAIN_CSS}{NAV_CSS}{ux.UX_CSS}
 .hcols .scard{{margin:0}}</style></head><body><div class="wrap" style="max-width:1180px">
 <header style="border-bottom:2px solid #3f6b4f"><h1 style="color:#3f6b4f">📚 往期提要</h1>
 <div class="updated">三专科每日对比提要 · 共 {total} 篇 · 按日期倒序</div></header>
@@ -651,7 +665,7 @@ def build_history_page(history, specs):
 </div>
 <div class="hcols">{"".join(cols)}</div>
 <footer style="margin-top:22px">点击任一日期进入该篇提要，篇内提供「上一篇 / 下一篇」导航。</footer>
-</div></body></html>"""
+</div>{ux.TO_TOP_HTML}<script>{ux.UX_JS}</script></body></html>"""
 
 SPECS_ORDER = [("肾内科", "肾内科"), ("内分泌", "内分泌·体重管理"), ("心血管", "心血管")]
 
@@ -674,8 +688,14 @@ def main():
         d = json.load(f)
     os.makedirs(SITE, exist_ok=True)
     hist = d.get("specialty_history", {}) or {}
-    html_main = (MAIN_TPL.replace("__CSS__", MAIN_CSS + NAV_CSS)
-                 .replace("__UPDATED__", d.get("updated", ""))
+    html_main = (MAIN_TPL.replace("__CSS__", MAIN_CSS + NAV_CSS + ux.UX_CSS)
+                 .replace("__THEME__", ux.theme_meta())
+                 .replace("__SNAV__", ux.sticky_nav([
+                     ("s1", "大盘行情"), ("s2", "板块涨跌榜"), ("s3", "数据概览"),
+                     ("s4", "重点提要"), ("s5", "最新文章")]))
+                 .replace("__TOTOP__", ux.TO_TOP_HTML)
+                 .replace("__UXJS__", ux.UX_JS)
+                 .replace("__UPDATEDBADGE__", ux.updated_badge(d.get("updated", "")))
                  .replace("__CNIDX__", idx_cards(d.get("cn_index", [])))
                  .replace("__USIDX__", idx_cards(d.get("us_index", [])))
                  .replace("__CNUP__", sec_rows(d.get("cn_sectors", {}).get("up", [])))
@@ -687,19 +707,19 @@ def main():
                  .replace("__HISTLINK__", history_links(hist))
                  .replace("__ARTS__", art_table(d.get("articles", []))))
     shutil.copy(os.path.join(OUT, "data.json"), os.path.join(SITE, "data.json"))
-    # 复制刷题小程序（quiz.html）到站点根目录
+    # 复制刷题小程序（quiz.html）到站点根目录，并注入 theme-color / 回顶按钮
     _quiz = os.path.join(OUT, "quiz.html")
     if os.path.exists(_quiz):
-        shutil.copy(_quiz, os.path.join(SITE, "quiz.html"))
-        print("copied quiz.html ->", os.path.join(SITE, "quiz.html"))
+        ux.write_injected(_quiz, os.path.join(SITE, "quiz.html"), mode="quiz", color="#0f766e")
+        print("copied quiz.html (ux injected) ->", os.path.join(SITE, "quiz.html"))
     else:
         print("WARN: quiz.html not found in", OUT)
     # 复制西综306考研题库
     _xz = os.path.join(OUT, "xz", "quiz.html")
     if os.path.exists(_xz):
         os.makedirs(os.path.join(SITE, "xz"), exist_ok=True)
-        shutil.copy(_xz, os.path.join(SITE, "xz", "quiz.html"))
-        print("copied xz/quiz.html")
+        ux.write_injected(_xz, os.path.join(SITE, "xz", "quiz.html"), mode="quiz", color="#0f766e")
+        print("copied xz/quiz.html (ux injected)")
     else:
         print("WARN: xz/quiz.html not found")
     # 西综成套教学视频导航页：服务端直出卡片（弱网/断网也能看到内容）

@@ -7,6 +7,12 @@
 """
 import json, os, re, html
 
+sys_path_fix = os.path.dirname(os.path.abspath(__file__))
+import sys as _sys
+if sys_path_fix not in _sys.path:
+    _sys.path.insert(0, sys_path_fix)
+import ux  # 统一交互/视觉增强组件
+
 CSS = """
 :root{--bg:#eef3e8;--card:#fff;--ink:#20301f;--mut:#5a6b56;--line:#d3ddc7;--acc:#3f6b4f}
 *{box-sizing:border-box}
@@ -179,7 +185,18 @@ def _ts(d):
     return int("".join(m.groups())) if m else 0
 
 
+VIDEO_UX_EXTRA = """
+/* 视频页：深色头部下的徽章配色 + 卡片斑马/悬停增强 */
+header .upd .live{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.28);color:#eaf6e3}
+header .upd .live::before{background:#c8f0a8;box-shadow:0 0 0 0 rgba(200,240,168,.7);animation:uxpulse 1.9s ease-out infinite}
+header .upd .rel{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.24);color:#f2fbee}
+.toolbar{position:sticky;top:0;z-index:60;box-shadow:0 6px 16px -14px rgba(40,70,40,.6)}
+@media print{.toolbar{position:static!important;box-shadow:none!important}}
+"""
+
+
 def render(data, offline=False):
+    UXCSS = ux.UX_CSS + VIDEO_UX_EXTRA
     items = data.get("items") or []
     subjects = data.get("subjects") or []
     cnt = {}
@@ -195,21 +212,25 @@ def render(data, offline=False):
     foot_links = ("离线单文件版 · 数据截至上方时间" if offline else
                   '<a href="quiz.html">西综 306 刷题</a> · <a href="../index.html">返回看板首页</a>'
                   ' · <a href="videos.json">JSON</a>')
-    return f"""<!DOCTYPE html>
+    _html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
+{ux.theme_meta()}
 <title>考研西医综合（306）成套教学视频</title>
-<style>{CSS}</style>
+<style>{CSS}{UXCSS}</style>
 </head>
 <body>
 <div class="wrap">
 <header>
   <h1>考研西医综合（306）成套教学视频</h1>
   <div class="sub">收录 B 站公开的多分 P / 长系列精讲课程，剔除散课与失效视频</div>
-  <div class="upd">数据更新：{esc(data.get("updated",""))}（北京时间） · 共 {len(items)} 套 · 每天自动刷新{'' if offline else ' · <a href="videos_lite.html" style="color:#d6f5cf">网慢？用精简版 →</a>'}
+  <div class="upd">数据更新：<b>{esc(data.get("updated",""))}</b>（北京时间） · 共 {len(items)} 套 · 每天自动刷新
+    <span class="live">自动刷新中</span><span class="rel" data-bjtime="{esc(data.get("updated",""))}">刚刚</span>
+    {'' if offline else ' · <a href="videos_lite.html" style="color:#d6f5cf">网慢？用精简版 →</a>'}
+  </div>
 </header>
 
 <div class="toolbar">
@@ -239,9 +260,12 @@ def render(data, offline=False):
 </footer>
 </div>
 <script>{JS}</script>
+{ux.TO_TOP_HTML}
+<script>{{UXJS}}</script>
 </body>
 </html>
 """
+    return _html.replace("{UXJS}", ux.UX_JS)
 
 
 LITE_CSS = """
@@ -277,7 +301,15 @@ footer{margin-top:16px;font-size:11.5px;color:var(--mut)}
 """
 
 
+LITE_UX = """
+.item{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.item:hover{border-color:#b6cfa6;box-shadow:0 10px 22px -16px rgba(40,70,40,.55);transform:translateY(-1px)}
+@media(max-width:560px){.item:hover{transform:none}}
+"""
+
+
 def render_lite(data):
+    LITE_UX_CSS = ux.UX_CSS + LITE_UX
     items = data.get("items") or []
     cnt = {}
     for it in items:
@@ -309,20 +341,22 @@ def render_lite(data):
             f'<div class="acts"><a class="play" href="{play}">站内播放 ▶</a>'
             f'<a href="{esc(url)}" target="_blank" rel="noopener">B站原页</a>'
             f'<button data-cp="{esc(bv)}">复制BV</button></div></div>')
-    return f"""<!DOCTYPE html>
+    _html = f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{ux.theme_meta()}
 <title>考研西综306 · 教学视频（精简版）</title>
-<style>{LITE_CSS}</style></head><body><div class="wrap">
+<style>{LITE_CSS}{LITE_UX_CSS}</style></head><body><div class="wrap">
 <header><h1>考研西医综合（306）教学视频 · 精简版</h1>
-<div class="upd">数据更新：{esc(data.get("updated",""))} · 共 {len(items)} 套 · 无封面图，弱网秒开</div></header>
+<div class="upd">数据更新：<b>{esc(data.get("updated",""))}</b> · 共 {len(items)} 套 · 无封面图，弱网秒开
+<span class="live">自动刷新中</span><span class="rel" data-bjtime="{esc(data.get("updated",""))}">刚刚</span></div></header>
 <div class="tip" id="tip">点标题直接进<b>站内播放页</b>（内嵌播放器+选集，不用跳 App）。若播放器空白，点「复制BV」到哔哩哔哩 App 搜索，或右上角「…」→「在浏览器打开」。</div>
 <div class="chips" id="chips">{''.join(chips)}</div>
 <input id="q" placeholder="搜标题 / UP 主 / 老师">
 <div class="stat" id="stat">共 {len(items)} 套</div>
 <div id="list">{''.join(rows)}</div>
 <footer>点标题直接跳到 B 站课程页 · 版权归各 UP 主所有，本站仅做索引</footer>
-</div><script>
+</div>{ux.TO_TOP_HTML}<script>
 (function(){{
  var list=document.getElementById('list'),items=[].slice.call(list.children),
      chips=document.getElementById('chips'),q=document.getElementById('q'),stat=document.getElementById('stat'),cur='全部';
@@ -343,8 +377,11 @@ def render_lite(data):
    function fb(){{var i=document.createElement('textarea');i.value=v;i.style.position='fixed';i.style.opacity='0';document.body.appendChild(i);i.select();try{{document.execCommand('copy');done();}}catch(x){{prompt('长按复制',v);}}document.body.removeChild(i);}}
  }});
 }})();
-</script></body></html>
+</script>
+<script>{{UXJS}}</script>
+</body></html>
 """
+    return _html.replace("{UXJS}", ux.UX_JS)
 
 
 def build(json_path, out_dir):
@@ -444,7 +481,14 @@ PLAY_JS = """
 """
 
 
+PLAY_UX = """
+#toTop{right:14px;bottom:58px}
+@media(max-width:560px){#toTop{bottom:52px}}
+"""
+
+
 def render_play(meta, parts):
+    PLAY_UX_CSS = ux.UX_CSS + PLAY_UX
     bv = meta.get("bvid") or ""
     eps = "".join(
         f'<div class="ep" data-i="{k}">{k+1}. {esc(p)}</div>'
@@ -458,8 +502,9 @@ def render_play(meta, parts):
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
+{ux.theme_meta()}
 <title>{esc(meta.get("title"))}</title>
-<style>{PLAY_CSS}</style></head><body>
+<style>{PLAY_CSS}{PLAY_UX_CSS}</style></head><body>
 <div class="top"><a href="../videos_lite.html">← 列表</a>
   <span class="ttl">{esc(meta.get("title"))}</span></div>
 <div class="pwrap" id="pw"><div class="cover-guide">
@@ -480,6 +525,8 @@ def render_play(meta, parts):
 <div class="eps"><h3>选集（共 {len(parts)} 集）</h3><div class="eplist" id="eplist">{eps}</div></div>
 <script>window.__META__={head};window.__PARTS__={pj};</script>
 <script>{PLAY_JS}</script>
+{ux.TO_TOP_HTML}
+<script>""" + ux.UX_JS + """</script>
 </body></html>
 """
 
