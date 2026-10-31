@@ -208,6 +208,7 @@ def render(data, offline=False):
             chips.append(f'<span class="chip" data-s="{esc(s)}">{esc(s)}'
                          f'<span class="cnt">{cnt[s]}</span></span>')
     cards = "\n".join(card_html(it) for it in items)
+    min_date = data.get("min_date", "2025-01-01")
 
     foot_links = ("离线单文件版 · 数据截至上方时间" if offline else
                   '<a href="quiz.html">西综 306 刷题</a> · <a href="../index.html">返回看板首页</a>'
@@ -226,8 +227,8 @@ def render(data, offline=False):
 <div class="wrap">
 <header>
   <h1>考研西医综合（306）成套教学视频</h1>
-  <div class="sub">收录 B 站公开的多分 P / 长系列精讲课程，剔除散课与失效视频</div>
-  <div class="upd">数据更新：<b>{esc(data.get("updated",""))}</b>（北京时间） · 共 {len(items)} 套 · 每天自动刷新
+  <div class="sub">收录 B 站公开的多分 P / 长系列精讲课程，剔除散课与失效视频；仅保留 {esc(min_date)} 之后发布（置顶主讲豁免）</div>
+  <div class="upd">数据更新：<b>{esc(data.get("updated",""))}</b>（北京时间） · 共 {len(items)} 套 · 已屏蔽 {data.get("hidden_old",0)} 套旧视频
     <span class="live">自动刷新中</span><span class="rel" data-bjtime="{esc(data.get("updated",""))}">刚刚</span>
     {'' if offline else ' · <a href="videos_lite.html" style="color:#d6f5cf">网慢？用精简版 →</a>'}
   </div>
@@ -348,14 +349,14 @@ def render_lite(data):
 <title>考研西综306 · 教学视频（精简版）</title>
 <style>{LITE_CSS}{LITE_UX_CSS}</style></head><body><div class="wrap">
 <header><h1>考研西医综合（306）教学视频 · 精简版</h1>
-<div class="upd">数据更新：<b>{esc(data.get("updated",""))}</b> · 共 {len(items)} 套 · 无封面图，弱网秒开
+<div class="upd">数据更新：<b>{esc(data.get("updated",""))}</b> · 共 {len(items)} 套 · 仅 {esc(data.get("min_date","2025-01-01"))} 后发布（置顶豁免）· 已屏蔽 {data.get("hidden_old",0)} 套
 <span class="live">自动刷新中</span><span class="rel" data-bjtime="{esc(data.get("updated",""))}">刚刚</span></div></header>
 <div class="tip" id="tip">点标题直接进<b>站内播放页</b>（内嵌播放器+选集，不用跳 App）。若播放器空白，点「复制BV」到哔哩哔哩 App 搜索，或右上角「…」→「在浏览器打开」。</div>
 <div class="chips" id="chips">{''.join(chips)}</div>
 <input id="q" placeholder="搜标题 / UP 主 / 老师">
 <div class="stat" id="stat">共 {len(items)} 套</div>
 <div id="list">{''.join(rows)}</div>
-<footer>点标题直接跳到 B 站课程页 · 版权归各 UP 主所有，本站仅做索引</footer>
+<footer>点标题进入站内播放页（选集）· 版权归各 UP 主所有，本站仅做索引</footer>
 </div>{ux.TO_TOP_HTML}<script>
 (function(){{
  var list=document.getElementById('list'),items=[].slice.call(list.children),

@@ -53,6 +53,10 @@ SUBJ_KEYS = [("诊断", ["诊断学", "诊断"]), ("内科", ["内科"]), ("外�
 PIN_TEACHERS = ["隋准"]
 PIN_MAX_PER = 10          # 每位置顶老师最多收录条数（按评分取）
 
+# 最低发布年份：早于该日期发布的视频不再展示（置顶主讲豁免，避免与置顶冲突）
+MIN_DATE = "2025-01-01"
+OLD_EXEMPT_PINNED = True
+
 
 def relevant(title, parts=()):
     """相关性：必须指向考研西综/306，或带考研语境的医学五大科目课程。
@@ -264,6 +268,18 @@ def collect():
         key = sig if len(sig) >= 12 else norm(it["title"])[:26] + str(it["pages"])
         best.setdefault(key, it)
 
+    # 时间过滤：屏蔽 MIN_DATE 之前发布的视频（置顶主讲可按开关豁免）
+    before = len(best)
+    kept, hidden_old = [], 0
+    for it in best.values():
+        old = it["date"] < MIN_DATE
+        if old and not (OLD_EXEMPT_PINNED and it.get("pinned")):
+            hidden_old += 1
+            continue
+        kept.append(it)
+    best = {i["bvid"]: i for i in kept}
+    print(f"[filter] 屏蔽 {MIN_DATE} 前发布 {hidden_old} 套，剩 {len(best)} 套（原 {before}）")
+
     # 分科配额：保证各科都有位置，避免长真题/带背挤掉系统课
     QUOTA = {"全程系统课": 14, "内科": 12, "外科": 12, "生理": 10, "生化": 10,
              "病理": 10, "诊断": 10, "真题精讲": 8, "冲刺带背": 8}
@@ -293,6 +309,7 @@ def collect():
 
     # 置顶项排最前，其余按评分
     picked.sort(key=lambda x: (not x.get("pinned"), -x["score"], -x["play"]))
+    collect.stats = {"hidden_old": hidden_old, "before": before}
     return picked[:80]
 
 
@@ -326,10 +343,13 @@ def refresh(verbose=True, max_age_hours=6):
         print(f"[xz-videos] 仅 {len(items)} 条，低于阈值，沿用旧数据")
         return 0
     parts_map = {it["bvid"]: it.pop("parts_all", []) for it in items if it.get("bvid")}
+    stats = getattr(collect, "stats", {})
     data = {
         "updated": now_bj().strftime("%Y-%m-%d %H:%M"),
         "source": "哔哩哔哩（公开搜索 + 视频详情有效性校验）",
         "total": len(items),
+        "min_date": MIN_DATE,
+        "hidden_old": stats.get("hidden_old", 0),
         "subjects": SUBJECTS,
         "items": items,
     }
