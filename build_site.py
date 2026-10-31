@@ -702,15 +702,29 @@ def main():
         print("copied xz/quiz.html")
     else:
         print("WARN: xz/quiz.html not found")
-    # 复制西综成套教学视频导航页（xz/videos.html + videos.json）
-    for _name in ("videos.html", "videos.json"):
-        _src = os.path.join(OUT, "xz", _name)
-        if os.path.exists(_src):
-            os.makedirs(os.path.join(SITE, "xz"), exist_ok=True)
-            shutil.copy(_src, os.path.join(SITE, "xz", _name))
-            print("copied xz/" + _name)
-        else:
-            print("WARN: xz/" + _name + " not found")
+    # 西综成套教学视频导航页：videos.html 内联构建时数据（fetch 失败可兜底），另出离线单文件版
+    _vh = os.path.join(OUT, "xz", "videos.html")
+    _vj = os.path.join(OUT, "xz", "videos.json")
+    if os.path.exists(_vh) and os.path.exists(_vj):
+        with open(_vh, encoding="utf-8") as f:
+            _h = f.read()
+        with open(_vj, encoding="utf-8") as f:
+            _j = f.read()
+        _inline = "<script>window.__XZ_DATA__=" + _j + ";</script>\n</head>"
+        _page = _h.replace("</head>", _inline, 1)
+        os.makedirs(os.path.join(SITE, "xz"), exist_ok=True)
+        with open(os.path.join(SITE, "xz", "videos.html"), "w", encoding="utf-8") as f:
+            f.write(_page)
+        shutil.copy(_vj, os.path.join(SITE, "xz", "videos.json"))
+        # 离线单文件：去掉对 videos.json / 站内其他页面的依赖，可存手机直接打开
+        _off = (_page.replace('<a href="videos.json" target="_blank">videos.json</a> · ', "")
+                     .replace('<a href="quiz.html">西综 306 刷题</a> · <a href="../index.html">返回看板首页</a>',
+                              "离线单文件版 · 数据截至上方时间"))
+        with open(os.path.join(SITE, "xz", "videos_offline.html"), "w", encoding="utf-8") as f:
+            f.write(_off)
+        print("built xz/videos.html (inline data) + xz/videos_offline.html")
+    else:
+        print("WARN: xz/videos.html or videos.json not found")
 
     with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as f:
         f.write(html_main)

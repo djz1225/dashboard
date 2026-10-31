@@ -128,7 +128,7 @@ footer a{color:#3b6ea5;text-decoration:none}
     }[sort];
     list.sort(cmp);
     $('stat').textContent='共 '+list.length+' 套课程'+(curSub!=='全部'?'（'+curSub+'）':'')+(q?'，关键词「'+q+'」':'');
-    if(!list.length){$('grid').innerHTML='<div class="empty">没有匹配的课程，换个关键词或点「全部」看看</div>';return;}
+    if(!list.length){$('grid').innerHTML='<div class="empty">没有匹配的课程，换个关键词试试</div>';return;}
     $('grid').innerHTML=list.map(function(it){
       var tags='<span class="tag sub">'+esc(it.subject)+'</span>';
       (it.teachers||[]).slice(0,3).forEach(function(t){tags+='<span class="tag tc">'+esc(t)+'</span>';});
@@ -167,7 +167,10 @@ footer a{color:#3b6ea5;text-decoration:none}
     var c=e.target.closest('.chip'); if(!c)return;
     curSub=c.getAttribute('data-s'); buildSubs(); render();
   });
-  $('q').addEventListener('input',render);
+  $('q').addEventListener('input',function(){
+    if(this.value.trim()&&curSub!=='全部'){curSub='全部';buildSubs();}
+    render();
+  });
   $('sort').addEventListener('change',render);
 
   load();
