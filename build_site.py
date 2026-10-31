@@ -447,6 +447,28 @@ th{background:#eef5e9;font-weight:700;color:#1d3a28}
 @media(max-width:680px){body{padding:16px 10px}.wrap{padding:18px 14px;border-radius:10px}h2{font-size:20px}h3{font-size:17px}h4{font-size:15.5px}p,li{font-size:15px}table{font-size:14px}td,th{padding:6px 7px}}
 """
 
+def md_sections(md):
+    """从提要 md 抽取一级章节（供粘性章节导航使用）"""
+    secs = []
+    for raw in (md or "").splitlines():
+        s = raw.rstrip()
+        if s.startswith("## "):
+            head = s[3:].strip()
+            if re.match(r"^[一二三四五六七八九十]+、", head) and "总结" not in head and "重复" not in head:
+                lab = re.sub(r"^[一二三四五六七八九十]+、\s*", "", head)
+                lab = re.sub(r"[\u2b50\u26a0\ufe0f\u2705\u274c\U0001f300-\U0001faff\U0001f000-\U0001f2ff]", "", lab).strip()
+                lab = lab.replace("\u201c", "").replace("\u201d", "").replace('"', "")
+                lab = re.sub(r"[\u201c\u201d\"（）()【】\[\]]", "", lab)
+                head_part = re.split(r"[:：——|｜]", lab)[0].strip()
+                if 3 <= len(head_part) <= 14:
+                    lab = head_part
+                lab = re.sub(r"^[\s\-–—:：|/\\]+", "", lab).strip()
+                if len(lab) > 14:
+                    lab = lab[:14] + "…"
+                secs.append((f"i{len(secs)+1}", lab or f"第 {len(secs)+1} 节"))
+    return secs
+
+
 def md_to_html(md):
     out, in_tbl = [], False; sec_n = 0
     for raw in md.splitlines():
@@ -494,6 +516,7 @@ def build_attachment(s):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {ux.theme_meta()}
 <title>{esc(s["specialty"])} · 原文详解</title><style>{ATT_CSS}{ux.UX_CSS}</style></head><body><div class="wrap">
+{ux.sticky_nav(md_sections(s.get("md",""))) if len(md_sections(s.get("md",""))) >= 2 else ""}
 <h2>{esc(s["specialty"])} · 重点提要原文详解</h2>
 <p class="q">日期：{s["date"]} ｜ 来源：每日对比提要文件自动解析</p>
 <div class="src"><b>内容出处：</b>{src or "见下方正文"}<br>{link_html}</div>
@@ -627,6 +650,7 @@ def build_spec_page(key, rows, idx):
 {ux.theme_meta()}
 <title>{esc(title)} · {esc(disp)} {cur["date"]}</title><style>{ATT_CSS}{NAV_CSS}{ux.UX_CSS}</style></head><body><div class="wrap">
 {nav_bar(key, rows, idx, "top")}
+{ux.sticky_nav(md_sections(md)) if len(md_sections(md)) >= 2 else ""}
 <h2>{esc(disp)} · 重点提要</h2>
 <p class="q">日期：{cur["date"]} ｜ 来源：每日对比提要文件自动解析（{esc(cur.get("file",""))}）</p>
 <div class="src"><b>内容出处：</b>{esc(src) if src else "见下方正文"}<br>{link_html}</div>
