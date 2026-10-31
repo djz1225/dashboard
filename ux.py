@@ -310,3 +310,40 @@ def inject_ux(html, with_top=True, with_js=True, css=True):
     if with_js and "__uxRefreshRel" not in html and "</body>" in html:
         html = html.replace("</body>", f"<script>{UX_JS}</script>\n</body>", 1)
     return html
+
+
+# ============ 每半个月自动轮换的「美化增强层」 ============
+# 由 beautify.py 按 15 天周期选定当期增强包，构建期自动叠加到全站。
+# 增强包只做装饰性增量（入场动效 / 阅读进度 / 光影氛围 / 精致细节），不改结构与数据。
+try:
+    import beautify as _beautify
+    _PK_KEY, _PK_NAME, _PK_DESC, _PK_CSS, _PK_JS = _beautify.current_pack()
+    UX_CSS = UX_CSS + f"\n/* ==== 周期美化增强层 [{_PK_KEY}] {_PK_NAME} ==== */\n" + _PK_CSS
+    UX_JS = UX_JS + "\n/* 周期美化增强层 [%s] */\n" % _PK_KEY + _PK_JS
+    PERIOD_LABEL = f"{_PK_NAME}（{_PK_KEY}）"
+except Exception as _e:  # 增强层失败绝不影响主构建
+    PERIOD_LABEL = ""
+    PERIOD_ERROR = f"{type(_e).__name__}: {_e}"
+
+
+def period_note():
+    """页脚的美化周期说明（每 15 天自动换一版）"""
+    try:
+        import beautify
+        s, e = beautify.period_range()
+        k, n, desc, _c, _j = beautify.current_pack()
+        return (f'<span class="uxp-dot"></span>视觉皮肤：{n} · {s:%m-%d}~{e:%m-%d}'
+                f'（每 15 天自动轮换，共 {len(beautify.PACKS)} 套）')
+    except Exception:
+        return ""
+
+
+PERIOD_CSS = """
+footer .uxperiod{display:inline-flex;align-items:center;gap:6px;margin-left:10px;
+  padding:2px 10px;border-radius:999px;background:#f2f7ec;border:1px solid #dbe7cf;
+  color:#4e8259;font-size:12px;font-weight:600;white-space:nowrap}
+footer .uxp-dot{width:6px;height:6px;border-radius:50%;background:#6aa077;display:inline-block}
+@media(max-width:560px){footer .uxperiod{margin:8px 0 0;display:flex;width:fit-content}}
+@media print{footer .uxperiod{display:none}}
+"""
+UX_CSS = UX_CSS + PERIOD_CSS

@@ -35,6 +35,8 @@ jobs:
           python-version: "3.12"
       - run: python fetch_data.py
       - run: python build_site.py
+      - name: Template parity self-check
+        run: python check_parity.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

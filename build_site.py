@@ -378,7 +378,7 @@ __SNAV__
 <h2 id="s5">五、三专科 · 最新发表文章</h2>
 <div class="grid g2">__ARTS__</div>
 
-<footer>行情来源：新浪财经（A股指数 / 行业板块、美股指数 / SPDR 11 行业 ETF）。专科内容由每日对比提要文件与文章库自动解析，点击标题/链接可查原文。</footer>
+<footer>行情来源：新浪财经（A股指数 / 行业板块、美股指数 / SPDR 11 行业 ETF）。专科内容由每日对比提要文件与文章库自动解析，点击标题/链接可查原文。<span class="uxperiod">__PERIOD__</span></footer>
 </div>
 __TOTOP__
 <script>
@@ -719,6 +719,7 @@ def main():
                      ("s4", "重点提要"), ("s5", "最新文章")]))
                  .replace("__TOTOP__", ux.TO_TOP_HTML)
                  .replace("__UXJS__", ux.UX_JS)
+                 .replace("__PERIOD__", ux.period_note())
                  .replace("__UPDATEDBADGE__", ux.updated_badge(d.get("updated", "")))
                  .replace("__CNIDX__", idx_cards(d.get("cn_index", [])))
                  .replace("__USIDX__", idx_cards(d.get("us_index", [])))
