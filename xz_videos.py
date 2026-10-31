@@ -266,6 +266,13 @@ def collect():
     return picked[:70]
 
 
+BJ = datetime.timezone(datetime.timedelta(hours=8))
+
+
+def now_bj():
+    return datetime.datetime.now(BJ).replace(tzinfo=None)
+
+
 def refresh(verbose=True, max_age_hours=6):
     """抓取并写盘；成功返回条数，失败返回 0（旧文件保持不动）。
     若 videos.json 在 max_age_hours 内刚更新过，直接跳过，避免重复抓取。"""
@@ -274,7 +281,7 @@ def refresh(verbose=True, max_age_hours=6):
             with open(JSON_PATH, encoding="utf-8") as f:
                 old = json.load(f)
             ts = datetime.datetime.strptime(old.get("updated", ""), "%Y-%m-%d %H:%M")
-            age = (datetime.datetime.now() - ts).total_seconds() / 3600
+            age = (now_bj() - ts).total_seconds() / 3600
             if 0 <= age < max_age_hours:
                 print(f"[xz-videos] 数据 {age:.1f} 小时前刚刷新，跳过本轮")
                 return old.get("total", 0)
@@ -289,7 +296,7 @@ def refresh(verbose=True, max_age_hours=6):
         print(f"[xz-videos] 仅 {len(items)} 条，低于阈值，沿用旧数据")
         return 0
     data = {
-        "updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "updated": now_bj().strftime("%Y-%m-%d %H:%M"),
         "source": "哔哩哔哩（公开搜索 + 视频详情有效性校验）",
         "total": len(items),
         "subjects": SUBJECTS,
