@@ -335,8 +335,11 @@ def merge_open_courses(items):
     if not extra:
         return items
 
-    # 旧视频过滤同样生效（置顶不适用于公开课）
-    extra = [x for x in extra if x["date"] >= MIN_DATE or not x["date"]]
+    # 公开课豁免年份过滤：MOOC 是每学期持续开课，"首发时间"不代表课程过时
+    # （如华中科技大学病理学首发 2019 但仍在授课、17 万人学习）
+    n_stale = sum(1 for x in extra if x["date"] and x["date"] < MIN_DATE)
+    if n_stale:
+        print(f"[open] 公开课豁免年份过滤 {n_stale} 套（持续开课，不按首发时间剔除）")
     def _sig(t, school=""):
         core = re.sub(r"[（(].*?[)）]", "", t)          # 去掉括号里的学校名
         core = re.sub(r"[^0-9A-Za-z\u4e00-\u9fa5]", "", core)[:14]
