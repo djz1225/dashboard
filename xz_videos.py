@@ -230,6 +230,8 @@ def collect():
             continue
         c["subject"], c["teachers"] = classify(c["title"], parts)
         c["url"] = f"https://www.bilibili.com/video/{bv}"
+        c["source"] = "B站"
+        c["kind"] = "video"
         c["date"] = datetime.datetime.utcfromtimestamp(c["pubdate"]).strftime("%Y-%m-%d")
         c["dur_txt"] = fmt_dur(c["dur"])
         c.pop("dur_hint", None)
@@ -309,8 +311,10 @@ def collect():
 
     # 置顶项排最前，其余按评分
     picked.sort(key=lambda x: (not x.get("pinned"), -x["score"], -x["play"]))
+    picked = merge_open_courses(picked)
+    picked.sort(key=lambda x: (not x.get("pinned"), -x["score"], -x.get("play", 0)))
     collect.stats = {"hidden_old": hidden_old, "before": before}
-    return picked[:80]
+    return picked
 
 
 BJ = datetime.timezone(datetime.timedelta(hours=8))
@@ -318,6 +322,58 @@ BJ = datetime.timezone(datetime.timedelta(hours=8))
 
 def now_bj():
     return datetime.datetime.now(BJ).replace(tzinfo=None)
+
+
+def merge_open_courses(items):
+    """合并中国大学MOOC + 学堂在线 的公开课（超星/B站之外的播放源）。"""
+    try:
+        import xz_mooc
+        extra = xz_mooc.fetch_all()
+    except Exception as e:
+        print(f"[open] 多源抓取失败: {type(e).__name__}: {e}")
+        return items
+    if not extra:
+        return items
+
+    # 旧视频过滤同样生效（置顶不适用于公开课）
+    extra = [x for x in extra if x["date"] >= MIN_DATE or not x["date"]]
+    def _sig(t, school=""):
+        core = re.sub(r"[（(].*?[)）]", "", t)          # 去掉括号里的学校名
+        core = re.sub(r"[^0-9A-Za-z\u4e00-\u9fa5]", "", core)[:14]
+        return core + "|" + re.sub(r"[^\u4e00-\u9fa5]", "", school)[:8]
+
+    have = {_sig(i["title"], "") for i in items}
+
+    added = 0
+    for x in extra:
+        sig = _sig(x["title"], "")
+        if sig in have:
+            continue
+        have.add(sig)
+        base = 2.6
+        if x["learners"] >= 100000:
+            base += 1.1
+        elif x["learners"] >= 20000:
+            base += 0.7
+        elif x["learners"] >= 5000:
+            base += 0.35
+        if re.search(r"中国大学MOOC|学堂在线", x["source"]):
+            base += 0.3
+        items.append({
+            "bvid": "",
+            "title": x["title"] + (f"（{x['school']}）" if x.get("school") else ""),
+            "up": x["source"] + (" · " + x["school"] if x.get("school") else ""),
+            "mid": "", "play": x["learners"], "fav": 0,
+            "pubdate": 0, "cover": x.get("cover") or "",
+            "pages": 0, "dur": 0, "dur_txt": "MOOC 课程",
+            "parts": [], "teachers": x.get("teachers") or [],
+            "subject": x["subject"], "url": x["url"], "date": x["date"],
+            "score": round(base, 3), "pinned": [],
+            "source": x["source"], "kind": "mooc",
+        })
+        added += 1
+    print(f"[open] 合并公开课 {added} 套（候选 {len(extra)}）")
+    return items
 
 
 def refresh(verbose=True, max_age_hours=6):

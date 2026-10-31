@@ -48,6 +48,7 @@ input[type=search]:focus{border-color:#9dbf8d;background:#fff}
 .tag.sub{background:#e8f0f8;border-color:#d6e4f2;color:#2f5d8a;font-weight:600}
 .tag.tc{background:#fdf1e3;border-color:#f4e0c7;color:#8a5a20}
 .tag.pin{background:#c0392b;border-color:#a93226;color:#fff;font-weight:700}
+.tag.src{background:#eaf1fb;border-color:#cfdff5;color:#2f5d8a;font-weight:600}
 .card.pinned{border-color:#e0b04a;box-shadow:0 0 0 2px rgba(224,176,74,.28)}
 .parts{font-size:12px;color:#6b7d66;line-height:1.5}
 .foot{margin-top:auto;display:flex;align-items:center;gap:8px;padding-top:3px}
@@ -146,13 +147,16 @@ def fmt_play(n):
 
 
 def card_html(it):
+    is_mooc = it.get("kind") == "mooc"
     tags = []
     if it.get("pinned"):
         tags.append('<span class="tag pin">置顶</span>')
     tags.append(f'<span class="tag sub">{esc(it["subject"])}</span>')
     for t in (it.get("teachers") or [])[:3]:
         tags.append(f'<span class="tag tc">{esc(t)}</span>')
-    tags.append(f'<span class="tag">{esc(it.get("date",""))}</span>')
+    tags.append(f'<span class="tag">{esc(it.get("date","") or "MOOC")}</span>')
+    if is_mooc:
+        tags.append(f'<span class="tag src">{esc(it.get("source","MOOC"))}</span>')
     cover = it.get("cover") or ""
     img = (f'<img loading="lazy" referrerpolicy="no-referrer" src="{esc(cover)}" alt="">'
            if cover else "")
@@ -162,20 +166,27 @@ def card_html(it):
                   str(int(it.get("dur") or 0)), str(int(it.get("pages") or 0)),
                   str(it.get("score", 0)), "1" if it.get("pinned") else "0"])
     hay = (it.get("title", "") + " " + up + " " + " ".join(it.get("teachers") or [])).lower()
-    bv = it.get("bvid") or os.path.basename(it.get("url") or "")
-    play = f"play/{esc(bv)}.html" if bv else it.get("url")
+    bv = it.get("bvid") or ""
+    play = (it.get("url") if is_mooc else (f"play/{esc(bv)}.html" if bv else it.get("url"))) or ""
     _pincls = " pinned" if it.get("pinned") else ""
+    tgt = ' target="_blank" rel="noopener"' if is_mooc else ""
+    pg_txt = "" if is_mooc else str(int(it.get("pages") or 0)) + " P"
+    act_word = "学习" if is_mooc else "播放"
+    meta_who = "开设" if is_mooc else "UP"
+    if is_mooc:
+        actions = (f'<a class="go" href="{play}" target="_blank" rel="noopener">去上课 ↗</a>')
+    else:
+        actions = (f'<a class="mini" href="{esc(it.get("url"))}" target="_blank" rel="noopener">B站原页</a>'
+                   f'<a class="go" href="{play}">站内播放 ▶</a>')
     return (
         f'<article class="card{_pincls}" data-s="{esc(it["subject"])}" data-t="{esc(hay)}" data-k="{esc(k)}">'
-        f'<a class="cover" href="{play}">{img}'
-        f'<span class="pg">{int(it.get("pages") or 0)} P</span>'
+        f'<a class="cover" href="{play}"{tgt}>{img}'
+        f'<span class="pg">{pg_txt}</span>'
         f'<span class="dur">{esc(it.get("dur_txt",""))}</span></a>'
         f'<div class="body"><div class="ttl">{esc(it.get("title"))}</div>'
-        f'<div class="meta">{"".join(tags)}<span class="tag">UP：{esc(up)}</span></div>'
-        f'<div class="foot"><span class="plays">▶ {fmt_play(it.get("play"))} 播放</span>'
-        f'<a class="mini" href="{esc(it.get("url"))}" target="_blank" rel="noopener">B站原页</a>'
-        f'<a class="go" href="{play}">站内播放 ▶</a>'
-        f'</div></div></article>'
+        f'<div class="meta">{"".join(tags)}<span class="tag">{meta_who}：{esc(up)}</span></div>'
+        f'<div class="foot"><span class="plays">▶ {fmt_play(it.get("play"))} {act_word}</span>'
+        f'{actions}</div></div></article>'
     )
 
 
@@ -282,6 +293,8 @@ header .upd{margin-top:6px;font-size:12px;opacity:.95}
 .chip{flex:0 0 auto;border:1px solid var(--line);background:#f7faf3;color:#3d4f3a;border-radius:99px;padding:5px 11px;font-size:12.5px;cursor:pointer}
 .chip.on{background:#3f6b4f;color:#fff;border-color:#3f6b4f;font-weight:600}
 .chip.pin{background:#fdecea;color:#a93226;border-color:#f1b8b2;font-weight:700}
+.chip.src{background:#eaf1fb;color:#2f5d8a;border-color:#cfdff5;font-weight:600}
+.chip.src.on{background:#3b6ea5;color:#fff;border-color:#3b6ea5}
 .chip.pin.on{background:#c0392b;color:#fff;border-color:#c0392b}
 input{width:100%;min-height:38px;border:1px solid var(--line);border-radius:9px;padding:0 10px;font-size:14px;background:#fbfdf8;margin:6px 0}
 .item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:8px}
@@ -316,9 +329,14 @@ def render_lite(data):
     for it in items:
         cnt[it["subject"]] = cnt.get(it["subject"], 0) + 1
     npin = sum(1 for it in items if it.get("pinned"))
+    nmooc = sum(1 for it in items if it.get("kind") == "mooc")
+    nvideo = len(items) - nmooc
     chips = [f'<span class="chip on" data-s="全部">全部 {len(items)}</span>']
     if npin:
         chips.append(f'<span class="chip pin" data-s="★置顶">★置顶 {npin}</span>')
+    if nmooc:
+        chips.append(f'<span class="chip src" data-s="◆公开课">◆高校公开课 {nmooc}</span>')
+        chips.append(f'<span class="chip src" data-s="◆B站">◆B站 {nvideo}</span>')
     for s, n in sorted(cnt.items(), key=lambda x: -x[1]):
         chips.append(f'<span class="chip" data-s="{esc(s)}">{esc(s)} {n}</span>')
     rows = []
@@ -327,21 +345,32 @@ def render_lite(data):
                + " ".join(it.get("teachers") or [])).lower()
         bv = (it.get("bvid") or os.path.basename(it.get("url") or "")) or ""
         url = it.get("url") or ""
-        play = f"play/{bv}.html" if bv else url
+        im = it.get("kind") == "mooc"
+        play = url if im else (f"play/{bv}.html" if bv else url)
         _pc = " pinned" if it.get("pinned") else ""
         _badge = '<span class="tag pin">置顶</span>' if it.get("pinned") else ""
+        _src = f'<span class="tag src">{esc(it.get("source","公开课"))}</span>' if im else ""
+        _cnt = "" if im else f'<span>{int(it.get("pages") or 0)} 集</span>'
+        _who = "开设" if im else "UP"
+        _pv = "学习" if im else ""
+        if im:
+            _acts = f'<a class="play" href="{play}" target="_blank" rel="noopener">去上课 ↗</a>'
+        else:
+            _acts = (f'<a class="play" href="{play}">站内播放 ▶</a>'
+                     f'<a href="{esc(url)}" target="_blank" rel="noopener">B站原页</a>'
+                     f'<button data-cp="{esc(bv)}">复制BV</button>')
+        _sattr = "◆公开课" if im else "◆B站"
+        _tgt = ' target="_blank" rel="noopener"' if im else ""
         rows.append(
-            f'<div class="item{_pc}" data-s="{esc(it["subject"])}" data-pin="{"1" if it.get("pinned") else "0"}" data-t="{esc(hay)}">'
-            f'<a class="t" href="{play}">{esc(it.get("title"))}</a>'
-            f'<div class="m">{_badge}<span class="tag s">{esc(it["subject"])}</span>'
-            f'<span>{int(it.get("pages") or 0)} 集</span>'
+            f'<div class="item{_pc}" data-s="{esc(it["subject"])}" data-org="{_sattr}" data-pin="{"1" if it.get("pinned") else "0"}" data-t="{esc(hay)}">'
+            f'<a class="t" href="{play}"{_tgt}>{esc(it.get("title"))}</a>'
+            f'<div class="m">{_badge}<span class="tag s">{esc(it["subject"])}</span>{_src}'
+            f'{_cnt}'
             f'<span>{esc(it.get("dur_txt",""))}</span>'
-            f'<span>▶{fmt_play(it.get("play"))}</span>'
+            f'<span>▶{fmt_play(it.get("play"))}{_pv}</span>'
             f'<span>{esc(it.get("date",""))}</span>'
-            f'<span>UP：{esc(it.get("up") or "")}</span></div>'
-            f'<div class="acts"><a class="play" href="{play}">站内播放 ▶</a>'
-            f'<a href="{esc(url)}" target="_blank" rel="noopener">B站原页</a>'
-            f'<button data-cp="{esc(bv)}">复制BV</button></div></div>')
+            f'<span>{_who}：{esc(it.get("up") or "")}</span></div>'
+            f'<div class="acts">{_acts}</div></div>')
     _html = f"""<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -362,12 +391,14 @@ def render_lite(data):
  var list=document.getElementById('list'),items=[].slice.call(list.children),
      chips=document.getElementById('chips'),q=document.getElementById('q'),stat=document.getElementById('stat'),cur='全部';
  function ap(){{var k=q.value.trim().toLowerCase(),n=0;
-  items.forEach(function(e){{var base=(cur==='全部')?true:(cur==='★置顶'?e.getAttribute('data-pin')==='1':e.getAttribute('data-s')===cur);
+  items.forEach(function(e){{var base=(cur==='全部')?true:(cur==='★置顶'?e.getAttribute('data-pin')==='1':
+     (cur.indexOf('◆')===0?e.getAttribute('data-org')===cur:e.getAttribute('data-s')===cur));
    var ok=base&&(!k||e.getAttribute('data-t').indexOf(k)>=0);e.style.display=ok?'':'none';if(ok)n++;}});
   stat.textContent='共 '+n+' 套'+(k?'（'+q.value.trim()+'）':'');}}
  chips.addEventListener('click',function(e){{var c=e.target.closest('.chip');if(!c)return;cur=c.getAttribute('data-s');
-  [].forEach.call(chips.children,function(x){{var pin=x.getAttribute('data-s')==='★置顶';
-    x.className='chip'+(pin?' pin':'')+(x.getAttribute('data-s')===cur?' on':'');}});q.value='';ap();}});
+  [].forEach.call(chips.children,function(x){{var v=x.getAttribute('data-s');
+    var cls='chip'+(v==='★置顶'?' pin':(v.indexOf('◆')===0?' src':''))+(v===cur?' on':'');
+    x.className=cls;}});q.value='';ap();}});
  q.addEventListener('input',function(){{if(this.value&&cur!=='全部'){{cur='全部';[].forEach.call(chips.children,function(x){{x.className='chip'+(x.getAttribute('data-s')==='全部'?' on':'');}});}}ap();}});
  if(/MicroMessenger/i.test(navigator.userAgent))document.getElementById('tip').className='tip show';
  document.getElementById('list').addEventListener('click',function(e){{
