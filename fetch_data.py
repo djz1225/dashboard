@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """每日看板数据抓取 v2：A股/美股指数 + 板块涨跌榜 + 三专科结构化提要"""
-import json, os, re, sys, datetime, urllib.request
+import json, os, re, sys, time, datetime, urllib.request
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -9,12 +9,58 @@ OUT = ROOT
 SEARCH_DIRS = [os.path.join(ROOT, "specialties"), ROOT, "/sandbox/workspace/outputs"]
 SITE = os.path.join(OUT, "site")
 
-def http_get(url, decode="utf-8", referer=None):
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
-    if referer:
-        req.add_header("Referer", referer)
-    with urllib.request.urlopen(req, timeout=20) as r:
-        return r.read().decode(decode, errors="replace")
+def http_get(url, decode="utf-8", referer=None, retries=2):
+    """带重试的 GET；失败抛异常，由调用方决定降级"""
+    last = None
+    for i in range(retries):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            if referer:
+                req.add_header("Referer", referer)
+            with urllib.request.urlopen(req, timeout=20) as r:
+                return r.read().decode(decode, errors="replace")
+        except Exception as e:
+            last = e
+            time.sleep(0.8 * (i + 1))
+    raise last
+
+
+def http_get_safe(url, decode="utf-8", referer=None):
+    """失败返回 None，不抛异常"""
+    try:
+        return http_get(url, decode, referer)
+    except Exception as e:
+        print(f"  [warn] GET failed: {url[:70]} ({type(e).__name__})")
+        return None
+
+
+# ---------- 行情数据源：腾讯为主动，新浪为备 ----------
+def q_tencent(codes):
+    """腾讯行情 qt.gtimg.cn —— 返回 {code: fields[]}"""
+    txt = http_get_safe("https://qt.gtimg.cn/q=" + ",".join(codes), "gbk")
+    if not txt:
+        return {}
+    out = {}
+    for line in txt.splitlines():
+        if '="' not in line:
+            continue
+        key = line.split('="')[0].replace('v_', '').strip()
+        val = line.split('="')[1].rstrip('";')
+        out[key] = val.split('~')
+    return out
+
+
+def q_sina_http(codes, referer="https://finance.sina.com.cn"):
+    """新浪行情 http 版（https 已 403）—— 备用源"""
+    txt = http_get_safe("http://hq.sinajs.cn/list=" + ",".join(codes), "gbk", referer)
+    if not txt:
+        return {}
+    out = {}
+    for line in txt.splitlines():
+        m = re.search(r'hq_str_([^=]+)="([^"]*)"', line)
+        if m:
+            out[m.group(1)] = m.group(2).split(",")
+    return out
 
 def q_sina(codes, referer="https://finance.sina.com.cn"):
     url = "https://hq.sinajs.cn/list=" + ",".join(codes)
@@ -27,21 +73,41 @@ def q_sina(codes, referer="https://finance.sina.com.cn"):
     return out
 
 def fetch_cn_index():
-    d = q_sina(["sh000001", "sz399001", "sz399006", "sh000300"])
     meta = {"sh000001": "上证指数", "sz399001": "深证成指", "sz399006": "创业板指", "sh000300": "沪深300"}
     res = []
+    # 主源：腾讯
+    d = q_tencent(list(meta.keys()))
     for code, nm in meta.items():
         f = d.get(code)
-        if not f or len(f) < 4: continue
+        if not f or len(f) < 33:
+            continue
+        try:
+            cur, pct = float(f[3]), float(f[32])
+        except Exception:
+            continue
+        res.append({"name": nm, "price": round(cur, 2), "pct": round(pct, 2)})
+    if res:
+        return res
+    # 备源：新浪
+    print("  [cn_index] 腾讯源不可用，切换新浪")
+    d = q_sina_http(list(meta.keys()))
+    for code, nm in meta.items():
+        f = d.get(code)
+        if not f or len(f) < 4:
+            continue
         try:
             prev, cur = float(f[2]), float(f[3])
             pct = (cur - prev) / prev * 100 if prev else 0
-        except Exception: continue
+        except Exception:
+            continue
         res.append({"name": nm, "price": round(cur, 2), "pct": round(pct, 2)})
     return res
 
 def fetch_cn_sectors():
-    txt = http_get("https://vip.stock.finance.sina.com.cn/q/view/newSinaHy.php", "gbk")
+    txt = http_get_safe("https://vip.stock.finance.sina.com.cn/q/view/newSinaHy.php", "gbk")
+    if not txt:
+        print("  [cn_sectors] 板块接口不可用，返回空")
+        return {"up": [], "down": []}
     i = txt.find("{")
     if i < 0: return {"up": [], "down": []}
     data = json.loads(txt[i:])
@@ -60,27 +126,69 @@ US_SECTORS = {"gb_xlk": "科技", "gb_xle": "能源", "gb_xlf": "金融", "gb_xl
               "gb_xly": "非必需消费", "gb_xlp": "必需消费", "gb_xli": "工业", "gb_xlb": "材料",
               "gb_xlu": "公用事业", "gb_xlre": "房地产", "gb_xlc": "通信服务"}
 def fetch_us_index():
-    d = q_sina(["gb_$dji", "gb_$ixic", "gb_$inx"])
-    meta = {"gb_$dji": "道琼斯", "gb_$ixic": "纳斯达克", "gb_$inx": "标普500"}
+    meta = {"usDJI": "道琼斯", "usIXIC": "纳斯达克", "usINX": "标普500"}
     res = []
+    # 主源：腾讯
+    d = q_tencent(list(meta.keys()))
     for code, nm in meta.items():
         f = d.get(code)
-        if not f or len(f) < 3: continue
-        try: cur, pct = float(f[1]), float(f[2])
-        except Exception: continue
+        if not f or len(f) < 33:
+            continue
+        try:
+            cur, pct = float(f[3]), float(f[32])
+        except Exception:
+            continue
+        res.append({"name": nm, "price": round(cur, 2), "pct": round(pct, 2)})
+    if res:
+        return res
+    # 备源：新浪
+    print("  [us_index] 腾讯源不可用，切换新浪")
+    sina_meta = {"gb_$dji": "道琼斯", "gb_$ixic": "纳斯达克", "gb_$inx": "标普500"}
+    d = q_sina_http(list(sina_meta.keys()))
+    for code, nm in sina_meta.items():
+        f = d.get(code)
+        if not f or len(f) < 3:
+            continue
+        try:
+            cur, pct = float(f[1]), float(f[2])
+        except Exception:
+            continue
         res.append({"name": nm, "price": round(cur, 2), "pct": round(pct, 2)})
     return res
 
+US_ETF_TENCENT = {"usXLK": "科技", "usXLE": "能源", "usXLF": "金融", "usXLV": "医疗",
+                  "usXLY": "非必需消费", "usXLP": "必需消费", "usXLI": "工业",
+                  "usXLB": "材料", "usXLU": "公用事业", "usXLRE": "房地产", "usXLC": "通信服务"}
+
 def fetch_us_sectors():
-    d = q_sina(list(US_SECTORS.keys()))
     rows = []
-    for code, nm in US_SECTORS.items():
+    # 主源：腾讯
+    d = q_tencent(list(US_ETF_TENCENT.keys()))
+    for code, nm in US_ETF_TENCENT.items():
         f = d.get(code)
-        if not f or len(f) < 3: continue
-        try: pct = float(f[2])
-        except Exception: continue
+        if not f or len(f) < 33:
+            continue
+        try:
+            pct = float(f[32])
+        except Exception:
+            continue
         rows.append({"name": nm, "pct": round(pct, 2)})
+    # 备源：新浪
+    if not rows:
+        print("  [us_sectors] 腾讯源不可用，切换新浪")
+        d = q_sina_http(list(US_SECTORS.keys()))
+        for code, nm in US_SECTORS.items():
+            f = d.get(code)
+            if not f or len(f) < 3:
+                continue
+            try:
+                pct = float(f[2])
+            except Exception:
+                continue
+            rows.append({"name": nm, "pct": round(pct, 2)})
     rows.sort(key=lambda x: x["pct"], reverse=True)
+    if not rows:
+        return {"up": [], "down": []}
     return {"up": rows[:10], "down": rows[-10:][::-1]}
 
 # ---------------- 三专科结构化解析 ----------------
@@ -299,18 +407,31 @@ def load_articles():
             return []
     return []
 
+def _safe(fn, default, label):
+    """单项失败不影响整体构建"""
+    try:
+        r = fn()
+        return r if r is not None else default
+    except Exception as e:
+        print(f"  [ERROR] {label} 抓取失败: {type(e).__name__}: {str(e)[:100]}")
+        return default
+
+
 def main():
     bj = datetime.timezone(datetime.timedelta(hours=8))
     data = {
         "updated": datetime.datetime.now(bj).strftime("%Y-%m-%d %H:%M") + " 北京时间",
-        "cn_index": fetch_cn_index(),
-        "us_index": fetch_us_index(),
-        "cn_sectors": fetch_cn_sectors(),
-        "us_sectors": fetch_us_sectors(),
-        "specialties": fetch_specialties(),
-        "specialty_history": fetch_specialty_history(),
-        "articles": load_articles(),
+        "cn_index": _safe(fetch_cn_index, [], "A股指数"),
+        "us_index": _safe(fetch_us_index, [], "美股指数"),
+        "cn_sectors": _safe(fetch_cn_sectors, {"up": [], "down": []}, "A股板块"),
+        "us_sectors": _safe(fetch_us_sectors, {"up": [], "down": []}, "美股板块"),
+        "specialties": _safe(fetch_specialties, [], "三专科提要"),
+        "specialty_history": _safe(fetch_specialty_history, {}, "专科历史"),
+        "articles": _safe(load_articles, [], "文章列表"),
     }
+    # 数据完整性提示（不阻断构建）
+    if not data["cn_index"] and not data["us_index"]:
+        print("  [WARN] 指数数据全部为空，页面将显示'暂无数据'")
     os.makedirs(OUT, exist_ok=True)
     with open(os.path.join(OUT, "data.json"), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
