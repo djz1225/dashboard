@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#3f6b4f">
 <title>考研西综306 · 教学视频（精简版）</title>
 <style>
 :root{--bg:#eef3e8;--card:#fff;--ink:#20301f;--mut:#5a6b56;--line:#d3ddc7;--acc:#3f6b4f}
@@ -32,16 +33,118 @@ input{width:100%;min-height:38px;border:1px solid var(--line);border-radius:9px;
 .acts button:active,.acts a:active{background:#e2efd6}
 .acts .bv{color:#8a8f8b;background:none;border:none;font-weight:400;padding:4px 0;font-size:11.5px}
 footer{margin-top:16px;font-size:11.5px;color:var(--mut)}
+
+/* ===== 1. 粘性章节导航 ===== */
+.snav{position:sticky;top:0;z-index:70;display:flex;gap:6px;overflow-x:auto;
+  margin:0 0 16px;padding:9px 2px;background:rgba(238,243,232,.92);
+  -webkit-backdrop-filter:saturate(180%) blur(10px);backdrop-filter:saturate(180%) blur(10px);
+  border-bottom:1px solid var(--line);scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  scroll-snap-type:x proximity}
+.snav::-webkit-scrollbar{display:none}
+.snav a{flex:0 0 auto;scroll-snap-align:center;white-space:nowrap;text-decoration:none;
+  padding:6px 13px;border-radius:999px;font-size:13.5px;font-weight:700;color:#3a5440;
+  border:1px solid transparent;transition:background .18s,border-color .18s,color .18s,box-shadow .18s}
+.snav a:hover{background:#e6efdd;border-color:#cfe0bf}
+.snav a.on{background:linear-gradient(135deg,#54895f,#3f6b4f);color:#fff;border-color:#3f6b4f;
+  box-shadow:0 4px 12px -7px rgba(63,107,79,.9)}
+
+/* ===== 2. 回到顶部 ===== */
+#toTop{position:fixed;right:20px;bottom:24px;z-index:90;width:46px;height:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;
+  border:1px solid #cfe0bf;background:rgba(255,255,255,.95);color:var(--acc);
+  font-size:19px;font-weight:700;line-height:1;
+  box-shadow:0 8px 22px -10px rgba(40,70,40,.55),0 1px 3px rgba(40,70,40,.10);
+  opacity:0;visibility:hidden;transform:translateY(10px);
+  transition:opacity .22s ease,transform .22s ease,visibility .22s,background .18s}
+#toTop.on{opacity:1;visibility:visible;transform:translateY(0)}
+#toTop:hover{background:#f2f8ea;border-color:#a9c797;transform:translateY(-2px)}
+#toTop:active{transform:translateY(0)}
+
+/* ===== 3. 更新时间徽章（呼吸脉冲 + 相对时间） ===== */
+.updated .live{display:inline-flex;align-items:center;gap:6px;color:#4e8259;font-size:12px;
+  font-weight:700;margin-left:8px;padding:2px 10px 2px 8px;border-radius:999px;
+  background:rgba(78,130,89,.09);border:1px solid rgba(78,130,89,.16)}
+.updated .live::before{content:"";width:7px;height:7px;border-radius:50%;background:#4e8259;
+  box-shadow:0 0 0 0 rgba(78,130,89,.6);animation:uxpulse 1.9s ease-out infinite}
+@keyframes uxpulse{
+  0%{box-shadow:0 0 0 0 rgba(78,130,89,.55);opacity:1}
+  70%{box-shadow:0 0 0 7px rgba(78,130,89,0);opacity:.72}
+  100%{box-shadow:0 0 0 0 rgba(78,130,89,0);opacity:1}
+}
+.updated .rel{display:inline-flex;align-items:center;gap:4px;margin-left:7px;font-size:12px;
+  font-weight:700;color:#43594a;background:#eef4e7;border:1px solid #dfe8d4;
+  border-radius:999px;padding:2px 10px;font-variant-numeric:tabular-nums}
+.updated .rel::before{content:"\27F3";font-size:11px;opacity:.65;font-weight:400}
+
+/* ===== 4. 涨跌箭头 + 色块徽章 ===== */
+.pill{display:inline-flex;align-items:center;justify-content:flex-end;gap:3px;
+  padding:2px 9px;border-radius:999px;font-weight:800;font-variant-numeric:tabular-nums;
+  font-size:14px;line-height:1.5;white-space:nowrap}
+.pill .ar{font-size:11px;line-height:1}
+.pill.up{color:var(--up);background:rgba(192,57,43,.09);border:1px solid rgba(192,57,43,.20)}
+.pill.down{color:var(--down);background:rgba(30,132,73,.09);border:1px solid rgba(30,132,73,.20)}
+.pill.flat{color:#5a6b56;background:#f0f3ec;border:1px solid #e0e7d8}
+.ipct.pill{font-size:15px;padding:3px 11px}
+
+/* ===== 5. 卡片微交互 ===== */
+.icard,.scard,.chart,.tbl,.card,.item{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.icard:hover,.scard:hover,.chart:hover,.tbl:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 26px -16px rgba(40,70,40,.55),0 2px 6px rgba(40,70,40,.08);
+  border-color:#bcd3b0}
+.card:hover{transform:translateY(-2px);box-shadow:0 12px 26px -16px rgba(40,70,40,.5);border-color:#b6cfa6}
+.item:hover{background:#fbfdf8}
+.histrow:hover{background:#f2f8ea}
+
+/* ===== 6. 表格斑马纹 + 悬停高亮 ===== */
+table tbody tr:nth-child(even){background:#f6faf0}
+table tbody tr:hover{background:#ebf4e0}
+table tbody tr:nth-child(even):hover{background:#e9f3de}
+table.arttbl tbody tr.art-p{background:#fbfdf8}
+table.arttbl tbody tr.art-p:hover{background:#f2f8ea}
+table.itbl tbody tr:nth-child(even){background:#f4f9ed}
+table.itbl tbody tr:hover{background:#eaf3f2}
+
+/* ===== 7-a. 移动端 ===== */
+@media(max-width:560px){
+  .snav{margin:0 0 12px;padding:7px 0;gap:5px}
+  .snav a{font-size:12.5px;padding:5px 11px}
+  #toTop{width:40px;height:40px;right:12px;bottom:14px;font-size:17px}
+  .updated{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+  .updated .live{margin-left:0;font-size:11.5px;padding:2px 8px}
+  .updated .rel{font-size:11.5px;padding:2px 8px;margin-left:2px}
+  .pill{font-size:13px;padding:2px 7px}
+  .icard:hover,.scard:hover,.chart:hover,.tbl:hover,.card:hover{transform:none}
+}
+
+/* ===== 7-b. 打印 ===== */
+@media print{
+  .snav,#toTop,.toolnav,.nav,.nav-btns,.hist-cta,.cover,.acts,.tip{display:none!important}
+  body{background:#fff!important;padding:0!important;color:#000}
+  .wrap{max-width:100%!important;border:none!important;box-shadow:none!important;padding:0!important}
+  .icard,.scard,.chart,.tbl,.card{box-shadow:none!important;border:1px solid #ccc!important;
+    break-inside:avoid;page-break-inside:avoid;transform:none!important}
+  header{break-after:avoid}
+  h2,h3{break-after:avoid}
+  a{color:#000!important;text-decoration:none!important}
+  table{font-size:11pt}
+  table tbody tr{background:#fff!important}
+}
+
+.item{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.item:hover{border-color:#b6cfa6;box-shadow:0 10px 22px -16px rgba(40,70,40,.55);transform:translateY(-1px)}
+@media(max-width:560px){.item:hover{transform:none}}
 </style></head><body><div class="wrap">
 <header><h1>考研西医综合（306）教学视频 · 精简版</h1>
-<div class="upd">数据更新：2026-10-31 22:10 · 共 57 套 · 仅 2025-01-01 后发布（置顶豁免）· 已屏蔽 32 套旧视频</div></header>
+<div class="upd">数据更新：<b>2026-10-31 22:10</b> · 共 57 套 · 仅 2025-01-01 后发布（置顶豁免）· 已屏蔽 32 套
+<span class="live">自动刷新中</span><span class="rel" data-bjtime="2026-10-31 22:10">刚刚</span></div></header>
 <div class="tip" id="tip">点标题直接进<b>站内播放页</b>（内嵌播放器+选集，不用跳 App）。若播放器空白，点「复制BV」到哔哩哔哩 App 搜索，或右上角「…」→「在浏览器打开」。</div>
 <div class="chips" id="chips"><span class="chip on" data-s="全部">全部 57</span><span class="chip pin" data-s="★置顶">★置顶 10</span><span class="chip" data-s="生理">生理 8</span><span class="chip" data-s="全程系统课">全程系统课 8</span><span class="chip" data-s="冲刺带背">冲刺带背 8</span><span class="chip" data-s="内科">内科 7</span><span class="chip" data-s="真题精讲">真题精讲 6</span><span class="chip" data-s="病理">病理 6</span><span class="chip" data-s="生化">生化 6</span><span class="chip" data-s="诊断">诊断 4</span><span class="chip" data-s="外科">外科 4</span></div>
 <input id="q" placeholder="搜标题 / UP 主 / 老师">
 <div class="stat" id="stat">共 57 套</div>
 <div id="list"><div class="item pinned" data-s="诊断" data-pin="1" data-t="隋准诊断学面授，经典版 一定要早睡早起鸭 隋准"><a class="t" href="play/BV1ja411r7wx.html">隋准诊断学面授，经典版</a><div class="m"><span class="tag pin">置顶</span><span class="tag s">诊断</span><span>87 集</span><span>50小时16分</span><span>▶17.1万</span><span>2021-12-30</span><span>UP：一定要早睡早起鸭</span></div><div class="acts"><a class="play" href="play/BV1ja411r7wx.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1ja411r7wx" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1ja411r7wx">复制BV</button></div></div><div class="item pinned" data-s="诊断" data-pin="1" data-t="2022考研西综.隋准-诊断学完整版，，持续更新 shley_ 隋准"><a class="t" href="play/BV11K4y1R7dQ.html">2022考研西综.隋准-诊断学完整版，，持续更新</a><div class="m"><span class="tag pin">置顶</span><span class="tag s">诊断</span><span>38 集</span><span>39小时35分</span><span>▶17.9万</span><span>2021-04-25</span><span>UP：shley_</span></div><div class="acts"><a class="play" href="play/BV11K4y1R7dQ.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV11K4y1R7dQ" target="_blank" rel="noopener">B站原页</a><button data-cp="BV11K4y1R7dQ">复制BV</button></div></div><div class="item pinned" data-s="内科" data-pin="1" data-t="15隋准内科 最经典成名作（已更新三大篇） 医学喵的医学笔记 隋准"><a class="t" href="play/BV1sV411B7gq.html">15隋准内科 最经典成名作（已更新三大篇）</a><div class="m"><span class="tag pin">置顶</span><span class="tag s">内科</span><span>66 集</span><span>44小时48分</span><span>▶14.6万</span><span>2021-01-29</span><span>UP：医学喵的医学笔记</span></div><div class="acts"><a class="play" href="play/BV1sV411B7gq.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1sV411B7gq" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1sV411B7gq">复制BV</button></div></div><div class="item pinned" data-s="生理" data-pin="1" data-t="【2022西综306】隋准 生理学精讲【持续更新】 最强大脑868 隋准"><a class="t" href="play/BV1Zh411y7YC.html">【2022西综306】隋准 生理学精讲【持续更新】</a><div class="m"><span class="tag pin">置顶</span><span class="tag s">生理</span><span>41 集</span><span>48小时10分</span><span>▶7.7万</span><span>2021-01-26</span><span>UP：最强大脑868</span></div><div class="acts"><a class="play" href="play/BV1Zh411y7YC.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1Zh411y7YC" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1Zh411y7YC">复制BV</button></div></div><div class="item pinned" data-s="内科" data-pin="1" data-t="内科精读（2） 幸福真是奋斗出来的 隋准"><a class="t" href="play/BV1U34y1o7FA.html">内科精读（2）</a><div class="m"><span class="tag pin">置顶</span><span class="tag s">内科</span><span>66 集</span><span>67小时04分</span><span>▶1.4万</span><span>2021-10-30</span><span>UP：幸福真是奋斗出来的</span></div><div class="acts"><a class="play" href="play/BV1U34y1o7FA.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1U34y1o7FA" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1U34y1o7FA">复制BV</button></div></div><div class="item pinned" data-s="生理" data-pin="1" data-t="2019隋准考研生理强化班 辣个真真吖 隋准"><a class="t" href="play/BV1ff4y1B72K.html">2019隋准考研生理强化班</a><div class="m"><span class="tag pin">置顶</span><span class="tag s">生理</span><span>83 集</span><span>38小时11分</span><span>▶4325</span><span>2020-10-22</span><span>UP：辣个真真吖</span></div><div class="acts"><a class="play" href="play/BV1ff4y1B72K.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1ff4y1B72K" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1ff4y1B72K">复制BV</button></div></div><div class="item pinned" data-s="真题精讲" data-pin="1" data-t="2022考研西综隋准诊断学完整版基础强化真题 .持续更新【强烈推荐】 明月依我窗 隋准"><a class="t" href="play/BV1NX4y1g76P.html">2022考研西综隋准诊断学完整版基础强化真题 .持续更新【强烈推荐】</a><div class="m"><span class="tag pin">置顶</span><span class="tag s">真题精讲</span><span>36 集</span><span>33小时15分</span><span>▶9299</span><span>2021-04-06</span><span>UP：明月依我窗</span></div><div class="acts"><a class="play" href="play/BV1NX4y1g76P.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1NX4y1g76P" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1NX4y1g76P">复制BV</button></div></div><div class="item pinned" data-s="诊断" data-pin="1" data-t="15隋准诊断学 最经典版成名作 医学喵的医学笔记 隋准"><a class="t" href="play/BV1954y1s7NX.html">15隋准诊断学 最经典版成名作</a><div class="m"><span class="tag pin">置顶</span><span class="tag s">诊断</span><span>20 集</span><span>25小时38分</span><span>▶21.0万</span><span>2021-01-27</span><span>UP：医学喵的医学笔记</span></div><div class="acts"><a class="play" href="play/BV1954y1s7NX.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1954y1s7NX" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1954y1s7NX">复制BV</button></div></div><div class="item pinned" data-s="全程系统课" data-pin="1" data-t="2022考研隋准西医综合研大西综全程班隋准 stqe258069 隋准 王强"><a class="t" href="play/BV1DU4y1s7QF.html">2022考研隋准西医综合研大西综全程班隋准</a><div class="m"><span class="tag pin">置顶</span><span class="tag s">全程系统课</span><span>22 集</span><span>36小时15分</span><span>▶4157</span><span>2021-02-03</span><span>UP：stqe258069</span></div><div class="acts"><a class="play" href="play/BV1DU4y1s7QF.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1DU4y1s7QF" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1DU4y1s7QF">复制BV</button></div></div><div class="item pinned" data-s="生理" data-pin="1" data-t="2021考研西综专硕隋准《基础生理学》【完整班】 kah2772 隋准"><a class="t" href="play/BV1a7411J77W.html">2021考研西综专硕隋准《基础生理学》【完整班】</a><div class="m"><span class="tag pin">置顶</span><span class="tag s">生理</span><span>17 集</span><span>23小时42分</span><span>▶1.9万</span><span>2020-02-15</span><span>UP：kah2772</span></div><div class="acts"><a class="play" href="play/BV1a7411J77W.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1a7411J77W" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1a7411J77W">复制BV</button></div></div><div class="item" data-s="全程系统课" data-pin="0" data-t="【医学考研】2027考研-2027西医综合-2027西综-306西医综合-2027研究生考试-临床医学学硕 2027考试备考 "><a class="t" href="play/BV13mMj69Eke.html">【医学考研】2027考研-2027西医综合-2027西综-306西医综合-2027研究生考试-临床医学学硕</a><div class="m"><span class="tag s">全程系统课</span><span>81 集</span><span>106小时49分</span><span>▶1.9万</span><span>2026-07-09</span><span>UP：2027考试备考</span></div><div class="acts"><a class="play" href="play/BV13mMj69Eke.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV13mMj69Eke" target="_blank" rel="noopener">B站原页</a><button data-cp="BV13mMj69Eke">复制BV</button></div></div><div class="item" data-s="全程系统课" data-pin="0" data-t="【西医综合】27/28西综考研贺银成师兄最新精讲基础班 （最全完整版附讲义） uu研上 贺银成"><a class="t" href="play/BV1N7hi6xEyB.html">【西医综合】27/28西综考研贺银成师兄最新精讲基础班 （最全完整版附讲义）</a><div class="m"><span class="tag s">全程系统课</span><span>81 集</span><span>47小时08分</span><span>▶1.2万</span><span>2026-09-21</span><span>UP：UU研上</span></div><div class="acts"><a class="play" href="play/BV1N7hi6xEyB.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1N7hi6xEyB" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1N7hi6xEyB">复制BV</button></div></div><div class="item" data-s="内科" data-pin="0" data-t="26/27考研内科学|十版教材（完整版）|西医综合306（复旦马威） 医学考研-马威老师 马威"><a class="t" href="play/BV1UNhizCEgz.html">26/27考研内科学|十版教材（完整版）|西医综合306（复旦马威）</a><div class="m"><span class="tag s">内科</span><span>49 集</span><span>63小时02分</span><span>▶16.6万</span><span>2025-08-30</span><span>UP：医学考研-马威老师</span></div><div class="acts"><a class="play" href="play/BV1UNhizCEgz.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1UNhizCEgz" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1UNhizCEgz">复制BV</button></div></div><div class="item" data-s="病理" data-pin="0" data-t="《病理学》十版~你的西医综合蜕变之旅！ 西综小公举 "><a class="t" href="play/BV12x3RzVEcS.html">《病理学》十版~你的西医综合蜕变之旅！</a><div class="m"><span class="tag s">病理</span><span>96 集</span><span>63小时54分</span><span>▶4.1万</span><span>2025-07-05</span><span>UP：西综小公举</span></div><div class="acts"><a class="play" href="play/BV12x3RzVEcS.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV12x3RzVEcS" target="_blank" rel="noopener">B站原页</a><button data-cp="BV12x3RzVEcS">复制BV</button></div></div><div class="item" data-s="生化" data-pin="0" data-t="生物化学-考研生物化学-27考研 学生化的秃哥哥 "><a class="t" href="play/BV1X6FhzxEh3.html">生物化学-考研生物化学-27考研</a><div class="m"><span class="tag s">生化</span><span>74 集</span><span>19小时23分</span><span>▶99.5万</span><span>2026-02-05</span><span>UP：学生化的秃哥哥</span></div><div class="acts"><a class="play" href="play/BV1X6FhzxEh3.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1X6FhzxEh3" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1X6FhzxEh3">复制BV</button></div></div><div class="item" data-s="生理" data-pin="0" data-t="27 / 28 《生理学》考研精讲 | 第十版教材（完整版）| 西医综合306 | 复旦大学马威老师主讲 没冇耳朵的兔子 马威"><a class="t" href="play/BV158doBsEEb.html">27 / 28 《生理学》考研精讲 | 第十版教材（完整版）| 西医综合306 | 复旦大学马威老师主讲</a><div class="m"><span class="tag s">生理</span><span>26 集</span><span>48小时11分</span><span>▶5.6万</span><span>2026-04-19</span><span>UP：没冇耳朵的兔子</span></div><div class="acts"><a class="play" href="play/BV158doBsEEb.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV158doBsEEb" target="_blank" rel="noopener">B站原页</a><button data-cp="BV158doBsEEb">复制BV</button></div></div><div class="item" data-s="冲刺带背" data-pin="0" data-t="天天师兄西综知识点抽背 小凯的医学之路 天天师兄"><a class="t" href="play/BV1EjTi6XEJt.html">天天师兄西综知识点抽背</a><div class="m"><span class="tag s">冲刺带背</span><span>39 集</span><span>41小时13分</span><span>▶5.0万</span><span>2026-07-05</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV1EjTi6XEJt.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1EjTi6XEJt" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1EjTi6XEJt">复制BV</button></div></div><div class="item" data-s="全程系统课" data-pin="0" data-t="【西医综合】2027徐琦外科学 徐琦病理学 徐琦诊断学基础课程含讲义完整版|侯英健生理学 橘柚小只 徐琦 侯英健"><a class="t" href="play/BV1H2hN6NEZK.html">【西医综合】2027徐琦外科学 徐琦病理学 徐琦诊断学基础课程含讲义完整版|侯英健生理学</a><div class="m"><span class="tag s">全程系统课</span><span>37 集</span><span>29小时53分</span><span>▶5.6万</span><span>2026-08-25</span><span>UP：橘柚小只</span></div><div class="acts"><a class="play" href="play/BV1H2hN6NEZK.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1H2hN6NEZK" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1H2hN6NEZK">复制BV</button></div></div><div class="item" data-s="冲刺带背" data-pin="0" data-t="一天刷完人卫第10版《内科学》核心考点+考法 磨耳朵带背 三色笔记 思维导图 临床医学 西综 临床综合考研 考研你终硕 "><a class="t" href="play/BV1MwHkzBEEw.html">一天刷完人卫第10版《内科学》核心考点+考法 磨耳朵带背 三色笔记 思维导图 临床医学 西综 临床综合考研</a><div class="m"><span class="tag s">冲刺带背</span><span>94 集</span><span>18小时33分</span><span>▶7.0万</span><span>2025-09-12</span><span>UP：考研你终硕</span></div><div class="acts"><a class="play" href="play/BV1MwHkzBEEw.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1MwHkzBEEw" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1MwHkzBEEw">复制BV</button></div></div><div class="item" data-s="全程系统课" data-pin="0" data-t="【西医综合】27/28西综考研最新天天师兄精讲基础班-带 读（最全完整版附讲义） 爱丽萨alissa 天天师兄"><a class="t" href="play/BV1mKYd6HEV2.html">【西医综合】27/28西综考研最新天天师兄精讲基础班-带 读（最全完整版附讲义）</a><div class="m"><span class="tag s">全程系统课</span><span>28 集</span><span>28小时31分</span><span>▶2.9万</span><span>2026-09-12</span><span>UP：爱丽萨Alissa</span></div><div class="acts"><a class="play" href="play/BV1mKYd6HEV2.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1mKYd6HEV2" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1mKYd6HEV2">复制BV</button></div></div><div class="item" data-s="冲刺带背" data-pin="0" data-t="小亮西综知识点抽背 小凯的医学之路 小亮"><a class="t" href="play/BV1EjTi6XEnd.html">小亮西综知识点抽背</a><div class="m"><span class="tag s">冲刺带背</span><span>37 集</span><span>33小时39分</span><span>▶1.1万</span><span>2026-07-05</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV1EjTi6XEnd.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1EjTi6XEnd" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1EjTi6XEnd">复制BV</button></div></div><div class="item" data-s="冲刺带背" data-pin="0" data-t="3小时背完 | 生化所有代谢图基因图：口诀理顺+虐耳速通 | 生化带背 | 生化| 西医综合 | 26考研 | 每天磨耳朵听 | 睡前必听 小王学医笔记 "><a class="t" href="play/BV1GPbtzxEkR.html">3小时背完 | 生化所有代谢图基因图：口诀理顺+虐耳速通 | 生化带背 | 生化| 西医综合 | 26考研 | 每天磨耳朵听 | 睡前必听</a><div class="m"><span class="tag s">冲刺带背</span><span>70 集</span><span>6小时15分</span><span>▶25.7万</span><span>2025-08-16</span><span>UP：小王学医笔记</span></div><div class="acts"><a class="play" href="play/BV1GPbtzxEkR.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1GPbtzxEkR" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1GPbtzxEkR">复制BV</button></div></div><div class="item" data-s="全程系统课" data-pin="0" data-t="（西医综合）2027侯英健精讲基础班 |侯英健生理学-侯英健病理生理-生物化学配套完整版讲义 橘柚小只 侯英健"><a class="t" href="play/BV16vty6NEUn.html">（西医综合）2027侯英健精讲基础班 |侯英健生理学-侯英健病理生理-生物化学配套完整版讲义</a><div class="m"><span class="tag s">全程系统课</span><span>29 集</span><span>19小时25分</span><span>▶6.6万</span><span>2026-09-05</span><span>UP：橘柚小只</span></div><div class="acts"><a class="play" href="play/BV16vty6NEUn.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV16vty6NEUn" target="_blank" rel="noopener">B站原页</a><button data-cp="BV16vty6NEUn">复制BV</button></div></div><div class="item" data-s="内科" data-pin="0" data-t="天天师兄内科挖空讲义带读 小凯的医学之路 天天师兄"><a class="t" href="play/BV1yg396sEek.html">天天师兄内科挖空讲义带读</a><div class="m"><span class="tag s">内科</span><span>57 集</span><span>22小时21分</span><span>▶4.6万</span><span>2026-08-04</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV1yg396sEek.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1yg396sEek" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1yg396sEek">复制BV</button></div></div><div class="item" data-s="冲刺带背" data-pin="0" data-t="一天刷完人卫第10版《外科学》核心考点+考法 磨耳朵带背 三色笔记 思维导图 临床医学 西综 临床综合考研 外科 考研你终硕 "><a class="t" href="play/BV129puz2ECq.html">一天刷完人卫第10版《外科学》核心考点+考法 磨耳朵带背 三色笔记 思维导图 临床医学 西综 临床综合考研 外科</a><div class="m"><span class="tag s">冲刺带背</span><span>74 集</span><span>16小时44分</span><span>▶7.9万</span><span>2025-09-15</span><span>UP：考研你终硕</span></div><div class="acts"><a class="play" href="play/BV129puz2ECq.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV129puz2ECq" target="_blank" rel="noopener">B站原页</a><button data-cp="BV129puz2ECq">复制BV</button></div></div><div class="item" data-s="冲刺带背" data-pin="0" data-t="生物化学带背，考研生物化学-全部都是考试的重点哦 学生化的秃哥哥 "><a class="t" href="play/BV1SuRWY4EhL.html">生物化学带背，考研生物化学-全部都是考试的重点哦</a><div class="m"><span class="tag s">冲刺带背</span><span>69 集</span><span>14小时24分</span><span>▶41.2万</span><span>2025-03-08</span><span>UP：学生化的秃哥哥</span></div><div class="acts"><a class="play" href="play/BV1SuRWY4EhL.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1SuRWY4EhL" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1SuRWY4EhL">复制BV</button></div></div><div class="item" data-s="生理" data-pin="0" data-t="10版《生理学》天花板级讲授~306满分 西综小公举 "><a class="t" href="play/BV1uQk2BpEWS.html">10版《生理学》天花板级讲授~306满分</a><div class="m"><span class="tag s">生理</span><span>36 集</span><span>25小时46分</span><span>▶12.6万</span><span>2025-11-12</span><span>UP：西综小公举</span></div><div class="acts"><a class="play" href="play/BV1uQk2BpEWS.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1uQk2BpEWS" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1uQk2BpEWS">复制BV</button></div></div><div class="item" data-s="内科" data-pin="0" data-t="一天刷完内科学6220个常考点-临床医学本科 1天干完一学期课程 西医综合 西综 考研你终硕 "><a class="t" href="play/BV1ofQJYRESY.html">一天刷完内科学6220个常考点-临床医学本科 1天干完一学期课程 西医综合 西综</a><div class="m"><span class="tag s">内科</span><span>88 集</span><span>21小时34分</span><span>▶2.8万</span><span>2025-03-12</span><span>UP：考研你终硕</span></div><div class="acts"><a class="play" href="play/BV1ofQJYRESY.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1ofQJYRESY" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1ofQJYRESY">复制BV</button></div></div><div class="item" data-s="全程系统课" data-pin="0" data-t="（2027西医综合）第十版西综 徐琦诊断学-徐琦外科学-徐琦病理学完整版视频课程 朝露日晞a 徐琦"><a class="t" href="play/BV1LWgn6CETC.html">（2027西医综合）第十版西综 徐琦诊断学-徐琦外科学-徐琦病理学完整版视频课程</a><div class="m"><span class="tag s">全程系统课</span><span>18 集</span><span>13小时19分</span><span>▶2.0万</span><span>2026-08-13</span><span>UP：朝露日晞a</span></div><div class="acts"><a class="play" href="play/BV1LWgn6CETC.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1LWgn6CETC" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1LWgn6CETC">复制BV</button></div></div><div class="item" data-s="生化" data-pin="0" data-t="《生物化学》课程精讲 没冇耳朵的兔子 "><a class="t" href="play/BV1ofyUBGErh.html">《生物化学》课程精讲</a><div class="m"><span class="tag s">生化</span><span>55 集</span><span>36小时14分</span><span>▶2.4万</span><span>2025-10-29</span><span>UP：没冇耳朵的兔子</span></div><div class="acts"><a class="play" href="play/BV1ofyUBGErh.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1ofyUBGErh" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1ofyUBGErh">复制BV</button></div></div><div class="item" data-s="病理" data-pin="0" data-t="27医学考研病理学合集（持续更新） 医学考研-马威老师 "><a class="t" href="play/BV1UFdsBREjN.html">27医学考研病理学合集（持续更新）</a><div class="m"><span class="tag s">病理</span><span>25 集</span><span>33小时50分</span><span>▶9375</span><span>2026-04-18</span><span>UP：医学考研-马威老师</span></div><div class="acts"><a class="play" href="play/BV1UFdsBREjN.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1UFdsBREjN" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1UFdsBREjN">复制BV</button></div></div><div class="item" data-s="外科" data-pin="0" data-t="一天刷完外科学4220个常考点-临床医学本科 1天干完一学期课程 西医综合 西综 考研你终硕 "><a class="t" href="play/BV1hJQiY4ECt.html">一天刷完外科学4220个常考点-临床医学本科 1天干完一学期课程 西医综合 西综</a><div class="m"><span class="tag s">外科</span><span>72 集</span><span>17小时11分</span><span>▶2.8万</span><span>2025-03-17</span><span>UP：考研你终硕</span></div><div class="acts"><a class="play" href="play/BV1hJQiY4ECt.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1hJQiY4ECt" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1hJQiY4ECt">复制BV</button></div></div><div class="item" data-s="生理" data-pin="0" data-t="天天师兄生理挖空讲义带读 小凯的医学之路 天天师兄"><a class="t" href="play/BV1tGTy6tE1B.html">天天师兄生理挖空讲义带读</a><div class="m"><span class="tag s">生理</span><span>35 集</span><span>10小时32分</span><span>▶4.5万</span><span>2026-07-05</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV1tGTy6tE1B.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1tGTy6tE1B" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1tGTy6tE1B">复制BV</button></div></div><div class="item" data-s="外科" data-pin="0" data-t="天天师兄外科挖空讲义带读 小凯的医学之路 天天师兄"><a class="t" href="play/BV12ogM6aEMu.html">天天师兄外科挖空讲义带读</a><div class="m"><span class="tag s">外科</span><span>39 集</span><span>8小时28分</span><span>▶2.8万</span><span>2026-08-16</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV12ogM6aEMu.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV12ogM6aEMu" target="_blank" rel="noopener">B站原页</a><button data-cp="BV12ogM6aEMu">复制BV</button></div></div><div class="item" data-s="冲刺带背" data-pin="0" data-t="西综考研 生化代谢带背全系列 小凯的医学之路 "><a class="t" href="play/BV1vTtAzpE53.html">西综考研 生化代谢带背全系列</a><div class="m"><span class="tag s">冲刺带背</span><span>31 集</span><span>1小时38分</span><span>▶18.7万</span><span>2025-08-06</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV1vTtAzpE53.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1vTtAzpE53" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1vTtAzpE53">复制BV</button></div></div><div class="item" data-s="诊断" data-pin="0" data-t="10小时刷完诊断学2418个常考点-临床医学本科 1天干完一学期课程 西综 西医综合 考研你终硕 "><a class="t" href="play/BV1z2R3YkEJq.html">10小时刷完诊断学2418个常考点-临床医学本科 1天干完一学期课程 西综 西医综合</a><div class="m"><span class="tag s">诊断</span><span>76 集</span><span>10小时42分</span><span>▶2.1万</span><span>2025-03-11</span><span>UP：考研你终硕</span></div><div class="acts"><a class="play" href="play/BV1z2R3YkEJq.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1z2R3YkEJq" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1z2R3YkEJq">复制BV</button></div></div><div class="item" data-s="全程系统课" data-pin="0" data-t="【2027西医综合】侯英健生理学 侯英健生物化学含讲义完整课程合集 橘柚小只 侯英健"><a class="t" href="play/BV186h36YEZ5.html">【2027西医综合】侯英健生理学 侯英健生物化学含讲义完整课程合集</a><div class="m"><span class="tag s">全程系统课</span><span>11 集</span><span>10小时21分</span><span>▶6952</span><span>2026-08-25</span><span>UP：橘柚小只</span></div><div class="acts"><a class="play" href="play/BV186h36YEZ5.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV186h36YEZ5" target="_blank" rel="noopener">B站原页</a><button data-cp="BV186h36YEZ5">复制BV</button></div></div><div class="item" data-s="生理" data-pin="0" data-t="天天师兄生理思维导图挖空带读 小凯的医学之路 天天师兄"><a class="t" href="play/BV1HB466XEwM.html">天天师兄生理思维导图挖空带读</a><div class="m"><span class="tag s">生理</span><span>35 集</span><span>5小时04分</span><span>▶1.4万</span><span>2026-08-29</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV1HB466XEwM.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1HB466XEwM" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1HB466XEwM">复制BV</button></div></div><div class="item" data-s="病理" data-pin="0" data-t="天天师兄病理挖空讲义带读 小凯的医学之路 天天师兄"><a class="t" href="play/BV1XbKE6oEpq.html">天天师兄病理挖空讲义带读</a><div class="m"><span class="tag s">病理</span><span>27 集</span><span>5小时04分</span><span>▶3.6万</span><span>2026-07-17</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV1XbKE6oEpq.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1XbKE6oEpq" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1XbKE6oEpq">复制BV</button></div></div><div class="item" data-s="外科" data-pin="0" data-t="天天师兄外科思维导图挖空带读 小凯的医学之路 天天师兄"><a class="t" href="play/BV19CgM63EwB.html">天天师兄外科思维导图挖空带读</a><div class="m"><span class="tag s">外科</span><span>38 集</span><span>3小时03分</span><span>▶1.2万</span><span>2026-08-16</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV19CgM63EwB.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV19CgM63EwB" target="_blank" rel="noopener">B站原页</a><button data-cp="BV19CgM63EwB">复制BV</button></div></div><div class="item" data-s="外科" data-pin="0" data-t="27小亮外科讲义挖空带读 小凯的医学之路 小亮"><a class="t" href="play/BV16Zt16MEre.html">27小亮外科讲义挖空带读</a><div class="m"><span class="tag s">外科</span><span>20 集</span><span>12小时28分</span><span>▶8602</span><span>2026-09-05</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV16Zt16MEre.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV16Zt16MEre" target="_blank" rel="noopener">B站原页</a><button data-cp="BV16Zt16MEre">复制BV</button></div></div><div class="item" data-s="生理" data-pin="0" data-t="27农学考研｜414植物生理学全程班｜一轮基础课程 桔籽农研 "><a class="t" href="play/BV1CvDLBGEXi.html">27农学考研｜414植物生理学全程班｜一轮基础课程</a><div class="m"><span class="tag s">生理</span><span>28 集</span><span>13小时23分</span><span>▶2.8万</span><span>2026-04-08</span><span>UP：桔籽农研</span></div><div class="acts"><a class="play" href="play/BV1CvDLBGEXi.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1CvDLBGEXi" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1CvDLBGEXi">复制BV</button></div></div><div class="item" data-s="病理" data-pin="0" data-t="26考研西医综合-病理学（持续更新） 医学考研-马威老师 "><a class="t" href="play/BV1fFQ3YPEXm.html">26考研西医综合-病理学（持续更新）</a><div class="m"><span class="tag s">病理</span><span>30 集</span><span>24小时55分</span><span>▶2.6万</span><span>2025-03-14</span><span>UP：医学考研-马威老师</span></div><div class="acts"><a class="play" href="play/BV1fFQ3YPEXm.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1fFQ3YPEXm" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1fFQ3YPEXm">复制BV</button></div></div><div class="item" data-s="生化" data-pin="0" data-t="天天师兄生化挖空讲义带读 小凯的医学之路 天天师兄"><a class="t" href="play/BV1We466xEyS.html">天天师兄生化挖空讲义带读</a><div class="m"><span class="tag s">生化</span><span>18 集</span><span>7小时48分</span><span>▶9926</span><span>2026-08-29</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV1We466xEyS.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1We466xEyS" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1We466xEyS">复制BV</button></div></div><div class="item" data-s="冲刺带背" data-pin="0" data-t="天天师兄：生理口诀带背 | 虐耳带背 |生理学 | 西医综合 | 26考研 | 每天磨耳朵听 | 睡前必听 小王学医笔记 天天师兄"><a class="t" href="play/BV1qzYFzaEkq.html">天天师兄：生理口诀带背 | 虐耳带背 |生理学 | 西医综合 | 26考研 | 每天磨耳朵听 | 睡前必听</a><div class="m"><span class="tag s">冲刺带背</span><span>12 集</span><span>1小时48分</span><span>▶7.7万</span><span>2025-09-08</span><span>UP：小王学医笔记</span></div><div class="acts"><a class="play" href="play/BV1qzYFzaEkq.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1qzYFzaEkq" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1qzYFzaEkq">复制BV</button></div></div><div class="item" data-s="真题精讲" data-pin="0" data-t="2026临床西医综合考研生物化学20年真题要点逐题总结 4小时刷完西综生理 天天 小亮课程补充 考研你终硕 小亮"><a class="t" href="play/BV1rcCbB4E57.html">2026临床西医综合考研生物化学20年真题要点逐题总结 4小时刷完西综生理 天天 小亮课程补充</a><div class="m"><span class="tag s">真题精讲</span><span>24 集</span><span>4小时07分</span><span>▶1.2万</span><span>2025-11-13</span><span>UP：考研你终硕</span></div><div class="acts"><a class="play" href="play/BV1rcCbB4E57.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1rcCbB4E57" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1rcCbB4E57">复制BV</button></div></div><div class="item" data-s="真题精讲" data-pin="0" data-t="3.5小时刷完26西医综合考研历年真题外科学1277个考点逐题总结带背 磨耳朵 2026考研 临床医学综合 西医 西综 考研你终硕 "><a class="t" href="play/BV16tMuzeERs.html">3.5小时刷完26西医综合考研历年真题外科学1277个考点逐题总结带背 磨耳朵 2026考研 临床医学综合 西医 西综</a><div class="m"><span class="tag s">真题精讲</span><span>59 集</span><span>3小时29分</span><span>▶1.2万</span><span>2025-06-13</span><span>UP：考研你终硕</span></div><div class="acts"><a class="play" href="play/BV16tMuzeERs.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV16tMuzeERs" target="_blank" rel="noopener">B站原页</a><button data-cp="BV16tMuzeERs">复制BV</button></div></div><div class="item" data-s="生化" data-pin="0" data-t="天天师兄生化思维导图挖空带读 小凯的医学之路 天天师兄"><a class="t" href="play/BV1ATtC6vE7D.html">天天师兄生化思维导图挖空带读</a><div class="m"><span class="tag s">生化</span><span>18 集</span><span>3小时53分</span><span>▶8020</span><span>2026-09-05</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV1ATtC6vE7D.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1ATtC6vE7D" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1ATtC6vE7D">复制BV</button></div></div><div class="item" data-s="生化" data-pin="0" data-t="小亮生化挖空讲义带读 小凯的医学之路 小亮"><a class="t" href="play/BV1e7YS6SEiW.html">小亮生化挖空讲义带读</a><div class="m"><span class="tag s">生化</span><span>12 集</span><span>6小时33分</span><span>▶5367</span><span>2026-09-12</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV1e7YS6SEiW.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1e7YS6SEiW" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1e7YS6SEiW">复制BV</button></div></div><div class="item" data-s="内科" data-pin="0" data-t="天天师兄内科思维导图挖空带读 小凯的医学之路 天天师兄"><a class="t" href="play/BV1caa26SEtr.html">天天师兄内科思维导图挖空带读</a><div class="m"><span class="tag s">内科</span><span>12 集</span><span>2小时06分</span><span>▶1.0万</span><span>2026-10-02</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV1caa26SEtr.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1caa26SEtr" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1caa26SEtr">复制BV</button></div></div><div class="item" data-s="病理" data-pin="0" data-t="小亮病理讲义挖空带读 小凯的医学之路 小亮"><a class="t" href="play/BV1ZETi6JEuF.html">小亮病理讲义挖空带读</a><div class="m"><span class="tag s">病理</span><span>12 集</span><span>6小时24分</span><span>▶9436</span><span>2026-07-01</span><span>UP：小凯的医学之路</span></div><div class="acts"><a class="play" href="play/BV1ZETi6JEuF.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1ZETi6JEuF" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1ZETi6JEuF">复制BV</button></div></div><div class="item" data-s="真题精讲" data-pin="0" data-t="西医综合（306）真题精讲17-20年 北医何老师15386986851 "><a class="t" href="play/BV1q1vNzSErn.html">西医综合（306）真题精讲17-20年</a><div class="m"><span class="tag s">真题精讲</span><span>8 集</span><span>21小时22分</span><span>▶7177</span><span>2025-08-26</span><span>UP：北医何老师15386986851</span></div><div class="acts"><a class="play" href="play/BV1q1vNzSErn.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1q1vNzSErn" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1q1vNzSErn">复制BV</button></div></div><div class="item" data-s="病理" data-pin="0" data-t="《病理学》教材精讲【完整版】 迈德森-medicine "><a class="t" href="play/BV11MGq61Ek9.html">《病理学》教材精讲【完整版】</a><div class="m"><span class="tag s">病理</span><span>15 集</span><span>5小时24分</span><span>▶5893</span><span>2026-05-23</span><span>UP：迈德森-Medicine</span></div><div class="acts"><a class="play" href="play/BV11MGq61Ek9.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV11MGq61Ek9" target="_blank" rel="noopener">B站原页</a><button data-cp="BV11MGq61Ek9">复制BV</button></div></div><div class="item" data-s="真题精讲" data-pin="0" data-t="3小时刷完26西医综合考研历年真题生物化学913个考点逐题总结带背 磨耳朵 2026考研 临床医学综合 西医 西综 考研你终硕 "><a class="t" href="play/BV14xTrzwEHW.html">3小时刷完26西医综合考研历年真题生物化学913个考点逐题总结带背 磨耳朵 2026考研 临床医学综合 西医 西综</a><div class="m"><span class="tag s">真题精讲</span><span>24 集</span><span>2小时56分</span><span>▶6291</span><span>2025-06-10</span><span>UP：考研你终硕</span></div><div class="acts"><a class="play" href="play/BV14xTrzwEHW.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV14xTrzwEHW" target="_blank" rel="noopener">B站原页</a><button data-cp="BV14xTrzwEHW">复制BV</button></div></div><div class="item" data-s="真题精讲" data-pin="0" data-t="3.5小时刷完26西医综合考研历年真题生理学1200个考点逐题总结带背 磨耳朵 2026考研 临床医学综合 西医 西综 考研你终硕 "><a class="t" href="play/BV1oMTazQE2w.html">3.5小时刷完26西医综合考研历年真题生理学1200个考点逐题总结带背 磨耳朵 2026考研 临床医学综合 西医 西综</a><div class="m"><span class="tag s">真题精讲</span><span>13 集</span><span>3小时45分</span><span>▶1.7万</span><span>2025-06-09</span><span>UP：考研你终硕</span></div><div class="acts"><a class="play" href="play/BV1oMTazQE2w.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1oMTazQE2w" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1oMTazQE2w">复制BV</button></div></div><div class="item" data-s="生化" data-pin="0" data-t="十版教材生化课|26生物化学强化课（持续更新） 医学考研-马威老师 "><a class="t" href="play/BV1bauqzbEYB.html">十版教材生化课|26生物化学强化课（持续更新）</a><div class="m"><span class="tag s">生化</span><span>15 集</span><span>13小时13分</span><span>▶1.2万</span><span>2025-07-14</span><span>UP：医学考研-马威老师</span></div><div class="acts"><a class="play" href="play/BV1bauqzbEYB.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1bauqzbEYB" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1bauqzbEYB">复制BV</button></div></div><div class="item" data-s="内科" data-pin="0" data-t="【10版内科学】 课本带读（持续更新中....） dr_牛学长 "><a class="t" href="play/BV1HTPte2E7C.html">【10版内科学】 课本带读（持续更新中....）</a><div class="m"><span class="tag s">内科</span><span>13 集</span><span>3小时22分</span><span>▶7.0万</span><span>2025-02-24</span><span>UP：Dr_牛学长</span></div><div class="acts"><a class="play" href="play/BV1HTPte2E7C.html">站内播放 ▶</a><a href="https://www.bilibili.com/video/BV1HTPte2E7C" target="_blank" rel="noopener">B站原页</a><button data-cp="BV1HTPte2E7C">复制BV</button></div></div></div>
 <footer>点标题进入站内播放页（选集）· 版权归各 UP 主所有，本站仅做索引</footer>
-</div><script>
+</div><button id="toTop" type="button" aria-label="回到顶部" title="回到顶部">↑</button><script>
 (function(){
  var list=document.getElementById('list'),items=[].slice.call(list.children),
      chips=document.getElementById('chips'),q=document.getElementById('q'),stat=document.getElementById('stat'),cur='全部';
@@ -62,4 +165,91 @@ footer{margin-top:16px;font-size:11.5px;color:var(--mut)}
    function fb(){var i=document.createElement('textarea');i.value=v;i.style.position='fixed';i.style.opacity='0';document.body.appendChild(i);i.select();try{document.execCommand('copy');done();}catch(x){prompt('长按复制',v);}document.body.removeChild(i);}
  });
 })();
-</script></body></html>
+</script>
+<script>
+/* ===== 统一交互：粘性导航 scrollspy / 回顶 / 相对时间 ===== */
+(function(){
+  var toTop=document.getElementById('toTop');
+  var snav=document.getElementById('snav');
+  var links=snav?[].slice.call(snav.querySelectorAll('a')):[];
+  var targets=links.map(function(a){return document.getElementById(a.getAttribute('data-t'));});
+
+  function onScroll(){
+    var y=window.pageYOffset||document.documentElement.scrollTop||0;
+    if(toTop){
+      if(y>400)toTop.classList.add('on');else toTop.classList.remove('on');
+    }
+    if(links.length){
+      var idx=-1;
+      for(var i=0;i<targets.length;i++){
+        var t=targets[i];if(!t)continue;
+        var top=t.getBoundingClientRect().top+y;
+        if(top-130<=y)idx=i;
+      }
+      if(idx<0)idx=0;
+      links.forEach(function(a,j){a.classList.toggle('on',j===idx);});
+      var cur=links[idx];
+      if(cur&&snav.scrollWidth>snav.clientWidth+4){
+        var l=cur.offsetLeft-(snav.clientWidth-cur.offsetWidth)/2;
+        if(Math.abs(snav.scrollLeft-l)>4)snav.scrollTo({left:Math.max(0,l),behavior:'smooth'});
+      }
+    }
+  }
+  var raf=false;
+  window.addEventListener('scroll',function(){
+    if(raf)return;raf=true;
+    requestAnimationFrame(function(){raf=false;onScroll();});
+  },{passive:true});
+  window.addEventListener('resize',onScroll);
+  onScroll();
+
+  if(toTop){
+    toTop.addEventListener('click',function(){
+      try{window.scrollTo({top:0,behavior:'smooth'});}
+      catch(e){window.scrollTo(0,0);}
+    });
+  }
+
+  if(links.length){
+    links.forEach(function(a){
+      a.addEventListener('click',function(e){
+        var t=document.getElementById(a.getAttribute('data-t'));
+        if(!t)return;e.preventDefault();
+        var y=(window.pageYOffset||0)+t.getBoundingClientRect().top-64;
+        try{window.scrollTo({top:y,behavior:'smooth'});}
+        catch(err){window.scrollTo(0,y);}
+        if(history.replaceState)history.replaceState(null,'','#'+a.getAttribute('data-t'));
+      });
+    });
+  }
+
+  /* 相对时间：解析「YYYY-MM-DD HH:MM 北京时间」，任意时区浏览器均可算 */
+  function parseBJ(s){
+    var m=/(\d{4})-(\d{1,2})-(\d{1,2})\D+(\d{1,2}):(\d{2})/.exec(s||'');
+    if(!m)return null;
+    return Date.UTC(+m[1],+m[2]-1,+m[3],+m[4]-8,+m[5]);
+  }
+  function relText(t){
+    if(!t)return '';
+    var d=Date.now()-t;if(d<0)d=0;
+    var mi=Math.floor(d/60000);
+    if(mi<1)return '刚刚';
+    if(mi<60)return mi+' 分钟前';
+    var h=Math.floor(mi/60);
+    if(h<24)return h+' 小时前';
+    var dd=Math.floor(h/24);
+    if(dd<30)return dd+' 天前';
+    return Math.floor(dd/30)+' 个月前';
+  }
+  function refreshRel(){
+    [].forEach.call(document.querySelectorAll('[data-bjtime]'),function(el){
+      var t=parseBJ(el.getAttribute('data-bjtime'));
+      el.textContent=relText(t)||'时间未知';
+    });
+  }
+  window.__uxRefreshRel=refreshRel;
+  refreshRel();
+  setInterval(refreshRel,30000);
+})();
+</script>
+</body></html>
