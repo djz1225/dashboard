@@ -428,6 +428,8 @@ __TOTOP__
 </body></html>"""
 
 ATT_CSS = """
+.med-fig{margin:18px 0;padding:10px;background:#fbfbfa;border:1px solid #e2e2dc;border-radius:10px;overflow:hidden}
+.med-fig svg{display:block;width:100%;height:auto}
 :root{--bg:#eef3e8;--card:#fff;--ink:#20301f;--mut:#5a6b56;--line:#d3ddc7;--acc:#3f6b4f;}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.8;padding:28px 18px}
@@ -636,11 +638,52 @@ def nav_bar(key, rows, idx, where="top"):
             f'<div class="nav-btns">{prev}<a class="nb mid" href="history.html">返回列表</a>{nxt}</div>'
             f'</div>')
 
+# ---------- 医学插图注入 ----------
+# 用法：提要 md 里单独一行写 <!--FIG:slug-->，构建时把 figs/<slug>.svg 内联进正文。
+# 找不到图渲染为空，不报错；同一 slug 只读一次盘。
+FIG_DIR = os.path.join(OUT, "figs")
+FIG_TOKENS = {}
+
+def figure_html(slug):
+    """读取 figs/<slug>.svg，返回可直接内联的 HTML；缺失返回空串。"""
+    path = os.path.join(FIG_DIR, slug + ".svg")
+    if not os.path.isfile(path):
+        return ""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            svg = fh.read()
+    except OSError:
+        return ""
+    # SVG 已内联样式与 width/height，直接内联；套 <img> 会丢样式
+    return '<figure class="med-fig" data-slug="' + esc(slug) + '">' + svg + '</figure>'
+
+def inject_figures(md):
+    """把 <!--FIG:slug--> 换成哨兵令牌 ZFIGnZ。
+    必须先换令牌、后交给 md_to_html：正文会被 esc() 处理，直接塞 HTML 会被转义。"""
+    if not md or "FIG:" not in md:
+        return md
+    def swap(match):
+        token = "ZFIG" + str(len(FIG_TOKENS)) + "Z"
+        FIG_TOKENS[token] = figure_html(match.group(1))
+        return token
+    return re.sub(r"<!--\s*FIG:\s*([a-z0-9_-]+)\s*-->", swap, md)
+
+def restore_figures(body):
+    """md_to_html 之后把哨兵令牌还原成真正的 HTML。"""
+    if not body or "ZFIG" not in body:
+        return body
+    for token, html_out in FIG_TOKENS.items():
+        body = body.replace(token, html_out)
+    return body
+
 def build_spec_page(key, rows, idx):
     cur = rows[idx]
     disp = SPEC_DISP.get(key, key)
     md = load_md(cur.get("file", ""))
-    body = md_to_html(md) if md else '<div class="mut">原文文件缺失（' + esc(cur.get("file", "")) + '）</div>'
+    if md:
+        body = restore_figures(md_to_html(inject_figures(md)))
+    else:
+        body = '<div class="mut">原文文件缺失（' + esc(cur.get("file", "")) + '）</div>'
     src = find_source(md)
     links = find_links(src)
     link_html = " ".join(f'<a href="{u}" target="_blank">原文出处 {i+1} ↗</a>' for i, u in enumerate(links))
