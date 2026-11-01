@@ -430,6 +430,15 @@ __TOTOP__
 ATT_CSS = """
 .med-fig{margin:18px 0;padding:10px;background:#fbfbfa;border:1px solid #e2e2dc;border-radius:10px;overflow:hidden}
 .med-fig svg{display:block;width:100%;height:auto}
+/* 动态图：SMIL 动画由 SVG 内部驱动。CSS 的 animation:none 管不了 SMIL，
+   但用 display:none 把动画层摘掉，视觉即静止且不参与绘制（开销极低）。
+   这是内联 SVG 场景下 reduced-motion 最稳的做法。 */
+@media (prefers-reduced-motion:reduce){
+  .med-fig .med-flow,.med-fig .med-pulse,.med-fig .med-block-pulse{display:none}
+}
+@media print{
+  .med-fig .med-flow,.med-fig .med-pulse{display:none}
+}
 :root{--bg:#eef3e8;--card:#fff;--ink:#20301f;--mut:#5a6b56;--line:#d3ddc7;--acc:#3f6b4f;}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.8;padding:28px 18px}
