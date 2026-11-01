@@ -53,8 +53,10 @@ SUBJ_KEYS = [("诊断", ["诊断学", "诊断"]), ("内科", ["内科"]), ("外�
 PIN_TEACHERS = ["隋准"]
 PIN_MAX_PER = 10          # 每位置顶老师最多收录条数（按评分取）
 
-# 最低发布年份：早于该日期发布的视频不再展示（置顶主讲豁免，避免与置顶冲突）
-MIN_DATE = "2025-01-01"
+# 最低发布年份：早于该日期发布的视频不再展示（置顶主讲豁免）
+MIN_DATE = "2020-01-01"
+# 早期经典课分界：2025 年之前发布但在 MIN_DATE 之后的，标为「经典课」
+CLASSIC_BEFORE = "2025-01-01"
 OLD_EXEMPT_PINNED = True
 
 
@@ -262,6 +264,8 @@ def collect():
         it["score"] = round(base, 3)
         hay_all = t + " " + " ".join(it.get("teachers") or []) + " " + (it.get("up") or "")
         it["pinned"] = [x for x in PIN_TEACHERS if x in hay_all]
+        it["classic"] = it["date"] < CLASSIC_BEFORE
+        it["v27"] = bool(re.search(r"2027|2028|27/28|27考研|28考研", t))
 
     # 去重：同一套课被多方搬运时，按「前 8 个分 P 名」为指纹只留播放最高者
     def norm(t):

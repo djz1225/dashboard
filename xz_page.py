@@ -52,6 +52,10 @@ input[type=search]:focus{border-color:#9dbf8d;background:#fff}
 .tag.t1{background:#fff4d6;border-color:#f0dca6;color:#8a6d1a;font-weight:700}
 .tag.t2{background:#eef4e7;border-color:#e2ead8;color:#40603f}
 .tag.t3{background:#f2f2f2;border-color:#e2e2e2;color:#6b6b6b}
+.tag.old{background:#f0eef8;border-color:#ddd8ee;color:#5b4b8a}
+.chip.old{background:#f0eef8;color:#5b4b8a;border-color:#ddd8ee;font-weight:600}
+.chip.old.on{background:#5b4b8a;color:#fff;border-color:#5b4b8a}
+.tag.old{background:#f0eef8;border-color:#ddd8ee;color:#5b4b8a}
 .card.pinned{border-color:#e0b04a;box-shadow:0 0 0 2px rgba(224,176,74,.28)}
 .parts{font-size:12px;color:#6b7d66;line-height:1.5}
 .foot{margin-top:auto;display:flex;align-items:center;gap:8px;padding-top:3px}
@@ -166,6 +170,8 @@ def card_html(it):
     for t in (it.get("teachers") or [])[:3]:
         tags.append(f'<span class="tag tc">{esc(t)}</span>')
     tags.append(f'<span class="tag">{esc(it.get("date","") or "MOOC")}</span>')
+    if it.get("classic"):
+        tags.append('<span class="tag old">经典课</span>')
     if is_mooc:
         _t = int(it.get("tier") or 2)
         _tl = {1: "双一流", 2: "本科", 3: "高职高专"}.get(_t, "本科")
@@ -254,7 +260,7 @@ def render(data, offline=False):
 <div class="wrap">
 <header>
   <h1>考研西医综合（306）成套教学视频</h1>
-  <div class="sub">收录 B 站公开的多分 P / 长系列精讲课程，剔除散课与失效视频；仅保留 {esc(min_date)} 之后发布（置顶主讲豁免）</div>
+  <div class="sub">收录 B 站公开的多分 P / 长系列精讲课程，剔除散课与失效视频；含 2020 年后全部课程（2025 前标「经典课」）</div>
   <div class="upd">数据更新：<b>{esc(data.get("updated",""))}</b>（北京时间） · 共 {len(items)} 套 · 已屏蔽 {data.get("hidden_old",0)} 套旧视频
     <span class="live">自动刷新中</span><span class="rel" data-bjtime="{esc(data.get("updated",""))}">刚刚</span>
     {'' if offline else ' · <a href="videos_lite.html" style="color:#d6f5cf">网慢？用精简版 →</a>'}
@@ -313,6 +319,9 @@ header .upd{margin-top:6px;font-size:12px;opacity:.95}
 .chip.pin{background:#fdecea;color:#a93226;border-color:#f1b8b2;font-weight:700}
 .chip.src{background:#eaf1fb;color:#2f5d8a;border-color:#cfdff5;font-weight:600}
 .chip.src.on{background:#3b6ea5;color:#fff;border-color:#3b6ea5}
+.chip.v27{background:#e8f7ee;color:#1e6b3a;border-color:#bfe5cd;font-weight:700}
+.chip.v27.on{background:#1e6b3a;color:#fff;border-color:#1e6b3a}
+.tag.v27b{background:#dcf5e4;border-color:#bfe5cd;color:#1e6b3a;font-weight:700}
 .chip.pin.on{background:#c0392b;color:#fff;border-color:#c0392b}
 input{width:100%;min-height:38px;border:1px solid var(--line);border-radius:9px;padding:0 10px;font-size:14px;background:#fbfdf8;margin:6px 0}
 .item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 11px;margin-bottom:8px}
@@ -329,6 +338,7 @@ input{width:100%;min-height:38px;border:1px solid var(--line);border-radius:9px;
 .tag.t1{background:#fff4d6;border-color:#f0dca6;color:#8a6d1a;font-weight:700}
 .tag.t2{background:#eef4e7;border-color:#e2ead8;color:#40603f}
 .tag.t3{background:#f2f2f2;border-color:#e2e2e2;color:#6b6b6b}
+.tag.old{background:#f0eef8;border-color:#ddd8ee;color:#5b4b8a}
 .tip{background:#fff6e5;border:1px solid #f2d8a8;color:#7a5312;border-radius:9px;padding:9px 11px;font-size:12.5px;line-height:1.65;margin:8px 0;display:none}
 .tip.show{display:block}
 .acts{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
@@ -358,6 +368,12 @@ def render_lite(data):
     chips = [f'<span class="chip on" data-s="全部">全部 {len(items)}</span>']
     if npin:
         chips.append(f'<span class="chip pin" data-s="★置顶">★置顶 {npin}</span>')
+    nv27 = sum(1 for it in items if it.get("v27"))
+    nold = sum(1 for it in items if it.get("classic"))
+    if nv27:
+        chips.append(f'<span class="chip v27" data-s="◎27版">◎27/28 新版 {nv27}</span>')
+    if nold:
+        chips.append(f'<span class="chip old" data-s="◎经典课">◎经典课 {nold}</span>')
     if nmooc:
         chips.append(f'<span class="chip src" data-s="◆公开课">◆高校公开课 {nmooc}</span>')
         chips.append(f'<span class="chip src" data-s="◆B站">◆B站 {nvideo}</span>')
@@ -373,6 +389,10 @@ def render_lite(data):
         play = url if im else (f"play/{bv}.html" if bv else url)
         _pc = " pinned" if it.get("pinned") else ""
         _badge = '<span class="tag pin">置顶</span>' if it.get("pinned") else ""
+        if it.get("v27"):
+            _badge += '<span class="tag v27b">27版</span>'
+        if it.get("classic"):
+            _badge += '<span class="tag old">经典课</span>'
         _src = f'<span class="tag src">{esc(it.get("source","公开课"))}</span>' if im else ""
         if im:
             _t = int(it.get("tier") or 2)
@@ -390,7 +410,7 @@ def render_lite(data):
         _sattr = "◆公开课" if im else "◆B站"
         _tgt = ' target="_blank" rel="noopener"' if im else ""
         rows.append(
-            f'<div class="item{_pc}" data-s="{esc(it["subject"])}" data-org="{_sattr}" data-pin="{"1" if it.get("pinned") else "0"}" data-t="{esc(hay)}" data-play="{int(it.get("play") or 0)}" data-tier="{int(it.get("tier") or 4)}" data-score="{it.get("score",0)}" data-exam="{"0" if it.get("exam")=="core" else "1"}">'
+            f'<div class="item{_pc}" data-s="{esc(it["subject"])}" data-org="{_sattr}" data-pin="{"1" if it.get("pinned") else "0"}" data-v27="{"1" if it.get("v27") else "0"}" data-old="{"1" if it.get("classic") else "0"}" data-t="{esc(hay)}" data-play="{int(it.get("play") or 0)}" data-tier="{int(it.get("tier") or 4)}" data-score="{it.get("score",0)}" data-exam="{"0" if it.get("exam")=="core" else "1"}">'
             f'<a class="t" href="{play}"{_tgt}>{esc(it.get("title"))}</a>'
             f'<div class="m">{_badge}<span class="tag s">{esc(it["subject"])}</span>{_src}'
             f'{_cnt}'
@@ -406,7 +426,7 @@ def render_lite(data):
 <title>考研西综306 · 教学视频（精简版）</title>
 <style>{LITE_CSS}{LITE_UX_CSS}</style></head><body><div class="wrap">
 <header><h1>考研西医综合（306）教学视频 · 精简版</h1>
-<div class="upd">数据更新：<b>{esc(data.get("updated",""))}</b> · 共 {len(items)} 套 · 仅 {esc(data.get("min_date","2025-01-01"))} 后发布（置顶豁免）· 已屏蔽 {data.get("hidden_old",0)} 套
+<div class="upd">数据更新：<b>{esc(data.get("updated",""))}</b> · 共 {len(items)} 套 · 2020 年后课程全收录
 <span class="live">自动刷新中</span><span class="rel" data-bjtime="{esc(data.get("updated",""))}">刚刚</span></div></header>
 <div class="tip" id="tip">点标题直接进<b>站内播放页</b>（内嵌播放器+选集，不用跳 App）。若播放器空白，点「复制BV」到哔哩哔哩 App 搜索，或右上角「…」→「在浏览器打开」。</div>
 <div class="chips" id="chips">{''.join(chips)}</div>
@@ -427,7 +447,9 @@ def render_lite(data):
  var ex=document.getElementById('onlyExam');
  function ap(){{var k=q.value.trim().toLowerCase(),n=0,only=ex&&ex.checked;
   items.forEach(function(e){{var base=(cur==='全部')?true:(cur==='★置顶'?e.getAttribute('data-pin')==='1':
-     (cur.indexOf('◆')===0?e.getAttribute('data-org')===cur:e.getAttribute('data-s')===cur));
+     (cur==='◎27版'?e.getAttribute('data-v27')==='1':
+      (cur==='◎经典课'?e.getAttribute('data-old')==='1':
+       (cur.indexOf('◆')===0?e.getAttribute('data-org')===cur:e.getAttribute('data-s')===cur))));
    var ok=base&&(!k||e.getAttribute('data-t').indexOf(k)>=0);
    if(ok&&only)ok=e.getAttribute('data-exam')==='0';
    e.style.display=ok?'':'none';if(ok)n++;}});
@@ -454,7 +476,7 @@ def render_lite(data):
  doSort();
  chips.addEventListener('click',function(e){{var c=e.target.closest('.chip');if(!c)return;cur=c.getAttribute('data-s');
   [].forEach.call(chips.children,function(x){{var v=x.getAttribute('data-s');
-    var cls='chip'+(v==='★置顶'?' pin':(v.indexOf('◆')===0?' src':''))+(v===cur?' on':'');
+    var cls='chip'+(v==='★置顶'?' pin':(v==='◎27版'?' v27':(v==='◎经典课'?' old':(v.indexOf('◆')===0?' src':''))))+(v===cur?' on':'');
     x.className=cls;}});q.value='';ap();}});
  q.addEventListener('input',function(){{if(this.value&&cur!=='全部'){{cur='全部';[].forEach.call(chips.children,function(x){{x.className='chip'+(x.getAttribute('data-s')==='全部'?' on':'');}});}}ap();}});
  if(/MicroMessenger/i.test(navigator.userAgent))document.getElementById('tip').className='tip show';
