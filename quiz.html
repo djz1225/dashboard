@@ -62,9 +62,9 @@ main{flex:1;padding:14px 14px 96px}
 .expl-src{margin-top:10px;padding-top:9px;border-top:1px dashed #cfe0fb;font-size:13px;line-height:1.7;color:#64748b}
 /* 解剖示意图 */
 .anat{margin-top:12px;border:1px solid #fed7aa;border-radius:12px;background:#fffbf5;overflow:hidden}
-.anat-h{display:flex;align-items:center;gap:7px;padding:11px 14px;cursor:pointer;font-size:14px;font-weight:600;color:#c2410c;user-select:none}
+.anat-h{display:flex;align-items:flex-start;gap:7px;padding-top:11px;padding:11px 14px;cursor:pointer;font-size:14px;font-weight:600;color:#c2410c;user-select:none}
 .anat-h .ico{font-size:15px}
-.anat-h .tip{font-size:12px;font-weight:400;color:#b45309;margin-left:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.anat-h .tip{font-size:12px;font-weight:400;color:#b45309;margin-left:6px;flex:1;line-height:1.35;display:block;padding-top:1px}
 .anat-h .ar{margin-left:auto;transition:transform .2s;font-size:12px;color:#fdba74}
 .anat.open .anat-h .tip{font-size:12px;font-weight:400;color:#b45309;margin-left:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
 .anat-h .ar{transform:rotate(180deg)}
@@ -216,6 +216,28 @@ main{flex:1;padding:14px 14px 96px}
 #main.slide-right{animation:slideR .22s ease}
 .swipe-hint{font-size:12px;color:#94a3b8;text-align:center;margin-top:10px}
 .swipe-hint b{color:#0f766e}
+</style>
+<style>
+/* 刷题类页面的轻量增强：回顶按钮 / 卡片微交互 / 打印 */
+#toTop{position:fixed;right:18px;bottom:78px;z-index:200;width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;
+  border:1px solid rgba(0,0,0,.07);background:rgba(255,255,255,.96);color:#0f766e;
+  font-size:18px;font-weight:700;line-height:1;
+  box-shadow:0 8px 22px -10px rgba(15,118,110,.55),0 1px 3px rgba(0,0,0,.10);
+  opacity:0;visibility:hidden;transform:translateY(10px);
+  transition:opacity .22s ease,transform .22s ease,visibility .22s;
+  -webkit-tap-highlight-color:transparent}
+#toTop.on{opacity:1;visibility:visible;transform:translateY(0)}
+#toTop:active{transform:scale(.94)}
+/* 卡片微交互 + 表格斑马纹（仅桌面悬停设备生效，避免移动端误触发） */
+tbody tr:nth-child(even),.list>li:nth-child(even){background:rgba(15,118,110,.03)}
+@media(hover:hover){
+  .card,.opt,.qcard,.stat-card{transition:box-shadow .18s ease,transform .18s ease,border-color .18s ease}
+  .card:hover,.qcard:hover{box-shadow:0 10px 22px -14px rgba(15,118,110,.45);border-color:rgba(15,118,110,.28)}
+  tbody tr:hover,.list>li:hover{background:rgba(15,118,110,.07)}
+}
+@media(max-width:560px){#toTop{width:40px;height:40px;right:12px;bottom:72px;font-size:16px}}
+@media print{#toTop{display:none!important}}
 </style>
 </head>
 <body>
@@ -1095,5 +1117,7 @@ function memPlan(){
 window.addEventListener('beforeunload',e=>{ if(exam&&!exam.finished){ e.preventDefault(); e.returnValue=''; } });
 render();
 </script>
+<button id="toTop" type="button" aria-label="回到顶部" title="回到顶部">↑</button>
+<script>(function(){var b=document.getElementById('toTop');if(!b)return;var f=function(){var y=window.pageYOffset||document.documentElement.scrollTop||0;b.classList[y>400?'add':'remove']('on');};window.addEventListener('scroll',f,{passive:true});f();b.addEventListener('click',function(){try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){window.scrollTo(0,0);}});})();</script>
 </body>
 </html>
