@@ -1,0 +1,41 @@
+{
+ "slug": "metformin-moa",
+ "subject": "内分泌与代谢",
+ "subject_slug": "endo",
+ "title": "二甲双胍作用机制",
+ "summary": "一线降糖药：抑制线粒体复合物Ⅰ → ATP↓/AMP↑ → AMPK 激活，减少肝糖输出、改善外周摄取、上调肠道 GLP-1。",
+ "tags": [
+  "二甲双胍",
+  "AMPK",
+  "糖异生",
+  "糖尿病",
+  "GLP-1"
+ ],
+ "updated": "2026-11-02 18:29",
+ "versions": {
+  "mechanism": {
+   "file": "mechanism.svg",
+   "caption": "机制版总览：三条通路导览 + 完整因果链（分图见同目录）"
+  }
+ },
+ "elements": [
+  "drug_pill",
+  "particle_path",
+  "arrow_act",
+  "arrow_inh"
+ ],
+ "extra_files": [
+  [
+   "mech-ampk.svg",
+   "mech-ampk"
+  ],
+  [
+   "mech-liver.svg",
+   "mech-liver"
+  ],
+  [
+   "mech-peripheral.svg",
+   "mech-peripheral"
+  ]
+ ]
+}
