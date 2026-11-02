@@ -877,3 +877,4 @@ if __name__ == "__main__":
 # rebuild: typography v5 med gallery (7b78)
 # rebuild: quiz figs + knee v5 (ae56)
 # rebuild: metformin + 3 motions (3990)
+# rebuild: quiz anatomy v2 (ef6c)
