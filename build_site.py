@@ -880,3 +880,4 @@ if __name__ == "__main__":
 # rebuild: quiz anatomy v2 (ef6c)
 # rebuild: quiz anatomy final (007e)
 # rebuild: quiz figs v3 (9c5d)
+# rebuild: cards with figures (e225)
