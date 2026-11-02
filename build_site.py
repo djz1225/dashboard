@@ -354,7 +354,7 @@ MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 __THEME__
 <title>每日追踪看板</title><style>__CSS__</style></head><body><div class="wrap">
 <header><h1>每日追踪看板</h1><div class="updated" id="updated">__UPDATEDBADGE__</div>
-<div class="toolnav"><a href="xz/videos.html">🎬 考研西综 306 成套视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="quiz.html">🩺 医师定考刷题</a><a href="med/knee-synovial.html">🦵 膝关节滑膜液动态图</a></div></header>
+<div class="toolnav"><a href="xz/videos.html">🎬 考研西综 306 成套视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="quiz.html">🩺 医师定考刷题</a><a href="med/index.html">🧬 医学动态图库（按学科）</a></div></header>
 __SNAV__
 
 <h2 id="s1">一、大盘行情</h2>
@@ -825,16 +825,26 @@ def main():
     else:
         print("WARN: xz/videos.json not found")
 
-    # 医学交互图（med/ 目录）：膝关节滑膜液等单文件交互页，原样复制到站点
+    # 医学图库（med/ 目录）：递归复制全部（index.html / data.json /
+    # <slug>/{mechanism.svg,anatomy.svg,motion.html,meta.json}）
     _med = os.path.join(OUT, "med")
     if os.path.isdir(_med):
-        os.makedirs(os.path.join(SITE, "med"), exist_ok=True)
-        _mn = 0
-        for _f in sorted(os.listdir(_med)):
-            if _f.endswith(".html"):
-                shutil.copy(os.path.join(_med, _f), os.path.join(SITE, "med", _f))
-                _mn += 1
-        print(f"copied {_mn} medical interactive page(s) -> site/med/")
+        _dst = os.path.join(SITE, "med")
+        os.makedirs(_dst, exist_ok=True)
+        _mn = _md = 0
+        for _root, _dirs, _files in os.walk(_med):
+            _rel = os.path.relpath(_root, _med)
+            _tgt = _dst if _rel == "." else os.path.join(_dst, _rel)
+            os.makedirs(_tgt, exist_ok=True)
+            for _f in sorted(_files):
+                if _f.startswith(".") or _f.endswith((".py", ".pyc")):
+                    continue
+                shutil.copy(os.path.join(_root, _f), os.path.join(_tgt, _f))
+                if _f.endswith(".html"):
+                    _mn += 1
+                else:
+                    _md += 1
+        print(f"copied medical gallery -> site/med/ ({_mn} html + {_md} assets)")
     else:
         print("WARN: med/ not found")
 
