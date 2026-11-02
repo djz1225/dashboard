@@ -874,3 +874,4 @@ if __name__ == "__main__":
     main()
 # rebuild-trigger: med interactive page
 # rebuild: 纳入 med/<slug>/ 子目录图库文件
+# rebuild: typography v5 med gallery (7b78)
