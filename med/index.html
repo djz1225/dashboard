@@ -52,11 +52,11 @@ footer{margin-top:28px;font-size:12.2px;color:#94a3ae}
   <h1>医学动态图库 · 按学科</h1>
   <p class="sub">每个主题三版并列：<b>机制版</b>（为什么）、<b>解剖版</b>（在哪）、
      <b>动态版</b>（怎么变，可交互）</p>
-  <p class="stat">共 5 个主题，覆盖 4 个学科 · 全部为矢量或单文件 HTML</p>
+  <p class="stat">共 6 个主题，覆盖 5 个学科 · 全部为矢量或单文件 HTML</p>
 
   <div class="bar">
-    <button class="tab" data-subj="__all" aria-pressed="true">全部<em>5</em></button>
-    <button class="tab" data-subj="运动系统" aria-pressed="false">运动系统<em>2</em></button><button class="tab" data-subj="心血管" aria-pressed="false">心血管<em>1</em></button><button class="tab" data-subj="血液" aria-pressed="false">血液<em>1</em></button><button class="tab" data-subj="免疫" aria-pressed="false">免疫<em>1</em></button>
+    <button class="tab" data-subj="__all" aria-pressed="true">全部<em>6</em></button>
+    <button class="tab" data-subj="运动系统" aria-pressed="false">运动系统<em>2</em></button><button class="tab" data-subj="心血管" aria-pressed="false">心血管<em>1</em></button><button class="tab" data-subj="内分泌与代谢" aria-pressed="false">内分泌与代谢<em>1</em></button><button class="tab" data-subj="血液" aria-pressed="false">血液<em>1</em></button><button class="tab" data-subj="免疫" aria-pressed="false">免疫<em>1</em></button>
     <input id="q" type="search" placeholder="搜索主题、关键词…" aria-label="搜索">
   </div>
 
@@ -85,36 +85,47 @@ footer{margin-top:28px;font-size:12.2px;color:#94a3ae}
   </div>
 </article>
 <article class="card" data-subj="心血管"
-         data-key="外科休克分期 代偿期、失代偿期、不可逆期三段演进；血压是晚期指标，早期看意识、皮肤、尿量与乳酸。 休克 微循环 代偿 MODS 外科总论">
+         data-key="外科休克分期 动态版：可交互查看机制演进 shock-stages">
   <div class="thumb"><img src="shock-stages/mechanism.svg" alt="外科休克分期 mechanism" loading="lazy"></div><div class="thumb-hint">点「机制版」等按钮查看可缩放原图</div>
   <div class="body">
-    <div class="meta"><span class="subj">心血管</span><span class="vb vb-mechanism">机制</span></div>
+    <div class="meta"><span class="subj">心血管</span><span class="vb vb-mechanism">机制</span><span class="vb vb-motion">动态</span></div>
     <h3>外科休克分期</h3>
-    <p>代偿期、失代偿期、不可逆期三段演进；血压是晚期指标，早期看意识、皮肤、尿量与乳酸。</p>
-    <div class="acts"><a class="go" href="shock-stages/mechanism.svg" target="_blank" rel="noopener">机制版 ↗</a></div>
-    <div class="stamp">更新 2026-11-02 18:11 · 元素 2 个</div>
+    <p>动态版：可交互查看机制演进</p>
+    <div class="acts"><a class="go" href="shock-stages/mechanism.svg" target="_blank" rel="noopener">机制版 ↗</a><a class="go" href="shock-stages/motion.html" target="_blank" rel="noopener">动态版 ↗</a></div>
+    <div class="stamp">更新 2026-11-02 18:32 · 元素 1 个</div>
+  </div>
+</article>
+<article class="card" data-subj="内分泌与代谢"
+         data-key="二甲双胍作用机制 一线降糖药：抑制线粒体复合物Ⅰ → ATP↓/AMP↑ → AMPK 激活，减少肝糖输出、改善外周摄取、上调肠道 GLP-1。 二甲双胍 AMPK 糖异生 糖尿病 GLP-1">
+  <div class="thumb"><img src="metformin-moa/mechanism.svg" alt="二甲双胍作用机制 mechanism" loading="lazy"></div><div class="thumb-hint">点「机制版」等按钮查看可缩放原图</div>
+  <div class="body">
+    <div class="meta"><span class="subj">内分泌与代谢</span><span class="vb vb-mechanism">机制</span></div>
+    <h3>二甲双胍作用机制</h3>
+    <p>一线降糖药：抑制线粒体复合物Ⅰ → ATP↓/AMP↑ → AMPK 激活，减少肝糖输出、改善外周摄取、上调肠道 GLP-1。</p>
+    <div class="acts"><a class="go" href="metformin-moa/mechanism.svg" target="_blank" rel="noopener">机制版 ↗</a><a class="go" href="metformin-moa/mech-ampk.svg" target="_blank" rel="noopener">mech-ampk ↗</a><a class="go" href="metformin-moa/mech-liver.svg" target="_blank" rel="noopener">mech-liver ↗</a><a class="go" href="metformin-moa/mech-peripheral.svg" target="_blank" rel="noopener">mech-peripheral ↗</a></div>
+    <div class="stamp">更新 2026-11-02 18:29 · 元素 4 个</div>
   </div>
 </article>
 <article class="card" data-subj="血液"
-         data-key="弥散性血管内凝血（DIC） 凝血与纤溶同时失控：微血栓形成、因子耗竭、继发纤溶亢进，最终出血与器官衰竭并存。 DIC 凝血 微血栓 纤溶 血液系统">
+         data-key="弥散性血管内凝血（DIC） 动态版：可交互查看机制演进 dic">
   <div class="thumb"><img src="dic/mechanism.svg" alt="弥散性血管内凝血（DIC） mechanism" loading="lazy"></div><div class="thumb-hint">点「机制版」等按钮查看可缩放原图</div>
   <div class="body">
-    <div class="meta"><span class="subj">血液</span><span class="vb vb-mechanism">机制</span></div>
+    <div class="meta"><span class="subj">血液</span><span class="vb vb-mechanism">机制</span><span class="vb vb-motion">动态</span></div>
     <h3>弥散性血管内凝血（DIC）</h3>
-    <p>凝血与纤溶同时失控：微血栓形成、因子耗竭、继发纤溶亢进，最终出血与器官衰竭并存。</p>
-    <div class="acts"><a class="go" href="dic/mechanism.svg" target="_blank" rel="noopener">机制版 ↗</a></div>
-    <div class="stamp">更新 2026-11-02 18:11 · 元素 3 个</div>
+    <p>动态版：可交互查看机制演进</p>
+    <div class="acts"><a class="go" href="dic/mechanism.svg" target="_blank" rel="noopener">机制版 ↗</a><a class="go" href="dic/motion.html" target="_blank" rel="noopener">动态版 ↗</a></div>
+    <div class="stamp">更新 2026-11-02 18:32 · 元素 2 个</div>
   </div>
 </article>
 <article class="card" data-subj="免疫"
-         data-key="过敏性紫癜（IgA 血管炎） IgA 免疫复合物沉积小血管壁致白细胞碎裂性血管炎，表现为皮肤、关节、胃肠、肾脏四联征。 过敏性紫癜 IgA血管炎 紫癜 血管炎">
+         data-key="过敏性紫癜（IgA 血管炎） 动态版：可交互查看机制演进 hsp-iga-vasculitis">
   <div class="thumb"><img src="hsp-iga-vasculitis/mechanism.svg" alt="过敏性紫癜（IgA 血管炎） mechanism" loading="lazy"></div><div class="thumb-hint">点「机制版」等按钮查看可缩放原图</div>
   <div class="body">
-    <div class="meta"><span class="subj">免疫</span><span class="vb vb-mechanism">机制</span></div>
+    <div class="meta"><span class="subj">免疫</span><span class="vb vb-mechanism">机制</span><span class="vb vb-motion">动态</span></div>
     <h3>过敏性紫癜（IgA 血管炎）</h3>
-    <p>IgA 免疫复合物沉积小血管壁致白细胞碎裂性血管炎，表现为皮肤、关节、胃肠、肾脏四联征。</p>
-    <div class="acts"><a class="go" href="hsp-iga-vasculitis/mechanism.svg" target="_blank" rel="noopener">机制版 ↗</a></div>
-    <div class="stamp">更新 2026-11-02 18:11 · 元素 3 个</div>
+    <p>动态版：可交互查看机制演进</p>
+    <div class="acts"><a class="go" href="hsp-iga-vasculitis/mechanism.svg" target="_blank" rel="noopener">机制版 ↗</a><a class="go" href="hsp-iga-vasculitis/motion.html" target="_blank" rel="noopener">动态版 ↗</a></div>
+    <div class="stamp">更新 2026-11-02 18:32 · 元素 2 个</div>
   </div>
 </article>
   </div>
