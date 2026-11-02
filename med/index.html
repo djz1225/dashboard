@@ -8,13 +8,13 @@ body{margin:0;font-family:"PingFang SC","Noto Sans CJK SC",system-ui,sans-serif;
   background:#eef3f8;color:#17222b;line-height:1.6}
 .app{max-width:1240px;margin:0 auto;padding:28px 20px 64px}
 h1{font-size:25px;margin:0 0 6px}
-.sub{color:#63727e;font-size:14px;margin:0 0 4px}
-.stat{font-size:12.6px;color:#94a3ae;margin-top:6px}
+.sub{color:#4E5B64;font-size:14px;margin:0 0 4px}
+.stat{font-size:13px;color:#5F6C75;margin-top:6px}
 .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:18px 0 14px;
   padding:12px 14px;background:#fff;border:1px solid #e3e9ef;border-radius:14px}
 .tab{border:1px solid #e3e9ef;background:#fff;padding:7px 13px;border-radius:999px;
   font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:.16s}
-.tab em{font-style:normal;color:#94a3ae;margin-left:6px;font-size:12px}
+.tab em{font-style:normal;color:#5F6C75;margin-left:6px;font-size:12px}
 .tab:hover{border-color:#c3d3e2;background:#f4f9ff}
 .tab[aria-pressed="true"]{background:#2c5f9e;color:#fff;border-color:#2c5f9e}
 .tab[aria-pressed="true"] em{color:#cfe2f6}
@@ -24,8 +24,11 @@ input#q{flex:1;min-width:180px;padding:8px 12px;border:1px solid #e3e9ef;
 .card{background:#fff;border:1px solid #e3e9ef;border-radius:16px;overflow:hidden;
   box-shadow:0 1px 2px rgba(16,32,48,.04);transition:.18s;display:flex;flex-direction:column}
 .card:hover{box-shadow:0 6px 20px rgba(16,32,48,.09);transform:translateY(-2px)}
-.thumb{background:#fbfdff;border-bottom:1px solid #eef3f8;padding:8px}
-.thumb img{width:100%;height:150px;object-fit:contain;display:block}
+.thumb{background:#fbfdff;border-bottom:1px solid #eef3f8;padding:10px;
+  display:flex;align-items:center;justify-content:center;height:168px}
+.thumb img{max-width:100%;max-height:148px;object-fit:contain;display:block}
+.thumb-hint{font-size:11.5px;color:#5F6C75;text-align:center;padding:0 0 8px;
+  background:#fbfdff;border-bottom:1px solid #eef3f8}
 .body{padding:12px 14px 14px;flex:1;display:flex;flex-direction:column}
 .meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
 .subj{font-size:11.6px;font-weight:700;color:#1d4e89;background:#e8f1fb;
@@ -34,13 +37,13 @@ input#q{flex:1;min-width:180px;padding:8px 12px;border:1px solid #e3e9ef;
 .vb-mechanism{background:#eaf3ff;color:#20558f}
 .vb-anatomy{background:#eaf6ef;color:#1c6b45}
 .vb-motion{background:#f5ecff;color:#6b46c1}
-h3{font-size:15.5px;margin:2px 0 6px}
-.card p{font-size:13px;color:#63727e;margin:0 0 10px;flex:1}
+h3{font-size:16px;margin:2px 0 6px}
+.card p{font-size:13.5px;color:#4E5B64;margin:0 0 10px;flex:1}
 .acts{display:flex;flex-wrap:wrap;gap:7px}
 .go{font-size:12.6px;font-weight:700;text-decoration:none;color:#20558f;
   background:#f2f7fd;border:1px solid #d9e6f6;padding:5px 10px;border-radius:8px}
 .go:hover{background:#e6f0fb}
-.stamp{font-size:11.5px;color:#a3aeb8;margin-top:10px}
+.stamp{font-size:12px;color:#5F6C75;margin-top:10px}
 .empty{padding:40px;text-align:center;color:#94a3ae;background:#fff;
   border:1px dashed #d7e0e9;border-radius:16px;grid-column:1/-1}
 footer{margin-top:28px;font-size:12.2px;color:#94a3ae}
@@ -60,14 +63,14 @@ footer{margin-top:28px;font-size:12.2px;color:#94a3ae}
   <div class="grid" id="grid">
     
 <article class="card" data-subj="运动系统"
-         data-key="肌丝滑行机制 横纹肌收缩的分子基础：细肌丝在粗肌丝间向 M 线滑入，A 带恒定、I 带与 H 区缩短，肌节变短而肌丝自身长度不变。 肌丝滑行 肌节 横桥循环 骨骼肌 钙 ATP">
-  <div class="thumb"><img src="sarcomere-sliding/mechanism.svg" alt="肌丝滑行机制 mechanism" loading="lazy"></div>
+         data-key="肌丝滑行机制 横纹肌收缩的分子基础：细肌丝向 M 线滑入，A 带恒定、I 带与 H 区缩短，肌丝自身长度不变。 肌丝滑行 肌节 横桥循环 钙开关 骨骼肌">
+  <div class="thumb"><img src="sarcomere-sliding/mechanism.svg" alt="肌丝滑行机制 mechanism" loading="lazy"></div><div class="thumb-hint">点「机制版」等按钮查看可缩放原图</div>
   <div class="body">
     <div class="meta"><span class="subj">运动系统</span><span class="vb vb-mechanism">机制</span><span class="vb vb-anatomy">解剖</span><span class="vb vb-motion">动态</span></div>
     <h3>肌丝滑行机制</h3>
-    <p>横纹肌收缩的分子基础：细肌丝在粗肌丝间向 M 线滑入，A 带恒定、I 带与 H 区缩短，肌节变短而肌丝自身长度不变。</p>
+    <p>横纹肌收缩的分子基础：细肌丝向 M 线滑入，A 带恒定、I 带与 H 区缩短，肌丝自身长度不变。</p>
     <div class="acts"><a class="go" href="sarcomere-sliding/mechanism.svg" target="_blank" rel="noopener">机制版 ↗</a><a class="go" href="sarcomere-sliding/anatomy.svg" target="_blank" rel="noopener">解剖版 ↗</a><a class="go" href="sarcomere-sliding/motion.html" target="_blank" rel="noopener">动态版 ↗</a></div>
-    <div class="stamp">更新 2026-11-02 16:20 · 元素 11 个</div>
+    <div class="stamp">更新 2026-11-02 17:40 · 元素 10 个</div>
   </div>
 </article>
   </div>
