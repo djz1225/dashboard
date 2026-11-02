@@ -354,7 +354,7 @@ MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 __THEME__
 <title>每日追踪看板</title><style>__CSS__</style></head><body><div class="wrap">
 <header><h1>每日追踪看板</h1><div class="updated" id="updated">__UPDATEDBADGE__</div>
-<div class="toolnav"><a href="xz/videos.html">🎬 考研西综 306 成套视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="quiz.html">🩺 医师定考刷题</a></div></header>
+<div class="toolnav"><a href="xz/videos.html">🎬 考研西综 306 成套视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="quiz.html">🩺 医师定考刷题</a><a href="med/knee-synovial.html">🦵 膝关节滑膜液动态图</a></div></header>
 __SNAV__
 
 <h2 id="s1">一、大盘行情</h2>
@@ -824,6 +824,19 @@ def main():
             print("WARN: xz page build failed:", type(e).__name__, e)
     else:
         print("WARN: xz/videos.json not found")
+
+    # 医学交互图（med/ 目录）：膝关节滑膜液等单文件交互页，原样复制到站点
+    _med = os.path.join(OUT, "med")
+    if os.path.isdir(_med):
+        os.makedirs(os.path.join(SITE, "med"), exist_ok=True)
+        _mn = 0
+        for _f in sorted(os.listdir(_med)):
+            if _f.endswith(".html"):
+                shutil.copy(os.path.join(_med, _f), os.path.join(SITE, "med", _f))
+                _mn += 1
+        print(f"copied {_mn} medical interactive page(s) -> site/med/")
+    else:
+        print("WARN: med/ not found")
 
     with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as f:
         f.write(html_main)
