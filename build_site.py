@@ -354,7 +354,7 @@ MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 __THEME__
 <title>每日追踪看板</title><style>__CSS__</style></head><body><div class="wrap">
 <header><h1>每日追踪看板</h1><div class="updated" id="updated">__UPDATEDBADGE__</div>
-<div class="toolnav"><a href="xz/videos.html">🎬 考研西综 306 成套视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="quiz.html">🩺 医师定考刷题</a><a href="med/index.html">🧬 医学动态图库（按学科）</a></div></header>
+<div class="toolnav"><a href="xz/videos.html">🎬 考研西综 306 成套视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="physio.html">🧠 生理学速记卡</a><a href="quiz.html">🩺 医师定考刷题</a><a href="med/index.html">🧬 医学动态图库（按学科）</a></div></header>
 __SNAV__
 
 <h2 id="s1">一、大盘行情</h2>
@@ -799,6 +799,14 @@ def main():
         print("copied quiz.html (ux injected) ->", os.path.join(SITE, "quiz.html"))
     else:
         print("WARN: quiz.html not found in", OUT)
+    # 复制生理学速记卡（physio.html）
+    _phys = os.path.join(OUT, "physio.html")
+    if os.path.exists(_phys):
+        ux.write_injected(_phys, os.path.join(SITE, "physio.html"),
+                          mode="quiz", color="#0f766e")
+        print("copied physio.html (ux injected)")
+    else:
+        print("WARN: physio.html not found in", OUT)
     # 复制西综306考研题库
     _xz = os.path.join(OUT, "xz", "quiz.html")
     if os.path.exists(_xz):
