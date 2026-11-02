@@ -1,9 +1,106 @@
 {
- "total": 1,
+ "total": 5,
  "subjects": [
-  "运动系统"
+  "运动系统",
+  "心血管",
+  "血液",
+  "免疫"
  ],
  "items": [
+  {
+   "slug": "dic",
+   "subject": "血液",
+   "subject_slug": "heme",
+   "title": "弥散性血管内凝血（DIC）",
+   "summary": "凝血与纤溶同时失控：微血栓形成、因子耗竭、继发纤溶亢进，最终出血与器官衰竭并存。",
+   "tags": [
+    "DIC",
+    "凝血",
+    "微血栓",
+    "纤溶",
+    "血液系统"
+   ],
+   "updated": "2026-11-02 18:11",
+   "versions": {
+    "mechanism": {
+     "file": "mechanism.svg",
+     "caption": "弥散性血管内凝血（DIC）：机制图（供题目引用）"
+    }
+   },
+   "elements": [
+    "particle_path",
+    "arrow_act",
+    "arrow_inh"
+   ],
+   "extra_files": []
+  },
+  {
+   "slug": "hsp-iga-vasculitis",
+   "subject": "免疫",
+   "subject_slug": "immuno",
+   "title": "过敏性紫癜（IgA 血管炎）",
+   "summary": "IgA 免疫复合物沉积小血管壁致白细胞碎裂性血管炎，表现为皮肤、关节、胃肠、肾脏四联征。",
+   "tags": [
+    "过敏性紫癜",
+    "IgA血管炎",
+    "紫癜",
+    "血管炎"
+   ],
+   "updated": "2026-11-02 18:11",
+   "versions": {
+    "mechanism": {
+     "file": "mechanism.svg",
+     "caption": "过敏性紫癜（IgA 血管炎）：机制图（供题目引用）"
+    }
+   },
+   "elements": [
+    "antibody_y",
+    "arrow_act",
+    "immune_cell"
+   ],
+   "extra_files": []
+  },
+  {
+   "slug": "knee-synovial-fluid",
+   "subject": "运动系统",
+   "subject_slug": "msk",
+   "title": "膝关节滑膜液循环",
+   "summary": "滑膜液分泌—泵送—营养—清除闭环；滑膜炎时四环节同步恶化，形成积液正反馈。",
+   "tags": [
+    "滑膜液",
+    "滑膜炎",
+    "膝关节",
+    "半月板",
+    "积液"
+   ],
+   "updated": "2026-11-02 18:11",
+   "versions": {
+    "mechanism": {
+     "file": "mechanism.svg",
+     "caption": "机制版：四环节闭环 + 滑膜炎同步恶化"
+    },
+    "anatomy": {
+     "file": "anatomy.svg",
+     "caption": "解剖版：矢状剖面，标注落在空白侧"
+    },
+    "motion": {
+     "file": "motion.html",
+     "caption": "动态版：可切换正常/滑膜炎，积液滑块联动"
+    }
+   },
+   "elements": [
+    "synovium",
+    "meniscus",
+    "particle_path",
+    "patella_bursa",
+    "hoffa",
+    "bone",
+    "scale_bar",
+    "pannus",
+    "villain_wave"
+   ],
+   "extra_files": []
+  },
   {
    "slug": "sarcomere-sliding",
    "subject": "运动系统",
@@ -17,7 +114,7 @@
     "钙开关",
     "骨骼肌"
    ],
-   "updated": "2026-11-02 17:40",
+   "updated": "2026-11-02 18:11",
    "versions": {
     "mechanism": {
      "file": "mechanism.svg",
@@ -43,7 +140,47 @@
     "thick_filament",
     "scale_bar",
     "particle_path"
+   ],
+   "extra_files": [
+    [
+     "mechanism-calcium.svg",
+     "钙开关"
+    ],
+    [
+     "mechanism-coupling.svg",
+     "耦联"
+    ],
+    [
+     "mechanism-crossbridge.svg",
+     "横桥循环"
+    ]
    ]
+  },
+  {
+   "slug": "shock-stages",
+   "subject": "心血管",
+   "subject_slug": "cardio",
+   "title": "外科休克分期",
+   "summary": "代偿期、失代偿期、不可逆期三段演进；血压是晚期指标，早期看意识、皮肤、尿量与乳酸。",
+   "tags": [
+    "休克",
+    "微循环",
+    "代偿",
+    "MODS",
+    "外科总论"
+   ],
+   "updated": "2026-11-02 18:11",
+   "versions": {
+    "mechanism": {
+     "file": "mechanism.svg",
+     "caption": "外科休克分期：机制图（供题目引用）"
+    }
+   },
+   "elements": [
+    "particle_path",
+    "arrow_act"
+   ],
+   "extra_files": []
   }
  ]
 }
