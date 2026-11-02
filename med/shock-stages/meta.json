@@ -1,0 +1,26 @@
+{
+ "slug": "shock-stages",
+ "subject": "心血管",
+ "subject_slug": "cardio",
+ "title": "外科休克分期",
+ "summary": "代偿期、失代偿期、不可逆期三段演进；血压是晚期指标，早期看意识、皮肤、尿量与乳酸。",
+ "tags": [
+  "休克",
+  "微循环",
+  "代偿",
+  "MODS",
+  "外科总论"
+ ],
+ "updated": "2026-11-02 18:11",
+ "versions": {
+  "mechanism": {
+   "file": "mechanism.svg",
+   "caption": "外科休克分期：机制图（供题目引用）"
+  }
+ },
+ "elements": [
+  "particle_path",
+  "arrow_act"
+ ],
+ "extra_files": []
+}
