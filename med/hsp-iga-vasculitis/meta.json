@@ -3,15 +3,16 @@
  "subject": "免疫",
  "subject_slug": "immuno",
  "title": "过敏性紫癜（IgA 血管炎）",
- "summary": "IgA 免疫复合物沉积小血管壁致白细胞碎裂性血管炎，表现为皮肤、关节、胃肠、肾脏四联征。",
+ "summary": "动态版：可交互查看机制演进",
  "tags": [
-  "过敏性紫癜",
-  "IgA血管炎",
-  "紫癜",
-  "血管炎"
+  "hsp-iga-vasculitis"
  ],
- "updated": "2026-11-02 18:11",
+ "updated": "2026-11-02 18:32",
  "versions": {
+  "motion": {
+   "file": "motion.html",
+   "caption": "动态版：分步查看机制演进"
+  },
   "mechanism": {
    "file": "mechanism.svg",
    "caption": "过敏性紫癜（IgA 血管炎）：机制图（供题目引用）"
@@ -19,8 +20,7 @@
  },
  "elements": [
   "antibody_y",
-  "arrow_act",
-  "immune_cell"
+  "particle_path"
  ],
  "extra_files": []
 }
