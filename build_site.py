@@ -879,3 +879,4 @@ if __name__ == "__main__":
 # rebuild: metformin + 3 motions (3990)
 # rebuild: quiz anatomy v2 (ef6c)
 # rebuild: quiz anatomy final (007e)
+# rebuild: quiz figs v3 (9c5d)
