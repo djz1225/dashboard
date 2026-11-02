@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>肌丝滑行机制 · 动态互动</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --ink:#17222b; --muted:#63727e; --line:#e3e9ef; --panel:#f7fafc;
+  --normal:#2c5f9e; --patho:#c0392b; --fluid:#7FB5E6; --accent:#6b46c1;
+  --bg:#eef3f8;
+}
+html,body{margin:0}
+body{
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",
+              "Noto Sans CJK SC",system-ui,sans-serif;
+  color:var(--ink); background:var(--bg); line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.app{max-width:1280px; margin:0 auto; padding:28px 20px 72px}
+header h1{font-size:26px; margin:0 0 6px; letter-spacing:.2px}
+header .sub{color:var(--muted); font-size:14.5px; margin:0}
+header .warn{font-size:12.5px; color:#94a3ae; margin-top:8px}
+
+.toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  margin:20px 0 14px; padding:12px 14px; background:#fff;
+  border:1px solid var(--line); border-radius:14px}
+.btn{
+  border:1px solid var(--line); background:#fff; color:var(--ink);
+  padding:8px 15px; border-radius:999px; font-size:14px; font-weight:600;
+  cursor:pointer; transition:.18s; font-family:inherit;
+}
+.btn:hover{border-color:#c3d3e2; background:#f4f9ff}
+.btn:focus-visible{outline:2.5px solid var(--accent); outline-offset:2px}
+.btn[aria-pressed="true"]{background:var(--normal); color:#fff; border-color:var(--normal)}
+.btn.patho[aria-pressed="true"]{background:var(--patho); border-color:var(--patho)}
+.state-pill{
+  padding:7px 14px; border-radius:999px; font-size:13.5px; font-weight:700;
+  background:#e8f1fb; color:#1d4e89; border:1px solid #cfe2f6;
+}
+body.patho .state-pill{background:#fceceb; color:#a3382c; border-color:#f2cfcb}
+.spacer{flex:1}
+
+.grid{display:grid; grid-template-columns:2.35fr 1fr; gap:16px; align-items:start}
+@media(max-width:960px){.grid{grid-template-columns:1fr}}
+.card{background:#fff; border:1px solid var(--line); border-radius:16px;
+  padding:14px; box-shadow:0 1px 2px rgba(16,32,48,.04)}
+.figwrap{position:relative}
+.figwrap svg{width:100%; height:auto; display:block; border-radius:10px}
+.badge{
+  position:absolute; top:10px; right:10px; font-size:12.5px; font-weight:700;
+  padding:5px 12px; border-radius:999px; background:#e8f1fb; color:#1d4e89;
+  border:1px solid #cfe2f6; transition:.25s;
+}
+body.patho .badge{background:#fceceb; color:#a3382c; border-color:#f2cfcb}
+
+/* 图例 = 图层开关 */
+.legend{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 10px}
+.legend button{
+  display:inline-flex; align-items:center; gap:7px; font-size:13px;
+  padding:5px 11px; border-radius:9px; border:1px solid var(--line);
+  background:#fff; cursor:pointer; font-family:inherit; transition:.16s;
+}
+.legend button[aria-pressed="false"]{opacity:.42; text-decoration:line-through}
+.legend .sw{width:13px; height:13px; border-radius:4px; display:inline-block}
+
+/* 步骤条 */
+.steps{display:flex; gap:6px; margin:12px 0 0; flex-wrap:wrap}
+.steps button{
+  flex:1 1 0; min-width:96px; padding:9px 6px; border-radius:10px;
+  border:1px solid var(--line); background:#fff; font-size:12.8px;
+  font-family:inherit; cursor:pointer; text-align:center;
+  font-weight:600; color:var(--muted); transition:.16s;
+}
+.steps button[aria-pressed="true"]{
+  background:#eef4ff; border-color:#b9cdf0; color:#204b8f;
+}
+body.patho .steps button[aria-pressed="true"]{
+  background:#fdeeed; border-color:#f0c9c4; color:#a3382c;
+}
+.steps button small{display:block; font-weight:500; font-size:11.4px; opacity:.8}
+
+/* 右侧信息 */
+h3{font-size:15.5px; margin:2px 0 10px}
+.info p{font-size:13.6px; margin:7px 0}
+.tag{display:inline-block; font-size:11.8px; padding:1.5px 8px; border-radius:6px;
+  margin:2px 4px 2px 0; font-weight:700}
+.tag.ok{background:#e6f5ec; color:#1c6b45}
+.tag.bad{background:#fceceb; color:#a3382c}
+.tag.warn{background:#fef4e3; color:#8a5a12}
+.tag.num{background:#eef1fb; color:#3c3f8f; font-variant-numeric:tabular-nums}
+
+table{width:100%; border-collapse:collapse; font-size:12.4px;
+  font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line); padding:6px 7px; text-align:left}
+thead th{background:#f2f6fa; font-weight:700; font-size:12.4px}
+tbody th{font-weight:600; color:#3a4a57; width:30%}
+table td:nth-child(1){width:30%}
+table td:last-child{width:auto}
+td.n{color:#1d4e89} td.p{color:#a3382c}
+
+.slidhint{font-size:12.2px;color:var(--muted);margin:2px 0 10px;line-height:1.5}
+.rangebar{display:flex; align-items:center; gap:10px; margin:10px 0 4px;
+  font-size:13px}
+.rangebar input[type=range]{flex:1; accent-color:var(--accent)}
+.readout{font-weight:700; font-variant-numeric:tabular-nums; min-width:86px;
+  text-align:right; color:var(--accent)}
+
+.note{font-size:12.4px; color:var(--muted); background:var(--panel);
+  border-left:3px solid #c8d8e8; padding:9px 12px; border-radius:0 8px 8px 0;
+  margin:12px 0 0}
+footer{margin-top:26px; font-size:12.2px; color:#94a3ae; line-height:1.7}
+
+/* 逐步高亮：非当前步骤的流动元素淡出 */
+body.stepping .med-flow{opacity:.18; transition:opacity .35s}
+body.stepping [data-step-on]{opacity:1 !important}
+
+@media (prefers-reduced-motion: reduce){
+  .med-flow{display:none!important}
+  *{animation-duration:.001ms!important; transition-duration:.001ms!important}
+}
+
+.only-patho,.only-normal{display:none}
+.ca-panel{margin-top:10px;border:1px solid var(--line);border-radius:12px;
+  overflow:hidden;font-size:13px}
+.ca-row{display:flex;border-bottom:1px solid var(--line)}
+.ca-row:last-child{border-bottom:none}
+.ca-k{width:38%;padding:8px 12px;background:#f4f8fc;font-weight:600;color:#3a4a57}
+.ca-v{padding:8px 12px;flex:1;transition:.2s}
+body.ca-on .ca-v{color:#a3382c;font-weight:600}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>肌丝滑行机制 · 动态互动</h1>
+    <p class="sub">细肌丝向 M 线滑入 → Z 线靠拢 → I 带与 H 区变窄；A 带与肌丝本身长度始终不变</p>
+    <div class="warn">⚠️ 本图为教学/科普示意，结构经简化，不用于临床诊断与治疗决策。</div>
+  </header>
+
+  <div class="toolbar">
+    
+    <button class="btn" id="btnMotion" aria-pressed="false">⏸ 暂停动效</button>
+    <span class="spacer"></span>
+    <span style="font-size:12.6px;color:var(--muted)">图例可点击隐藏图层 · 步骤条可逐段查看</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="figwrap">
+        <svg id="sarcSvg" viewBox="190 100 620 300" role="img" aria-label="肌节动态：收缩时细肌丝向 M 线滑入，A 带恒定，I 带与 H 区变窄"><rect x="190" y="100" width="620" height="300" fill="#FFFFFF"/><rect x="364.0" y="150" width="272.0" height="170" fill="#E8EDF3"/><rect x="313.0" y="150" width="51.0" height="170" fill="#FFF8EE"><animate attributeName="x" values="313.0;313.0;355.5;355.5" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/><animate attributeName="width" values="51.0;51.0;8.5;8.5" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></rect><rect x="636.0" y="150" width="51.0" height="170" fill="#FFF8EE"><animate attributeName="x" values="636.0;636.0;593.5;593.5" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/><animate attributeName="width" values="51.0;51.0;8.5;8.5" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></rect><rect x="483.0" y="150" width="34.0" height="170" fill="#DDE6F0"><animate attributeName="x" values="483.0;483.0;500.0;500.0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/><animate attributeName="width" values="34.0;34.0;0;0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></rect><rect x="364.0" y="224.0" width="272.0" height="22" rx="11" fill="#4A6FA5" stroke="#2E4A73" stroke-width="1.4"/><line x1="378.0" y1="225.0" x2="378.0" y2="245.0" stroke="#7592BB" stroke-width="1.4" opacity="0.5"/><line x1="408.5" y1="225.0" x2="408.5" y2="245.0" stroke="#7592BB" stroke-width="1.4" opacity="0.5"/><line x1="439.0" y1="225.0" x2="439.0" y2="245.0" stroke="#7592BB" stroke-width="1.4" opacity="0.5"/><line x1="469.5" y1="225.0" x2="469.5" y2="245.0" stroke="#7592BB" stroke-width="1.4" opacity="0.5"/><line x1="500.0" y1="225.0" x2="500.0" y2="245.0" stroke="#7592BB" stroke-width="1.4" opacity="0.5"/><line x1="530.5" y1="225.0" x2="530.5" y2="245.0" stroke="#7592BB" stroke-width="1.4" opacity="0.5"/><line x1="561.0" y1="225.0" x2="561.0" y2="245.0" stroke="#7592BB" stroke-width="1.4" opacity="0.5"/><line x1="591.5" y1="225.0" x2="591.5" y2="245.0" stroke="#7592BB" stroke-width="1.4" opacity="0.5"/><line x1="622.0" y1="225.0" x2="622.0" y2="245.0" stroke="#7592BB" stroke-width="1.4" opacity="0.5"/><defs><radialGradient id="sh0" cx="34%" cy="28%" r="74%"><stop offset="0" stop-color="#A1B4D0"/><stop offset="0.62" stop-color="#4A6FA5"/><stop offset="1" stop-color="#38547D"/></radialGradient></defs><g class="med-flow"><line x1="350.0" y1="209.0" x2="350.0" y2="226.0" stroke="#2E4A73" stroke-width="6" stroke-linecap="round"/><ellipse cx="350.0" cy="243.0" rx="9" ry="12" fill="url(#sh0)" stroke="#2E4A73" stroke-width="1.1"><animateTransform attributeName="transform" type="rotate" values="0 350.0 243.0;-30 350.0 243.0;0 350.0 243.0" dur="1.60s" repeatCount="indefinite"/></ellipse></g><defs><radialGradient id="sh1" cx="34%" cy="28%" r="74%"><stop offset="0" stop-color="#A1B4D0"/><stop offset="0.62" stop-color="#4A6FA5"/><stop offset="1" stop-color="#38547D"/></radialGradient></defs><g class="med-flow"><line x1="426.0" y1="209.0" x2="438.0" y2="221.0" stroke="#2E4A73" stroke-width="6" stroke-linecap="round"/><ellipse cx="450.0" cy="233.0" rx="9" ry="12" fill="url(#sh1)" stroke="#2E4A73" stroke-width="1.1"><animateTransform attributeName="transform" type="rotate" values="0 450.0 233.0;-30 450.0 233.0;0 450.0 233.0" dur="1.85s" repeatCount="indefinite"/></ellipse></g><defs><radialGradient id="sh2" cx="34%" cy="28%" r="74%"><stop offset="0" stop-color="#A1B4D0"/><stop offset="0.62" stop-color="#4A6FA5"/><stop offset="1" stop-color="#38547D"/></radialGradient></defs><g class="med-flow"><line x1="502.0" y1="209.0" x2="502.0" y2="226.0" stroke="#2E4A73" stroke-width="6" stroke-linecap="round"/><ellipse cx="502.0" cy="243.0" rx="9" ry="12" fill="url(#sh2)" stroke="#2E4A73" stroke-width="1.1"><animateTransform attributeName="transform" type="rotate" values="0 502.0 243.0;-30 502.0 243.0;0 502.0 243.0" dur="2.10s" repeatCount="indefinite"/></ellipse></g><defs><radialGradient id="sh3" cx="34%" cy="28%" r="74%"><stop offset="0" stop-color="#A1B4D0"/><stop offset="0.62" stop-color="#4A6FA5"/><stop offset="1" stop-color="#38547D"/></radialGradient></defs><g class="med-flow"><line x1="578.0" y1="209.0" x2="590.0" y2="221.0" stroke="#2E4A73" stroke-width="6" stroke-linecap="round"/><ellipse cx="602.0" cy="233.0" rx="9" ry="12" fill="url(#sh3)" stroke="#2E4A73" stroke-width="1.1"><animateTransform attributeName="transform" type="rotate" values="0 602.0 233.0;-30 602.0 233.0;0 602.0 233.0" dur="2.35s" repeatCount="indefinite"/></ellipse></g><defs><radialGradient id="sh4" cx="34%" cy="28%" r="74%"><stop offset="0" stop-color="#A1B4D0"/><stop offset="0.62" stop-color="#4A6FA5"/><stop offset="1" stop-color="#38547D"/></radialGradient></defs><g class="med-flow"><line x1="654.0" y1="209.0" x2="654.0" y2="226.0" stroke="#2E4A73" stroke-width="6" stroke-linecap="round"/><ellipse cx="654.0" cy="243.0" rx="9" ry="12" fill="url(#sh4)" stroke="#2E4A73" stroke-width="1.1"><animateTransform attributeName="transform" type="rotate" values="0 654.0 243.0;-30 654.0 243.0;0 654.0 243.0" dur="1.60s" repeatCount="indefinite"/></ellipse></g><defs><radialGradient id="sh5" cx="34%" cy="28%" r="74%"><stop offset="0" stop-color="#A1B4D0"/><stop offset="0.62" stop-color="#4A6FA5"/><stop offset="1" stop-color="#38547D"/></radialGradient></defs><g class="med-flow"><line x1="350.0" y1="261.0" x2="362.0" y2="249.0" stroke="#2E4A73" stroke-width="6" stroke-linecap="round"/><ellipse cx="374.0" cy="237.0" rx="9" ry="12" fill="url(#sh5)" stroke="#2E4A73" stroke-width="1.1"><animateTransform attributeName="transform" type="rotate" values="0 374.0 237.0;-30 374.0 237.0;0 374.0 237.0" dur="1.85s" repeatCount="indefinite"/></ellipse></g><defs><radialGradient id="sh6" cx="34%" cy="28%" r="74%"><stop offset="0" stop-color="#A1B4D0"/><stop offset="0.62" stop-color="#4A6FA5"/><stop offset="1" stop-color="#38547D"/></radialGradient></defs><g class="med-flow"><line x1="426.0" y1="261.0" x2="426.0" y2="244.0" stroke="#2E4A73" stroke-width="6" stroke-linecap="round"/><ellipse cx="426.0" cy="227.0" rx="9" ry="12" fill="url(#sh6)" stroke="#2E4A73" stroke-width="1.1"><animateTransform attributeName="transform" type="rotate" values="0 426.0 227.0;-30 426.0 227.0;0 426.0 227.0" dur="2.10s" repeatCount="indefinite"/></ellipse></g><defs><radialGradient id="sh7" cx="34%" cy="28%" r="74%"><stop offset="0" stop-color="#A1B4D0"/><stop offset="0.62" stop-color="#4A6FA5"/><stop offset="1" stop-color="#38547D"/></radialGradient></defs><g class="med-flow"><line x1="502.0" y1="261.0" x2="514.0" y2="249.0" stroke="#2E4A73" stroke-width="6" stroke-linecap="round"/><ellipse cx="526.0" cy="237.0" rx="9" ry="12" fill="url(#sh7)" stroke="#2E4A73" stroke-width="1.1"><animateTransform attributeName="transform" type="rotate" values="0 526.0 237.0;-30 526.0 237.0;0 526.0 237.0" dur="2.35s" repeatCount="indefinite"/></ellipse></g><defs><radialGradient id="sh8" cx="34%" cy="28%" r="74%"><stop offset="0" stop-color="#A1B4D0"/><stop offset="0.62" stop-color="#4A6FA5"/><stop offset="1" stop-color="#38547D"/></radialGradient></defs><g class="med-flow"><line x1="578.0" y1="261.0" x2="578.0" y2="244.0" stroke="#2E4A73" stroke-width="6" stroke-linecap="round"/><ellipse cx="578.0" cy="227.0" rx="9" ry="12" fill="url(#sh8)" stroke="#2E4A73" stroke-width="1.1"><animateTransform attributeName="transform" type="rotate" values="0 578.0 227.0;-30 578.0 227.0;0 578.0 227.0" dur="1.60s" repeatCount="indefinite"/></ellipse></g><defs><radialGradient id="sh9" cx="34%" cy="28%" r="74%"><stop offset="0" stop-color="#A1B4D0"/><stop offset="0.62" stop-color="#4A6FA5"/><stop offset="1" stop-color="#38547D"/></radialGradient></defs><g class="med-flow"><line x1="654.0" y1="261.0" x2="666.0" y2="249.0" stroke="#2E4A73" stroke-width="6" stroke-linecap="round"/><ellipse cx="678.0" cy="237.0" rx="9" ry="12" fill="url(#sh9)" stroke="#2E4A73" stroke-width="1.1"><animateTransform attributeName="transform" type="rotate" values="0 678.0 237.0;-30 678.0 237.0;0 678.0 237.0" dur="1.85s" repeatCount="indefinite"/></ellipse></g><g class="med-flow"><line x1="313.0" y1="165.0" x2="313.0" y2="305.0" stroke="#37474F" stroke-width="5" stroke-linecap="round"><animate attributeName="x1" values="313.0;313.0;355.5" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/><animate attributeName="x2" values="313.0;313.0;355.5" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></line></g><g class="med-flow"><line x1="687.0" y1="165.0" x2="687.0" y2="305.0" stroke="#37474F" stroke-width="5" stroke-linecap="round"><animate attributeName="x1" values="687.0;687.0;644.5" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/><animate attributeName="x2" values="687.0;687.0;644.5" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></line></g><g class="med-flow"><line x1="313.0" y1="201.0" x2="483.0" y2="201.0" stroke="#C97A5B" stroke-width="8" stroke-linecap="round"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;42.5 0;42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></line><polyline points="313.0,206.0 327.2,196.0 341.3,206.0 355.5,196.0 369.7,206.0 383.8,196.0 398.0,206.0 412.2,196.0 426.3,206.0 440.5,196.0 454.7,206.0 468.8,196.0 483.0,206.0" fill="none" stroke="#E0A33C" stroke-width="2.4" opacity="0.92"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;42.5 0;42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></polyline><circle cx="357.2" cy="201.0" r="4.8" fill="#8E5BD8" fill-opacity="0.9" stroke="white" stroke-width="0.9"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;42.5 0;42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></circle><circle cx="401.4" cy="201.0" r="4.8" fill="#8E5BD8" fill-opacity="0.9" stroke="white" stroke-width="0.9"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;42.5 0;42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></circle><circle cx="445.6" cy="201.0" r="4.8" fill="#8E5BD8" fill-opacity="0.9" stroke="white" stroke-width="0.9"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;42.5 0;42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></circle></g><g class="med-flow"><line x1="313.0" y1="269.0" x2="483.0" y2="269.0" stroke="#C97A5B" stroke-width="8" stroke-linecap="round"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;42.5 0;42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></line><polyline points="313.0,274.0 327.2,264.0 341.3,274.0 355.5,264.0 369.7,274.0 383.8,264.0 398.0,274.0 412.2,264.0 426.3,274.0 440.5,264.0 454.7,274.0 468.8,264.0 483.0,274.0" fill="none" stroke="#E0A33C" stroke-width="2.4" opacity="0.92"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;42.5 0;42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></polyline><circle cx="357.2" cy="269.0" r="4.8" fill="#8E5BD8" fill-opacity="0.9" stroke="white" stroke-width="0.9"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;42.5 0;42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></circle><circle cx="401.4" cy="269.0" r="4.8" fill="#8E5BD8" fill-opacity="0.9" stroke="white" stroke-width="0.9"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;42.5 0;42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></circle><circle cx="445.6" cy="269.0" r="4.8" fill="#8E5BD8" fill-opacity="0.9" stroke="white" stroke-width="0.9"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;42.5 0;42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></circle></g><g class="med-flow"><line x1="517.0" y1="201.0" x2="687.0" y2="201.0" stroke="#C97A5B" stroke-width="8" stroke-linecap="round"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;-42.5 0;-42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></line><polyline points="517.0,206.0 531.2,196.0 545.3,206.0 559.5,196.0 573.7,206.0 587.8,196.0 602.0,206.0 616.2,196.0 630.3,206.0 644.5,196.0 658.7,206.0 672.8,196.0 687.0,206.0" fill="none" stroke="#E0A33C" stroke-width="2.4" opacity="0.92"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;-42.5 0;-42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></polyline><circle cx="561.2" cy="201.0" r="4.8" fill="#8E5BD8" fill-opacity="0.9" stroke="white" stroke-width="0.9"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;-42.5 0;-42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></circle><circle cx="605.4" cy="201.0" r="4.8" fill="#8E5BD8" fill-opacity="0.9" stroke="white" stroke-width="0.9"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;-42.5 0;-42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></circle><circle cx="649.6" cy="201.0" r="4.8" fill="#8E5BD8" fill-opacity="0.9" stroke="white" stroke-width="0.9"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;-42.5 0;-42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></circle></g><g class="med-flow"><line x1="517.0" y1="269.0" x2="687.0" y2="269.0" stroke="#C97A5B" stroke-width="8" stroke-linecap="round"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;-42.5 0;-42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></line><polyline points="517.0,274.0 531.2,264.0 545.3,274.0 559.5,264.0 573.7,274.0 587.8,264.0 602.0,274.0 616.2,264.0 630.3,274.0 644.5,264.0 658.7,274.0 672.8,264.0 687.0,274.0" fill="none" stroke="#E0A33C" stroke-width="2.4" opacity="0.92"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;-42.5 0;-42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></polyline><circle cx="561.2" cy="269.0" r="4.8" fill="#8E5BD8" fill-opacity="0.9" stroke="white" stroke-width="0.9"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;-42.5 0;-42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></circle><circle cx="605.4" cy="269.0" r="4.8" fill="#8E5BD8" fill-opacity="0.9" stroke="white" stroke-width="0.9"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;-42.5 0;-42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></circle><circle cx="649.6" cy="269.0" r="4.8" fill="#8E5BD8" fill-opacity="0.9" stroke="white" stroke-width="0.9"><animateTransform attributeName="transform" type="translate" values="0 0;0 0;-42.5 0;-42.5 0" keyTimes="0;0.30;0.75;1" dur="9s" repeatCount="indefinite"/></circle></g><line x1="500" y1="219.0" x2="500" y2="251.0" stroke="#546E7A" stroke-width="3.5" stroke-dasharray="4 4"/><text x="500.0" y="128.0" text-anchor="middle" font-size="14" fill="#2E4A73" font-weight="700">A 带（长度恒定，收缩时不变）</text><text x="338.5" y="128.0" text-anchor="middle" font-size="12" fill="#96523A" font-weight="700">I 带</text><text x="661.5" y="128.0" text-anchor="middle" font-size="12" fill="#96523A" font-weight="700">I 带</text><text x="313.0" y="346.0" text-anchor="middle" font-size="11" fill="#37474F" font-weight="700">Z 线</text><text x="687.0" y="346.0" text-anchor="middle" font-size="11" fill="#37474F" font-weight="700">Z 线</text><text x="500.0" y="346.0" text-anchor="middle" font-size="11" fill="#546E7A" font-weight="700">M 线</text><text x="500.0" y="168.0" text-anchor="middle" font-size="11.5" fill="#5C6B73" font-weight="700">H 区</text><text x="500.0" y="372.0" text-anchor="middle" font-size="12" fill="#E2483C" font-weight="700">← 收缩：细肌丝向 M 线滑入，Z 线靠拢  →</text></svg>
+        
+      </div>
+      <div class="legend"><button aria-pressed="true" data-layer="thick" title="点击隐藏/显示：粗肌丝（肌球蛋白）"><i class="sw" style="background:#4A6FA5"></i>粗肌丝（肌球蛋白）</button><button aria-pressed="true" data-layer="thin" title="点击隐藏/显示：细肌丝（肌动蛋白）"><i class="sw" style="background:#C97A5B"></i>细肌丝（肌动蛋白）</button><button aria-pressed="true" data-layer="tropo" title="点击隐藏/显示：原肌球蛋白"><i class="sw" style="background:#E0A33C"></i>原肌球蛋白</button><button aria-pressed="true" data-layer="troponin" title="点击隐藏/显示：肌钙蛋白"><i class="sw" style="background:#8E5BD8"></i>肌钙蛋白</button></div>
+      <div class="steps"><button aria-pressed="false"><span>① rigor 结合态</span><small>无</small></button><button aria-pressed="false"><span>② ATP 结合 → 解离</span><small>结合</small></button><button aria-pressed="false"><span>③ ATP 水解 → 复位</span><small>水解</small></button><button aria-pressed="false"><span>④ Pi 释放 → 动力冲程</span><small>ADP+Pi 释放</small></button><button aria-pressed="false"><span>⑤ ADP 释放</span><small>回到起始</small></button></div>
+      <div class="note" id="stepDesc">点步骤条，可逐段查看滑膜液的完整循环。</div>
+    </div>
+
+    <div class="card info">
+      
+<div id="caInfo">
+  <h3 style="color:#1d4e89">钙离子开关：为什么肌肉能"听指令"收缩</h3>
+  <p>静息时胞质 Ca²⁺ 浓度 <b>&lt;10⁻⁷ mol/L</b>，原肌球蛋白横卧在肌动蛋白双螺旋沟上，
+     <b>挡住横桥结合位点</b>，肌球蛋白头碰不到肌动蛋白 → 肌肉舒张。</p>
+  <p>动作电位经 T 管传至肌质网，Ca²⁺ 释放使浓度升至 <b>10⁻⁵ mol/L</b>（升高约 100 倍）。
+     Ca²⁺ 结合<b>肌钙蛋白 C（TnC）</b> → 构象改变 → 牵动原肌球蛋白滚入沟内 →
+     结合位点暴露 → 横桥可结合并摆动 → 肌肉收缩。</p>
+  <p style="margin-top:8px">
+    <span class="tag num">Ca²⁺ 静息 &lt;10⁻⁷ mol/L</span>
+    <span class="tag num">激活 10⁻⁵ mol/L</span>
+    <span class="tag num">浓度比 ≈100×</span>
+  </p>
+  <p style="font-size:12.6px;color:#63727e">
+    注意：Ca²⁺ 不是"燃料"，ATP 才是。Ca²⁺ 只负责<b>把开关拨到允许状态</b>；
+    真正拉动细肌丝的能量全部来自 ATP 水解。</p>
+</div>
+<div class="ca-panel">
+  <div class="ca-row"><span class="ca-k">肌钙蛋白</span><span class="ca-v" id="caTn">未结合 Ca²⁺</span></div>
+  <div class="ca-row"><span class="ca-k">原肌球蛋白</span><span class="ca-v" id="caTm">覆盖结合位点</span></div>
+  <div class="ca-row"><span class="ca-k">横桥</span><span class="ca-v" id="caCb">不能形成</span></div>
+  <div class="ca-row"><span class="ca-k">肌肉状态</span><span class="ca-v" id="caMs">舒张</span></div>
+</div>
+
+<h3 style="margin-top:18px">三种长度的肌节几何（由模型算出）</h3>
+<table>
+  <thead><tr><th>肌节长</th><th>A 带</th><th>I 带</th><th>H 区</th><th>每侧重叠</th></tr></thead>
+  <tbody>
+    <tr><th>3.10 μm（拉长）</th><td class="n">1.60</td><td class="n">1.50</td><td class="n">1.10</td><td class="n">0.25</td></tr>
+    <tr><th>2.20 μm（静息）</th><td class="n">1.60</td><td class="n">0.60</td><td class="n">0.20</td><td class="n">0.70</td></tr>
+    <tr><th>1.70 μm（收缩）</th><td class="n">1.60</td><td class="n">0.10</td><td class="p">0</td><td class="n">0.80</td></tr>
+  </tbody>
+</table>
+<p style="font-size:12.4px;color:#63727e;margin-top:6px">
+  注意 A 带三行都是 1.60 μm —— <b>这就是"滑行"而非"缩短"的证据</b>。
+  I 带与 H 区则单调变窄，H 区在 1.70 μm 时已完全消失（细肌丝在中线相遇）。</p>
+
+<h3 style="margin-top:18px">临床与生理联系</h3>
+<table style="font-size:12.6px">
+  <thead><tr><th>现象</th><th>分子机制</th><th>要点</th></tr></thead>
+  <tbody>
+    <tr><th>尸僵</th><td>ATP 耗竭 → 横桥无法解离（卡在 ①rigor 态），肌肉僵硬</td><td style="font-size:12px">死亡后 2–6 h 出现，12 h 全盛，24–48 h 消退（随蛋白分解）</td></tr><tr><th>肌肉疲劳</th><td>Pi 蓄积 + H⁺ 升高 → 横桥循环速率下降、Ca²⁺ 敏感性降低</td><td style="font-size:12px">收缩力下降，恢复需补充 ATP 与清除代谢产物</td></tr><tr><th>恶性高热</th><td>RYR1 突变 → 肌质网 Ca²⁺ 持续外漏 → 横桥循环失控产热</td><td style="font-size:12px">麻醉触发，体温骤升，丹曲林为特异性解救药</td></tr><tr><th>心肌收缩力调节</th><td>Ca²⁺ 瞬变幅度与肌节长度（Frank-Starling）共同决定收缩力</td><td style="font-size:12px">前负荷↑ → 肌节接近最适长度 2.0–2.2 μm → 重叠适度 → 力↑</td></tr><tr><th>肌节长度-张力关系</th><td>过长（>2.2 μm）重叠减少；过短（<1.5 μm）细肌丝碰撞、阻碍</td><td style="font-size:12px">最适长度 ≈2.0–2.2 μm，此时可获得最大主动张力</td></tr>
+  </tbody>
+</table>
+
+      <div class="rangebar"><label for="rngCa">Ca²⁺ 浓度（相对激活阈值）</label><input id="rngCa" type="range" min="0" max="2" step="0.1" value="0.2" aria-label="Ca²⁺ 浓度（相对激活阈值）"><span class="readout" id="rngCa_out">0.2×</span></div>
+      
+    </div>
+  </div>
+
+  <footer>数据依据：肌节静息长度 2.0–2.2 μm；A 带（粗肌丝）1.5–1.65 μm 且收缩时恒定；细肌丝 ≈1.0 μm、粗肌丝 ≈1.6 μm；横桥扭动 ≈45°；单次循环 ≈50 ms；每步力 ≈4–6 pN；胞质 Ca²⁺ 静息 &lt;10⁻⁷、激活 10⁻⁵ mol/L。所有带区宽度由 medsarcomere.Sarcomere 按几何关系算出，非手绘估计。</footer>
+</div>
+<script>
+const CX=500, CY=280;
+const STEP_DESC=["点步骤条，逐段查看横桥循环的五个状态。", "<b>① rigor 结合态</b>：肌球蛋白头部与肌动蛋白呈<b>高亲和力</b>结合。此时若没有 ATP，头部无法解离——<b>尸僵</b>就是 ATP 耗竭后全部横桥卡在这一步。", "<b>② ATP 结合 → 解离</b>：ATP 结合到头部，诱导构象改变，亲和力骤降，头部脱离肌动蛋白。<b>ATP 结合是解离的唯一条件</b>，这是整个循环的开关。", "<b>③ ATP 水解 → 复位</b>：ATP→ADP+Pi，化学能储存在头部张力中；头部沿细肌丝前移约 <b>5 nm</b> 并转成垂直（预备冲程），像给弹簧上弦。", "<b>④ Pi 释放 → 动力冲程</b>：Pi 释放触发强结合，头部向杆臂方向扭动约 <b>45°</b>，拖动细肌丝向 M 线滑行，产生 <b>4–6 pN</b> 的力。这是唯一做功的一步。", "<b>⑤ ADP 释放 → 回到起始</b>：ADP 释放，头部回到 rigor 构象等待下一个 ATP。若 Ca²⁺ 仍高，循环持续（<b>≈50 ms/次</b>）；Ca²⁺ 下降则循环停止、肌肉舒张。"];
+
+(function(){
+  const body=document.body;
+  const $=s=>document.querySelector(s);
+  const $$=s=>Array.from(document.querySelectorAll(s));
+
+  /* ---------- 1 状态机 ---------- */
+  let patho=false;
+  const btnState=$('#btnState'), pill=$('#statePill'), badge=$('#figBadge');
+
+  function applyState(){
+    body.classList.toggle('patho', patho);
+    if(btnState){
+      btnState.setAttribute('aria-pressed', patho?'true':'false');
+      const off=btnState.dataset.labelOff||'', on=btnState.dataset.labelOn||'';
+      btnState.textContent = patho ? off : on;
+      btnState.classList.toggle('patho', patho);
+    }
+    if(pill) pill.textContent = patho ? (pill.dataset.on||'') : (pill.dataset.off||'');
+    if(badge) badge.textContent = patho ? (badge.dataset.on||'') : (badge.dataset.off||'');
+    if(!btnState && !badge) return;
+    $$('.only-normal').forEach(el=>el.style.display = patho?'none':'');
+    $$('.only-patho').forEach(el=>el.style.display = patho?'':'none');
+    if(typeof updateReadout==='function') updateReadout();
+  }
+  if(btnState) btnState.addEventListener('click',()=>{ patho=!patho; applyState(); });
+
+  /* ---------- 2 动效开关 ---------- */
+  let paused=false;
+  const btnMotion=$('#btnMotion');
+  btnMotion.addEventListener('click',()=>{
+    paused=!paused;
+    $$('svg').forEach(s=>{ paused?s.pauseAnimations():s.unpauseAnimations(); });
+    btnMotion.setAttribute('aria-pressed', paused?'true':'false');
+    btnMotion.textContent = paused?'▶ 播放动效':'⏸ 暂停动效';
+    body.classList.toggle('motion-off', paused);
+  });
+
+  /* ---------- 3 图例 = 图层开关 ---------- */
+  $$('.legend button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const on=b.getAttribute('aria-pressed')!=='false';
+      b.setAttribute('aria-pressed', on?'false':'true');
+      const layer=b.dataset.layer;
+      $$('[data-layer="'+layer+'"]').forEach(el=>{
+        el.style.display = on?'none':'';
+      });
+    });
+  });
+
+  /* ---------- 4 步骤条：逐段看 ---------- */
+  let curStep=0;
+  const stepBtns=$$('.steps button');
+  function setStep(i){
+    curStep=i;
+    stepBtns.forEach((b,k)=>b.setAttribute('aria-pressed', k===i?'true':'false'));
+    body.classList.toggle('stepping', i>0);
+    $$('[data-step]').forEach(el=>{
+      const on = (i===0) || (parseInt(el.dataset.step,10)===i);
+      el.toggleAttribute('data-step-on', on && i>0);
+      el.style.opacity = (i===0||on)?'':'0.18';
+      el.style.transition='opacity .3s';
+    });
+    const txt=$('#stepDesc');
+    if(txt) txt.innerHTML = STEP_DESC[i] || '';
+  }
+  stepBtns.forEach((b,k)=>b.addEventListener('click',()=>{
+    setStep(curStep===k?0:k);
+  }));
+
+  /* ---------- 5 可选：形态缩放滑块（仅当页面存在 #rngLevel 时启用） ---------- */
+  const rng=$('#rngLevel'), out=$('#levelOut');
+  let synovLevel=1.0;
+  function updateReadout(){
+    if(!rng) return;
+    const v=synovLevel;
+    if(out) out.textContent = v.toFixed(1)+'×';
+    // 腔体膨胀：缩放积液层
+    const cav=$('#med-cavity');
+    if(cav){
+      const k = 0.94 + 0.20*(v-1);
+      cav.setAttribute('transform',
+        'translate('+(CX*(1-k))+','+(CY*(1-k))+') scale('+k+')');
+    }
+    const bur=$('#med-bursa');
+    if(bur){
+      const k2 = 0.96 + 0.16*(v-1);
+      bur.setAttribute('transform',
+        'translate('+(CX*(1-k2))+','+(CY*(1-k2))+') scale('+k2+')');
+    }
+    const cells=$('#cellsVal');
+    if(cells) cells.textContent = Math.round(200 + 1200*(v-1)) + ' 个/μL';
+    const vol=$('#volVal');
+    if(vol) vol.textContent = (1.0 + 24.0*(v-1)).toFixed(0) + ' mL';
+  }
+  if(rng){
+    rng.addEventListener('input',()=>{
+      synovLevel=parseFloat(rng.value);
+      updateReadout();
+    });
+  }
+
+  applyState();
+  setStep(0);
+
+  /* reduced-motion 兜底：SMIL 不受 CSS 影响，必须显式暂停 */
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    $$('svg').forEach(s=>s.pauseAnimations());
+    btnMotion.textContent='▶ 播放动效（系统已降低动态效果）';
+  }
+})();
+
+setTimeout(()=>{
+  const r=document.getElementById('rngLevel');
+  if(r){ r.dispatchEvent(new Event('input')); }
+},60);
+</script>
+
+<script>
+(function(){
+  var rng=document.getElementById('rngCa');
+  if(!rng) return;
+  var Tn=document.getElementById('caTn'),Tm=document.getElementById('caTm'),
+      Cb=document.getElementById('caCb'),Ms=document.getElementById('caMs');
+  function upd(){
+    var v=parseFloat(rng.value);
+    var on=v>=1.0;
+    document.body.classList.toggle('ca-on',on);
+    Tn.textContent = on?'已结合 Ca²⁺（TnC 构象改变）':'未结合 Ca²⁺';
+    Tm.textContent = on?'滚入双螺旋沟，暴露结合位点':'横卧沟上，覆盖结合位点';
+    Cb.textContent  = on?'可结合并摆动（循环启动）':'不能形成横桥';
+    Ms.textContent  = on?'收缩':'舒张';
+    var out=document.getElementById('rngCa_out');
+    if(out) out.textContent = (v*5).toFixed(1)+'×10⁻⁷ mol/L';
+  }
+  rng.addEventListener('input',upd);
+  setTimeout(upd,80);
+})();
+</script>
+</body>
+</html>
