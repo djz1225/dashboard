@@ -1,8 +1,9 @@
 {
- "total": 5,
+ "total": 6,
  "subjects": [
   "运动系统",
   "心血管",
+  "内分泌与代谢",
   "血液",
   "免疫"
  ],
@@ -12,16 +13,16 @@
    "subject": "血液",
    "subject_slug": "heme",
    "title": "弥散性血管内凝血（DIC）",
-   "summary": "凝血与纤溶同时失控：微血栓形成、因子耗竭、继发纤溶亢进，最终出血与器官衰竭并存。",
+   "summary": "动态版：可交互查看机制演进",
    "tags": [
-    "DIC",
-    "凝血",
-    "微血栓",
-    "纤溶",
-    "血液系统"
+    "dic"
    ],
-   "updated": "2026-11-02 18:11",
+   "updated": "2026-11-02 18:32",
    "versions": {
+    "motion": {
+     "file": "motion.html",
+     "caption": "动态版：分步查看机制演进"
+    },
     "mechanism": {
      "file": "mechanism.svg",
      "caption": "弥散性血管内凝血（DIC）：机制图（供题目引用）"
@@ -29,8 +30,7 @@
    },
    "elements": [
     "particle_path",
-    "arrow_act",
-    "arrow_inh"
+    "swelling_rings"
    ],
    "extra_files": []
   },
@@ -39,15 +39,16 @@
    "subject": "免疫",
    "subject_slug": "immuno",
    "title": "过敏性紫癜（IgA 血管炎）",
-   "summary": "IgA 免疫复合物沉积小血管壁致白细胞碎裂性血管炎，表现为皮肤、关节、胃肠、肾脏四联征。",
+   "summary": "动态版：可交互查看机制演进",
    "tags": [
-    "过敏性紫癜",
-    "IgA血管炎",
-    "紫癜",
-    "血管炎"
+    "hsp-iga-vasculitis"
    ],
-   "updated": "2026-11-02 18:11",
+   "updated": "2026-11-02 18:32",
    "versions": {
+    "motion": {
+     "file": "motion.html",
+     "caption": "动态版：分步查看机制演进"
+    },
     "mechanism": {
      "file": "mechanism.svg",
      "caption": "过敏性紫癜（IgA 血管炎）：机制图（供题目引用）"
@@ -55,8 +56,7 @@
    },
    "elements": [
     "antibody_y",
-    "arrow_act",
-    "immune_cell"
+    "particle_path"
    ],
    "extra_files": []
   },
@@ -100,6 +100,47 @@
     "villain_wave"
    ],
    "extra_files": []
+  },
+  {
+   "slug": "metformin-moa",
+   "subject": "内分泌与代谢",
+   "subject_slug": "endo",
+   "title": "二甲双胍作用机制",
+   "summary": "一线降糖药：抑制线粒体复合物Ⅰ → ATP↓/AMP↑ → AMPK 激活，减少肝糖输出、改善外周摄取、上调肠道 GLP-1。",
+   "tags": [
+    "二甲双胍",
+    "AMPK",
+    "糖异生",
+    "糖尿病",
+    "GLP-1"
+   ],
+   "updated": "2026-11-02 18:29",
+   "versions": {
+    "mechanism": {
+     "file": "mechanism.svg",
+     "caption": "机制版总览：三条通路导览 + 完整因果链（分图见同目录）"
+    }
+   },
+   "elements": [
+    "drug_pill",
+    "particle_path",
+    "arrow_act",
+    "arrow_inh"
+   ],
+   "extra_files": [
+    [
+     "mech-ampk.svg",
+     "mech-ampk"
+    ],
+    [
+     "mech-liver.svg",
+     "mech-liver"
+    ],
+    [
+     "mech-peripheral.svg",
+     "mech-peripheral"
+    ]
+   ]
   },
   {
    "slug": "sarcomere-sliding",
@@ -161,24 +202,23 @@
    "subject": "心血管",
    "subject_slug": "cardio",
    "title": "外科休克分期",
-   "summary": "代偿期、失代偿期、不可逆期三段演进；血压是晚期指标，早期看意识、皮肤、尿量与乳酸。",
+   "summary": "动态版：可交互查看机制演进",
    "tags": [
-    "休克",
-    "微循环",
-    "代偿",
-    "MODS",
-    "外科总论"
+    "shock-stages"
    ],
-   "updated": "2026-11-02 18:11",
+   "updated": "2026-11-02 18:32",
    "versions": {
+    "motion": {
+     "file": "motion.html",
+     "caption": "动态版：分步查看机制演进"
+    },
     "mechanism": {
      "file": "mechanism.svg",
      "caption": "外科休克分期：机制图（供题目引用）"
     }
    },
    "elements": [
-    "particle_path",
-    "arrow_act"
+    "particle_path"
    ],
    "extra_files": []
   }
