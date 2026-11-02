@@ -876,3 +876,4 @@ if __name__ == "__main__":
 # rebuild: 纳入 med/<slug>/ 子目录图库文件
 # rebuild: typography v5 med gallery (7b78)
 # rebuild: quiz figs + knee v5 (ae56)
+# rebuild: metformin + 3 motions (3990)
