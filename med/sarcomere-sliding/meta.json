@@ -1,0 +1,43 @@
+{
+ "slug": "sarcomere-sliding",
+ "subject": "运动系统",
+ "subject_slug": "msk",
+ "title": "肌丝滑行机制",
+ "summary": "横纹肌收缩的分子基础：细肌丝在粗肌丝间向 M 线滑入，A 带恒定、I 带与 H 区缩短，肌节变短而肌丝自身长度不变。",
+ "tags": [
+  "肌丝滑行",
+  "肌节",
+  "横桥循环",
+  "骨骼肌",
+  "钙",
+  "ATP"
+ ],
+ "updated": "2026-11-02 16:20",
+ "versions": {
+  "mechanism": {
+   "file": "mechanism.svg",
+   "caption": "机制版：兴奋-收缩耦联 → 钙开关 → 横桥循环三条通路"
+  },
+  "anatomy": {
+   "file": "anatomy.svg",
+   "caption": "解剖版：肌纤维 → 肌原纤维 → 肌节的分级结构与真实尺寸"
+  },
+  "motion": {
+   "file": "motion.html",
+   "caption": "动态版：细肌丝真实滑入、Ca²⁺ 开关、五步循环分步查看"
+  }
+ },
+ "elements": [
+  "sarcomere",
+  "crossbridge",
+  "troponin",
+  "tropomyosin",
+  "thin_filament",
+  "thick_filament",
+  "zline",
+  "mline",
+  "zoom_badge",
+  "scale_bar",
+  "particle_path"
+ ]
+}
