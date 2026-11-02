@@ -873,3 +873,4 @@ def main():
 if __name__ == "__main__":
     main()
 # rebuild-trigger: med interactive page
+# rebuild: 纳入 med/<slug>/ 子目录图库文件
