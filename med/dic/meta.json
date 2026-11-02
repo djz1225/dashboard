@@ -1,0 +1,27 @@
+{
+ "slug": "dic",
+ "subject": "血液",
+ "subject_slug": "heme",
+ "title": "弥散性血管内凝血（DIC）",
+ "summary": "凝血与纤溶同时失控：微血栓形成、因子耗竭、继发纤溶亢进，最终出血与器官衰竭并存。",
+ "tags": [
+  "DIC",
+  "凝血",
+  "微血栓",
+  "纤溶",
+  "血液系统"
+ ],
+ "updated": "2026-11-02 18:11",
+ "versions": {
+  "mechanism": {
+   "file": "mechanism.svg",
+   "caption": "弥散性血管内凝血（DIC）：机制图（供题目引用）"
+  }
+ },
+ "elements": [
+  "particle_path",
+  "arrow_act",
+  "arrow_inh"
+ ],
+ "extra_files": []
+}
