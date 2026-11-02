@@ -1,0 +1,41 @@
+{
+ "slug": "knee-synovial-fluid",
+ "subject": "运动系统",
+ "subject_slug": "msk",
+ "title": "膝关节滑膜液循环",
+ "summary": "滑膜液分泌—泵送—营养—清除闭环；滑膜炎时四环节同步恶化，形成积液正反馈。",
+ "tags": [
+  "滑膜液",
+  "滑膜炎",
+  "膝关节",
+  "半月板",
+  "积液"
+ ],
+ "updated": "2026-11-02 18:11",
+ "versions": {
+  "mechanism": {
+   "file": "mechanism.svg",
+   "caption": "机制版：四环节闭环 + 滑膜炎同步恶化"
+  },
+  "anatomy": {
+   "file": "anatomy.svg",
+   "caption": "解剖版：矢状剖面，标注落在空白侧"
+  },
+  "motion": {
+   "file": "motion.html",
+   "caption": "动态版：可切换正常/滑膜炎，积液滑块联动"
+  }
+ },
+ "elements": [
+  "synovium",
+  "meniscus",
+  "particle_path",
+  "patella_bursa",
+  "hoffa",
+  "bone",
+  "scale_bar",
+  "pannus",
+  "villain_wave"
+ ],
+ "extra_files": []
+}
