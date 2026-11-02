@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>过敏性紫癜（IgA 血管炎）· 动态</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --ink:#17222b; --muted:#4E5B64; --line:#e3e9ef; --panel:#f7fafc;
+  --normal:#2c5f9e; --patho:#c0392b; --fluid:#7FB5E6; --accent:#6b46c1;
+  --bg:#eef3f8;
+}
+html,body{margin:0}
+body{
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",
+              "Noto Sans CJK SC",system-ui,sans-serif;
+  color:var(--ink); background:var(--bg); line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.app{max-width:1280px; margin:0 auto; padding:28px 20px 72px}
+header h1{font-size:26px; margin:0 0 6px; letter-spacing:.2px}
+header .sub{color:var(--muted); font-size:14.5px; margin:0}
+header .warn{font-size:12.8px; color:#5F6C75; margin-top:8px}
+
+.toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  margin:20px 0 14px; padding:12px 14px; background:#fff;
+  border:1px solid var(--line); border-radius:14px}
+.btn{
+  border:1px solid var(--line); background:#fff; color:var(--ink);
+  padding:8px 15px; border-radius:999px; font-size:14px; font-weight:600;
+  cursor:pointer; transition:.18s; font-family:inherit;
+}
+.btn:hover{border-color:#c3d3e2; background:#f4f9ff}
+.btn:focus-visible{outline:2.5px solid var(--accent); outline-offset:2px}
+.btn[aria-pressed="true"]{background:var(--normal); color:#fff; border-color:var(--normal)}
+.btn.patho[aria-pressed="true"]{background:var(--patho); border-color:var(--patho)}
+.state-pill{
+  padding:7px 14px; border-radius:999px; font-size:13.5px; font-weight:700;
+  background:#e8f1fb; color:#1d4e89; border:1px solid #cfe2f6;
+}
+body.patho .state-pill{background:#fceceb; color:#a3382c; border-color:#f2cfcb}
+.spacer{flex:1}
+
+.grid{display:grid; grid-template-columns:2.35fr 1fr; gap:16px; align-items:start}
+@media(max-width:960px){.grid{grid-template-columns:1fr}}
+.card{background:#fff; border:1px solid var(--line); border-radius:16px;
+  padding:14px; box-shadow:0 1px 2px rgba(16,32,48,.04)}
+.figwrap{position:relative}
+.figwrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+.figwrap svg{width:100%; height:auto; display:block; border-radius:10px;
+  min-width:660px}
+.figwrap::after{content:""; display:block}
+@media (max-width:760px){
+  .figwrap{position:relative}
+  .figwrap::after{content:"← 左右滑动查看全图 →"; text-align:center;
+    font-size:12px; color:#4E5B64; padding:6px 0 2px}
+}
+.badge{
+  position:absolute; top:10px; right:10px; font-size:12.5px; font-weight:700;
+  padding:5px 12px; border-radius:999px; background:#e8f1fb; color:#1d4e89;
+  border:1px solid #cfe2f6; transition:.25s;
+}
+body.patho .badge{background:#fceceb; color:#a3382c; border-color:#f2cfcb}
+
+/* 图例 = 图层开关 */
+.legend{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 10px}
+.legend button{
+  display:inline-flex; align-items:center; gap:7px; font-size:13px;
+  padding:5px 11px; border-radius:9px; border:1px solid var(--line);
+  background:#fff; cursor:pointer; font-family:inherit; transition:.16s;
+}
+.legend button[aria-pressed="false"]{opacity:.42; text-decoration:line-through}
+.legend .sw{width:13px; height:13px; border-radius:4px; display:inline-block}
+
+/* 步骤条 */
+.steps{display:flex; gap:6px; margin:12px 0 0; flex-wrap:wrap}
+.steps button{
+  flex:1 1 0; min-width:96px; padding:9px 6px; border-radius:10px;
+  border:1px solid var(--line); background:#fff; font-size:12.8px;
+  font-family:inherit; cursor:pointer; text-align:center;
+  font-weight:600; color:var(--muted); transition:.16s;
+}
+.steps button[aria-pressed="true"]{
+  background:#eef4ff; border-color:#b9cdf0; color:#204b8f;
+}
+body.patho .steps button[aria-pressed="true"]{
+  background:#fdeeed; border-color:#f0c9c4; color:#a3382c;
+}
+.steps button small{display:block; font-weight:500; font-size:11.4px; opacity:.8}
+
+/* 右侧信息 */
+h3{font-size:15.5px; margin:2px 0 10px}
+.info p{font-size:13.8px; margin:7px 0}
+.tag{display:inline-block; font-size:11.8px; padding:1.5px 8px; border-radius:6px;
+  margin:2px 4px 2px 0; font-weight:700}
+.tag.ok{background:#e6f5ec; color:#1c6b45}
+.tag.bad{background:#fceceb; color:#a3382c}
+.tag.warn{background:#fef4e3; color:#8a5a12}
+.tag.num{background:#eef1fb; color:#3c3f8f; font-variant-numeric:tabular-nums}
+
+table{width:100%; border-collapse:collapse; font-size:12.4px;
+  font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line); padding:6px 7px; text-align:left}
+thead th{background:#f2f6fa; font-weight:700; font-size:12.4px}
+tbody th{font-weight:600; color:#3a4a57; width:30%}
+table td:nth-child(1){width:30%}
+table td:last-child{width:auto}
+td.n{color:#1d4e89} td.p{color:#a3382c}
+
+.slidhint{font-size:12.2px;color:var(--muted);margin:2px 0 10px;line-height:1.5}
+.rangebar{display:flex; align-items:center; gap:10px; margin:10px 0 4px;
+  font-size:13px}
+.rangebar input[type=range]{flex:1; accent-color:var(--accent)}
+.readout{font-weight:700; font-variant-numeric:tabular-nums; min-width:86px;
+  text-align:right; color:var(--accent)}
+
+.note{font-size:12.4px; color:var(--muted); background:var(--panel);
+  border-left:3px solid #c8d8e8; padding:9px 12px; border-radius:0 8px 8px 0;
+  margin:12px 0 0}
+footer{margin-top:26px; font-size:12.5px; color:#4E5B64; line-height:1.7}
+
+/* 逐步高亮：非当前步骤的流动元素淡出 */
+body.stepping .med-flow{opacity:.18; transition:opacity .35s}
+body.stepping [data-step-on]{opacity:1 !important}
+
+@media (prefers-reduced-motion: reduce){
+  .med-flow{display:none!important}
+  *{animation-duration:.001ms!important; transition-duration:.001ms!important}
+}
+.only-patho,.only-normal{display:none}</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>过敏性紫癜（IgA 血管炎）· 动态</h1>
+    <p class="sub">IgA 复合物沉积小血管壁 → 白细胞碎裂性血管炎 → 四联征</p>
+    <div class="warn">⚠️ 本图为教学/科普示意，结构经简化，不用于临床诊断与治疗决策。</div>
+  </header>
+
+  <div class="toolbar">
+    
+    <button class="btn" id="btnMotion" aria-pressed="false">⏸ 暂停动效</button>
+    <span class="spacer"></span>
+    <span style="font-size:12.6px;color:var(--muted)">图例可点击隐藏图层 · 步骤条可逐段查看</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="figwrap">
+        <svg id="figSvg" viewBox="0 0 1000 640" width="1000" height="640" role="img" aria-label="过敏性紫癜动态：IgA 免疫复合物沉积小血管壁致血管炎"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5F6C75"/></marker></defs><rect width="1000" height="640" fill="#FFFFFF"/><text x="48.0" y="42.0" text-anchor="start" font-size="11.5" fill="#4E5B64" font-weight="700">动态版 · 血液系统</text><text x="48.0" y="76.0" text-anchor="start" font-size="22" fill="#1B2A33" font-weight="700">过敏性紫癜（IgA 血管炎）· 沉积→血管炎</text><text x="48.0" y="106.0" text-anchor="start" font-size="13.5" fill="#37474F" font-weight="400">看免疫复合物如何一步步沉积到小血管壁，并引发白细胞碎裂性血管炎</text><path d="M90,282 L910,282" stroke="#C0504D" stroke-width="60" stroke-linecap="round" opacity="0.16"/><path d="M90,282 L910,282" stroke="#C0504D" stroke-width="34" stroke-linecap="round" opacity="0.26"/><text x="90.0" y="234.0" text-anchor="start" font-size="11.5" fill="#A3382C" font-weight="700">小血管（皮肤/关节/肠/肾）</text><g class="med-flow"><circle r="7" fill="#8E2A1F" opacity="0"><animateMotion dur="3.6s" repeatCount="indefinite" begin="0s" path="M110,282 L890,282" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="3.6s" repeatCount="indefinite" begin="0s"/></circle><circle r="7" fill="#8E2A1F" opacity="0"><animateMotion dur="3.6s" repeatCount="indefinite" begin="0.72s" path="M110,282 L890,282" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="3.6s" repeatCount="indefinite" begin="0.72s"/></circle><circle r="7" fill="#8E2A1F" opacity="0"><animateMotion dur="3.6s" repeatCount="indefinite" begin="1.44s" path="M110,282 L890,282" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="3.6s" repeatCount="indefinite" begin="1.44s"/></circle><circle r="7" fill="#8E2A1F" opacity="0"><animateMotion dur="3.6s" repeatCount="indefinite" begin="2.16s" path="M110,282 L890,282" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="3.6s" repeatCount="indefinite" begin="2.16s"/></circle><circle r="7" fill="#8E2A1F" opacity="0"><animateMotion dur="3.6s" repeatCount="indefinite" begin="2.88s" path="M110,282 L890,282" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="3.6s" repeatCount="indefinite" begin="2.88s"/></circle></g><circle id="dep0" cx="210" cy="304" r="9" fill="#8E2A1F" opacity="0"/><circle id="dep1" cx="310" cy="304" r="9" fill="#8E2A1F" opacity="0"/><circle id="dep2" cx="410" cy="304" r="9" fill="#8E2A1F" opacity="0"/><circle id="dep3" cx="510" cy="304" r="9" fill="#8E2A1F" opacity="0"/><circle id="dep4" cx="610" cy="304" r="9" fill="#8E2A1F" opacity="0"/><circle id="dep5" cx="710" cy="304" r="9" fill="#8E2A1F" opacity="0"/><circle id="dep6" cx="810" cy="304" r="9" fill="#8E2A1F" opacity="0"/><g id="inf0" opacity="0"><circle cx="280" cy="258" r="11" fill="#7B4FC4" opacity="0.85"/><circle cx="289" cy="252" r="4" fill="#7B4FC4" opacity="0.7"/></g><g id="inf1" opacity="0"><circle cx="410" cy="258" r="11" fill="#7B4FC4" opacity="0.85"/><circle cx="419" cy="252" r="4" fill="#7B4FC4" opacity="0.7"/></g><g id="inf2" opacity="0"><circle cx="540" cy="258" r="11" fill="#7B4FC4" opacity="0.85"/><circle cx="549" cy="252" r="4" fill="#7B4FC4" opacity="0.7"/></g><g id="inf3" opacity="0"><circle cx="670" cy="258" r="11" fill="#7B4FC4" opacity="0.85"/><circle cx="679" cy="252" r="4" fill="#7B4FC4" opacity="0.7"/></g><g id="inf4" opacity="0"><circle cx="800" cy="258" r="11" fill="#7B4FC4" opacity="0.85"/><circle cx="809" cy="252" r="4" fill="#7B4FC4" opacity="0.7"/></g><g id="q0" opacity="0.32"><rect x="60.0" y="372.0" width="208.0" height="92.0" rx="10" fill="#FFFFFF" stroke="#A3382C" stroke-width="1.6"/><rect x="60.0" y="372.0" width="208.0" height="34.0" rx="12" fill="#A3382C"/><text x="164.0" y="395.0" text-anchor="middle" font-size="12.5" fill="#FFFFFF" font-weight="700">皮肤</text><text x="164.0" y="432.0" text-anchor="middle" font-size="11.5" fill="#37474F" font-weight="700">可触性紫癜</text><text x="164.0" y="452.0" text-anchor="middle" font-size="11.5" fill="#5F6C75" font-weight="400">四联征之一</text></g><g id="q1" opacity="0.32"><rect x="284.0" y="372.0" width="208.0" height="92.0" rx="10" fill="#FFFFFF" stroke="#8A5A12" stroke-width="1.6"/><rect x="284.0" y="372.0" width="208.0" height="34.0" rx="12" fill="#8A5A12"/><text x="388.0" y="395.0" text-anchor="middle" font-size="12.5" fill="#FFFFFF" font-weight="700">关节</text><text x="388.0" y="432.0" text-anchor="middle" font-size="11.5" fill="#37474F" font-weight="700">关节痛</text><text x="388.0" y="452.0" text-anchor="middle" font-size="11.5" fill="#5F6C75" font-weight="400">四联征之一</text></g><g id="q2" opacity="0.32"><rect x="508.0" y="372.0" width="208.0" height="92.0" rx="10" fill="#FFFFFF" stroke="#8A5A12" stroke-width="1.6"/><rect x="508.0" y="372.0" width="208.0" height="34.0" rx="12" fill="#8A5A12"/><text x="612.0" y="395.0" text-anchor="middle" font-size="12.5" fill="#FFFFFF" font-weight="700">胃肠</text><text x="612.0" y="432.0" text-anchor="middle" font-size="11.5" fill="#37474F" font-weight="700">腹痛便血</text><text x="612.0" y="452.0" text-anchor="middle" font-size="11.5" fill="#5F6C75" font-weight="400">四联征之一</text></g><g id="q3" opacity="0.32"><rect x="732.0" y="372.0" width="208.0" height="92.0" rx="10" fill="#FFFFFF" stroke="#2F6FB0" stroke-width="1.6"/><rect x="732.0" y="372.0" width="208.0" height="34.0" rx="12" fill="#2F6FB0"/><text x="836.0" y="395.0" text-anchor="middle" font-size="12.5" fill="#FFFFFF" font-weight="700">肾脏</text><text x="836.0" y="432.0" text-anchor="middle" font-size="11.5" fill="#37474F" font-weight="700">紫癜性肾炎</text><text x="836.0" y="452.0" text-anchor="middle" font-size="11.5" fill="#5F6C75" font-weight="400">四联征之一</text></g><text x="500.0" y="614.0" text-anchor="middle" font-size="11.5" fill="#4E5B64" font-weight="400">血小板与凝血功能正常 —— 这是与血小板减少性紫癜、DIC 的关键鉴别点</text></svg>
+        
+      </div>
+      <div class="legend"><button aria-pressed="true" data-layer="dep" title="点击隐藏/显示：IgA 复合物"><i class="sw" style="background:#8E2A1F"></i>IgA 复合物</button><button aria-pressed="true" data-layer="inf" title="点击隐藏/显示：中性粒细胞"><i class="sw" style="background:#7B4FC4"></i>中性粒细胞</button></div>
+      <div class="steps"><button aria-pressed="false"><span>① 诱因</span><small>黏膜免疫</small></button><button aria-pressed="false"><span>② 沉积</span><small>小血管壁</small></button><button aria-pressed="false"><span>③ 血管炎</span><small>中性粒浸润</small></button><button aria-pressed="false"><span>④ 四联征</span><small>皮肤/关节/胃肠/肾</small></button></div>
+      <div class="note" id="stepDesc">点步骤条，可逐段查看滑膜液的完整循环。</div>
+    </div>
+
+    <div class="card info">
+      
+<h3 style="color:#1F5FA0">从免疫复合物到四联征</h3>
+<p>过敏性紫癜本质是 <b>IgA 血管炎</b>：黏膜免疫异常产生大量 IgA1，
+形成免疫复合物后随血流沉积于<b>小血管壁</b>，激活补体、招募中性粒细胞，
+造成<b>白细胞碎裂性血管炎</b>（血管壁纤维素样坏死 + 核碎裂）。</p>
+<p>因此病变出现在"小血管密集"的四个部位：皮肤、关节、肠道、肾小球。</p>
+<h3 style="margin-top:16px">四联征与发生率</h3>
+<table>
+  <thead><tr><th>部位</th><th>表现</th><th>发生率</th></tr></thead>
+  <tbody>
+    <tr><th>皮肤</th><td class="p">可触性紫癜（下肢/臀部对称）</td><td>必有</td></tr>
+    <tr><th>关节</th><td>大关节痛，不遗留畸形</td><td>约 75%</td></tr>
+    <tr><th>胃肠</th><td>腹痛、便血，可肠套叠</td><td>约 50–75%</td></tr>
+    <tr><th>肾脏</th><td class="p">血尿、蛋白尿（决定预后）</td><td>约 30–50%</td></tr>
+  </tbody>
+</table>
+<p style="font-size:13px;color:#4E5B64;margin-top:8px">
+关键鉴别：<b>血小板计数正常、凝血功能正常</b>，可与血小板减少性紫癜、DIC 区分。</p>
+
+      
+      
+    </div>
+  </div>
+
+  <footer>本图为教学示意，结构经过简化。数值与判读阈值参见同目录静态版图注。仅用于教学与科普，不替代临床判断。</footer>
+</div>
+<script>
+const CX=500, CY=320;
+const STEP_DESC=["点步骤条查看从诱因到四联征的完整链条。", "<b>① 诱因</b>：感染、药物或食物等触发黏膜免疫异常，产生大量 IgA1。", "<b>② 沉积</b>：IgA 免疫复合物随血流沉积于小血管壁（皮肤、关节、肠道、肾小球）。", "<b>③ 血管炎</b>：补体激活、中性粒细胞浸润并核碎裂 → 白细胞碎裂性血管炎，血管壁坏死。", "<b>④ 四联征</b>：皮肤可触性紫癜（必有）、关节痛、腹痛便血、紫癜性肾炎，可单独或组合出现。"];
+
+(function(){
+  const body=document.body;
+  const $=s=>document.querySelector(s);
+  const $$=s=>Array.from(document.querySelectorAll(s));
+
+  /* ---------- 1 状态机 ---------- */
+  let patho=false;
+  const btnState=$('#btnState'), pill=$('#statePill'), badge=$('#figBadge');
+
+  function applyState(){
+    body.classList.toggle('patho', patho);
+    if(btnState){
+      btnState.setAttribute('aria-pressed', patho?'true':'false');
+      const off=btnState.dataset.labelOff||'', on=btnState.dataset.labelOn||'';
+      btnState.textContent = patho ? off : on;
+      btnState.classList.toggle('patho', patho);
+    }
+    if(pill) pill.textContent = patho ? (pill.dataset.on||'') : (pill.dataset.off||'');
+    if(badge) badge.textContent = patho ? (badge.dataset.on||'') : (badge.dataset.off||'');
+    if(!btnState && !badge) return;
+    $$('.only-normal').forEach(el=>el.style.display = patho?'none':'');
+    $$('.only-patho').forEach(el=>el.style.display = patho?'':'none');
+    if(typeof updateReadout==='function') updateReadout();
+  }
+  if(btnState) btnState.addEventListener('click',()=>{ patho=!patho; applyState(); });
+
+  /* ---------- 2 动效开关 ---------- */
+  let paused=false;
+  const btnMotion=$('#btnMotion');
+  btnMotion.addEventListener('click',()=>{
+    paused=!paused;
+    $$('svg').forEach(s=>{ paused?s.pauseAnimations():s.unpauseAnimations(); });
+    btnMotion.setAttribute('aria-pressed', paused?'true':'false');
+    btnMotion.textContent = paused?'▶ 播放动效':'⏸ 暂停动效';
+    body.classList.toggle('motion-off', paused);
+  });
+
+  /* ---------- 3 图例 = 图层开关 ---------- */
+  $$('.legend button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const on=b.getAttribute('aria-pressed')!=='false';
+      b.setAttribute('aria-pressed', on?'false':'true');
+      const layer=b.dataset.layer;
+      $$('[data-layer="'+layer+'"]').forEach(el=>{
+        el.style.display = on?'none':'';
+      });
+    });
+  });
+
+  /* ---------- 4 步骤条：逐段看 ---------- */
+  let curStep=0;
+  const stepBtns=$$('.steps button');
+  function setStep(i){
+    curStep=i;
+    stepBtns.forEach((b,k)=>b.setAttribute('aria-pressed', k===i?'true':'false'));
+    body.classList.toggle('stepping', i>0);
+    $$('[data-step]').forEach(el=>{
+      const on = (i===0) || (parseInt(el.dataset.step,10)===i);
+      el.toggleAttribute('data-step-on', on && i>0);
+      el.style.opacity = (i===0||on)?'':'0.18';
+      el.style.transition='opacity .3s';
+    });
+    const txt=$('#stepDesc');
+    if(txt) txt.innerHTML = STEP_DESC[i] || '';
+  }
+  stepBtns.forEach((b,k)=>b.addEventListener('click',()=>{
+    setStep(curStep===k?0:k);
+  }));
+
+  /* ---------- 5 可选：形态缩放滑块（仅当页面存在 #rngLevel 时启用） ---------- */
+  const rng=$('#rngLevel'), out=$('#levelOut');
+  let synovLevel=1.0;
+  function updateReadout(){
+    if(!rng) return;
+    const v=synovLevel;
+    if(out) out.textContent = v.toFixed(1)+'×';
+    // 腔体膨胀：缩放积液层
+    const cav=$('#med-cavity');
+    if(cav){
+      const k = 0.94 + 0.20*(v-1);
+      cav.setAttribute('transform',
+        'translate('+(CX*(1-k))+','+(CY*(1-k))+') scale('+k+')');
+    }
+    const bur=$('#med-bursa');
+    if(bur){
+      const k2 = 0.96 + 0.16*(v-1);
+      bur.setAttribute('transform',
+        'translate('+(CX*(1-k2))+','+(CY*(1-k2))+') scale('+k2+')');
+    }
+    const cells=$('#cellsVal');
+    if(cells) cells.textContent = Math.round(200 + 1200*(v-1)) + ' 个/μL';
+    const vol=$('#volVal');
+    if(vol) vol.textContent = (1.0 + 24.0*(v-1)).toFixed(0) + ' mL';
+  }
+  if(rng){
+    rng.addEventListener('input',()=>{
+      synovLevel=parseFloat(rng.value);
+      updateReadout();
+    });
+  }
+
+  applyState();
+  setStep(0);
+
+  /* reduced-motion 兜底：SMIL 不受 CSS 影响，必须显式暂停 */
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    $$('svg').forEach(s=>s.pauseAnimations());
+    btnMotion.textContent='▶ 播放动效（系统已降低动态效果）';
+  }
+})();
+
+setTimeout(()=>{
+  const r=document.getElementById('rngLevel');
+  if(r){ r.dispatchEvent(new Event('input')); }
+},60);
+</script>
+</body>
+</html>
