@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>外科休克 · 微循环演进（动态）</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --ink:#17222b; --muted:#4E5B64; --line:#e3e9ef; --panel:#f7fafc;
+  --normal:#2c5f9e; --patho:#c0392b; --fluid:#7FB5E6; --accent:#6b46c1;
+  --bg:#eef3f8;
+}
+html,body{margin:0}
+body{
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",
+              "Noto Sans CJK SC",system-ui,sans-serif;
+  color:var(--ink); background:var(--bg); line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.app{max-width:1280px; margin:0 auto; padding:28px 20px 72px}
+header h1{font-size:26px; margin:0 0 6px; letter-spacing:.2px}
+header .sub{color:var(--muted); font-size:14.5px; margin:0}
+header .warn{font-size:12.8px; color:#5F6C75; margin-top:8px}
+
+.toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  margin:20px 0 14px; padding:12px 14px; background:#fff;
+  border:1px solid var(--line); border-radius:14px}
+.btn{
+  border:1px solid var(--line); background:#fff; color:var(--ink);
+  padding:8px 15px; border-radius:999px; font-size:14px; font-weight:600;
+  cursor:pointer; transition:.18s; font-family:inherit;
+}
+.btn:hover{border-color:#c3d3e2; background:#f4f9ff}
+.btn:focus-visible{outline:2.5px solid var(--accent); outline-offset:2px}
+.btn[aria-pressed="true"]{background:var(--normal); color:#fff; border-color:var(--normal)}
+.btn.patho[aria-pressed="true"]{background:var(--patho); border-color:var(--patho)}
+.state-pill{
+  padding:7px 14px; border-radius:999px; font-size:13.5px; font-weight:700;
+  background:#e8f1fb; color:#1d4e89; border:1px solid #cfe2f6;
+}
+body.patho .state-pill{background:#fceceb; color:#a3382c; border-color:#f2cfcb}
+.spacer{flex:1}
+
+.grid{display:grid; grid-template-columns:2.35fr 1fr; gap:16px; align-items:start}
+@media(max-width:960px){.grid{grid-template-columns:1fr}}
+.card{background:#fff; border:1px solid var(--line); border-radius:16px;
+  padding:14px; box-shadow:0 1px 2px rgba(16,32,48,.04)}
+.figwrap{position:relative}
+.figwrap{overflow-x:auto; -webkit-overflow-scrolling:touch}
+.figwrap svg{width:100%; height:auto; display:block; border-radius:10px;
+  min-width:660px}
+.figwrap::after{content:""; display:block}
+@media (max-width:760px){
+  .figwrap{position:relative}
+  .figwrap::after{content:"← 左右滑动查看全图 →"; text-align:center;
+    font-size:12px; color:#4E5B64; padding:6px 0 2px}
+}
+.badge{
+  position:absolute; top:10px; right:10px; font-size:12.5px; font-weight:700;
+  padding:5px 12px; border-radius:999px; background:#e8f1fb; color:#1d4e89;
+  border:1px solid #cfe2f6; transition:.25s;
+}
+body.patho .badge{background:#fceceb; color:#a3382c; border-color:#f2cfcb}
+
+/* 图例 = 图层开关 */
+.legend{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 10px}
+.legend button{
+  display:inline-flex; align-items:center; gap:7px; font-size:13px;
+  padding:5px 11px; border-radius:9px; border:1px solid var(--line);
+  background:#fff; cursor:pointer; font-family:inherit; transition:.16s;
+}
+.legend button[aria-pressed="false"]{opacity:.42; text-decoration:line-through}
+.legend .sw{width:13px; height:13px; border-radius:4px; display:inline-block}
+
+/* 步骤条 */
+.steps{display:flex; gap:6px; margin:12px 0 0; flex-wrap:wrap}
+.steps button{
+  flex:1 1 0; min-width:96px; padding:9px 6px; border-radius:10px;
+  border:1px solid var(--line); background:#fff; font-size:12.8px;
+  font-family:inherit; cursor:pointer; text-align:center;
+  font-weight:600; color:var(--muted); transition:.16s;
+}
+.steps button[aria-pressed="true"]{
+  background:#eef4ff; border-color:#b9cdf0; color:#204b8f;
+}
+body.patho .steps button[aria-pressed="true"]{
+  background:#fdeeed; border-color:#f0c9c4; color:#a3382c;
+}
+.steps button small{display:block; font-weight:500; font-size:11.4px; opacity:.8}
+
+/* 右侧信息 */
+h3{font-size:15.5px; margin:2px 0 10px}
+.info p{font-size:13.8px; margin:7px 0}
+.tag{display:inline-block; font-size:11.8px; padding:1.5px 8px; border-radius:6px;
+  margin:2px 4px 2px 0; font-weight:700}
+.tag.ok{background:#e6f5ec; color:#1c6b45}
+.tag.bad{background:#fceceb; color:#a3382c}
+.tag.warn{background:#fef4e3; color:#8a5a12}
+.tag.num{background:#eef1fb; color:#3c3f8f; font-variant-numeric:tabular-nums}
+
+table{width:100%; border-collapse:collapse; font-size:12.4px;
+  font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line); padding:6px 7px; text-align:left}
+thead th{background:#f2f6fa; font-weight:700; font-size:12.4px}
+tbody th{font-weight:600; color:#3a4a57; width:30%}
+table td:nth-child(1){width:30%}
+table td:last-child{width:auto}
+td.n{color:#1d4e89} td.p{color:#a3382c}
+
+.slidhint{font-size:12.2px;color:var(--muted);margin:2px 0 10px;line-height:1.5}
+.rangebar{display:flex; align-items:center; gap:10px; margin:10px 0 4px;
+  font-size:13px}
+.rangebar input[type=range]{flex:1; accent-color:var(--accent)}
+.readout{font-weight:700; font-variant-numeric:tabular-nums; min-width:86px;
+  text-align:right; color:var(--accent)}
+
+.note{font-size:12.4px; color:var(--muted); background:var(--panel);
+  border-left:3px solid #c8d8e8; padding:9px 12px; border-radius:0 8px 8px 0;
+  margin:12px 0 0}
+footer{margin-top:26px; font-size:12.5px; color:#4E5B64; line-height:1.7}
+
+/* 逐步高亮：非当前步骤的流动元素淡出 */
+body.stepping .med-flow{opacity:.18; transition:opacity .35s}
+body.stepping [data-step-on]{opacity:1 !important}
+
+@media (prefers-reduced-motion: reduce){
+  .med-flow{display:none!important}
+  *{animation-duration:.001ms!important; transition-duration:.001ms!important}
+}
+.only-patho,.only-normal{display:none}</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>外科休克 · 微循环演进（动态）</h1>
+    <p class="sub">代偿期缺血 → 失代偿期淤血 → 不可逆期衰竭，血流状态逐期恶化</p>
+    <div class="warn">⚠️ 本图为教学/科普示意，结构经简化，不用于临床诊断与治疗决策。</div>
+  </header>
+
+  <div class="toolbar">
+    
+    <button class="btn" id="btnMotion" aria-pressed="false">⏸ 暂停动效</button>
+    <span class="spacer"></span>
+    <span style="font-size:12.6px;color:var(--muted)">图例可点击隐藏图层 · 步骤条可逐段查看</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="figwrap">
+        <svg id="figSvg" viewBox="0 0 1000 660" width="1000" height="660" role="img" aria-label="休克三期微循环动态演进：缺血、淤血、衰竭"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5F6C75"/></marker></defs><rect width="1000" height="660" fill="#FFFFFF"/><text x="48.0" y="42.0" text-anchor="start" font-size="11.5" fill="#4E5B64" font-weight="700">动态版 · 外科总论</text><text x="48.0" y="76.0" text-anchor="start" font-size="22" fill="#1B2A33" font-weight="700">外科休克 · 微循环演进</text><text x="48.0" y="106.0" text-anchor="start" font-size="13.5" fill="#37474F" font-weight="400">同一条微血管，三个阶段的血流状态完全不同——这是分期的核心</text><g id="S0" opacity="0.30"><text x="60.0" y="152.0" text-anchor="start" font-size="12.5" fill="#1C6B45" font-weight="700">正常灌注</text><path d="M60,190 L940,190" stroke="#1C6B45" stroke-width="30" stroke-linecap="round" opacity="0.22"/><path d="M60,190 L940,190" stroke="#1C6B45" stroke-width="16" stroke-linecap="round" opacity="0.32"/></g><g id="S1" opacity="0.30"><text x="60.0" y="282.0" text-anchor="start" font-size="12.5" fill="#8A5A12" font-weight="700">缺血期（代偿）</text><path d="M60,320 L940,320" stroke="#8A5A12" stroke-width="30" stroke-linecap="round" opacity="0.22"/><path d="M60,320 L940,320" stroke="#8A5A12" stroke-width="16" stroke-linecap="round" opacity="0.32"/></g><g id="S2" opacity="0.30"><text x="60.0" y="412.0" text-anchor="start" font-size="12.5" fill="#A3382C" font-weight="700">淤血期（失代偿）</text><path d="M60,450 L940,450" stroke="#A3382C" stroke-width="30" stroke-linecap="round" opacity="0.22"/><path d="M60,450 L940,450" stroke="#A3382C" stroke-width="16" stroke-linecap="round" opacity="0.32"/></g><g id="S3" opacity="0.30"><text x="60.0" y="542.0" text-anchor="start" font-size="12.5" fill="#7A2118" font-weight="700">衰竭期（DIC）</text><path d="M60,580 L940,580" stroke="#7A2118" stroke-width="30" stroke-linecap="round" opacity="0.22"/><path d="M60,580 L940,580" stroke="#7A2118" stroke-width="16" stroke-linecap="round" opacity="0.32"/></g><g class="med-flow"><circle r="6" fill="#C0504D" opacity="0"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0s" path="M76,190 L924,190" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="2.6s" repeatCount="indefinite" begin="0s"/></circle><circle r="6" fill="#C0504D" opacity="0"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.52s" path="M76,190 L924,190" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="2.6s" repeatCount="indefinite" begin="0.52s"/></circle><circle r="6" fill="#C0504D" opacity="0"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.04s" path="M76,190 L924,190" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="2.6s" repeatCount="indefinite" begin="1.04s"/></circle><circle r="6" fill="#C0504D" opacity="0"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.56s" path="M76,190 L924,190" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="2.6s" repeatCount="indefinite" begin="1.56s"/></circle><circle r="6" fill="#C0504D" opacity="0"><animateMotion dur="2.6s" repeatCount="indefinite" begin="2.08s" path="M76,190 L924,190" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="2.6s" repeatCount="indefinite" begin="2.08s"/></circle></g><g class="med-flow"><circle r="5.5" fill="#C0504D" opacity="0"><animateMotion dur="1.8s" repeatCount="indefinite" begin="0s" path="M76,356 L924,356" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="1.8s" repeatCount="indefinite" begin="0s"/></circle><circle r="5.5" fill="#C0504D" opacity="0"><animateMotion dur="1.8s" repeatCount="indefinite" begin="0.9s" path="M76,356 L924,356" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="1.8s" repeatCount="indefinite" begin="0.9s"/></circle></g><g class="med-flow"><circle r="6.5" fill="#B03A2E" opacity="0"><animateMotion dur="7.5s" repeatCount="indefinite" begin="0s" path="M76,486 L924,486" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="7.5s" repeatCount="indefinite" begin="0s"/></circle><circle r="6.5" fill="#B03A2E" opacity="0"><animateMotion dur="7.5s" repeatCount="indefinite" begin="1.071s" path="M76,486 L924,486" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="7.5s" repeatCount="indefinite" begin="1.071s"/></circle><circle r="6.5" fill="#B03A2E" opacity="0"><animateMotion dur="7.5s" repeatCount="indefinite" begin="2.143s" path="M76,486 L924,486" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="7.5s" repeatCount="indefinite" begin="2.143s"/></circle><circle r="6.5" fill="#B03A2E" opacity="0"><animateMotion dur="7.5s" repeatCount="indefinite" begin="3.214s" path="M76,486 L924,486" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="7.5s" repeatCount="indefinite" begin="3.214s"/></circle><circle r="6.5" fill="#B03A2E" opacity="0"><animateMotion dur="7.5s" repeatCount="indefinite" begin="4.286s" path="M76,486 L924,486" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="7.5s" repeatCount="indefinite" begin="4.286s"/></circle><circle r="6.5" fill="#B03A2E" opacity="0"><animateMotion dur="7.5s" repeatCount="indefinite" begin="5.357s" path="M76,486 L924,486" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="7.5s" repeatCount="indefinite" begin="5.357s"/></circle><circle r="6.5" fill="#B03A2E" opacity="0"><animateMotion dur="7.5s" repeatCount="indefinite" begin="6.429s" path="M76,486 L924,486" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="7.5s" repeatCount="indefinite" begin="6.429s"/></circle></g><g class="med-flow"><circle r="6" fill="#7A2118" opacity="0"><animateMotion dur="16s" repeatCount="indefinite" begin="0s" path="M76,616 L924,616" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="16s" repeatCount="indefinite" begin="0s"/></circle><circle r="6" fill="#7A2118" opacity="0"><animateMotion dur="16s" repeatCount="indefinite" begin="5.333s" path="M76,616 L924,616" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="16s" repeatCount="indefinite" begin="5.333s"/></circle><circle r="6" fill="#7A2118" opacity="0"><animateMotion dur="16s" repeatCount="indefinite" begin="10.667s" path="M76,616 L924,616" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42,0,0.58,1"/><animate attributeName="opacity" values="0;1;1;0" dur="16s" repeatCount="indefinite" begin="10.667s"/></circle></g><ellipse cx="240" cy="644" rx="24" ry="14" fill="#7A2118" opacity="0.85"/><ellipse cx="490" cy="644" rx="24" ry="14" fill="#7A2118" opacity="0.85"/><ellipse cx="710" cy="644" rx="24" ry="14" fill="#7A2118" opacity="0.85"/><text x="940.0" y="268.0" text-anchor="end" font-size="11.5" fill="#8A5A12" font-weight="600">代偿：心率↑、外周血管收缩、血压可正常</text><text x="940.0" y="398.0" text-anchor="end" font-size="11.5" fill="#A3382C" font-weight="600">失代偿：乳酸堆积、毛细血管前括约肌松弛</text><text x="940.0" y="528.0" text-anchor="end" font-size="11.5" fill="#7A2118" font-weight="600">衰竭：微血栓、细胞膜破坏、MODS</text><text x="500.0" y="634.0" text-anchor="middle" font-size="11.5" fill="#4E5B64" font-weight="400">关键：血压是晚期指标。代偿期血压可正常，但组织已灌注不足。</text></svg>
+        
+      </div>
+      <div class="legend"><button aria-pressed="true" data-layer="S0" title="点击隐藏/显示：正常灌注"><i class="sw" style="background:#1C6B45"></i>正常灌注</button><button aria-pressed="true" data-layer="S1" title="点击隐藏/显示：缺血期"><i class="sw" style="background:#8A5A12"></i>缺血期</button><button aria-pressed="true" data-layer="S2" title="点击隐藏/显示：淤血期"><i class="sw" style="background:#A3382C"></i>淤血期</button><button aria-pressed="true" data-layer="S3" title="点击隐藏/显示：衰竭期"><i class="sw" style="background:#7A2118"></i>衰竭期</button></div>
+      <div class="steps"><button aria-pressed="false"><span>① 代偿期</span><small>缺血</small></button><button aria-pressed="false"><span>② 失代偿期</span><small>淤血</small></button><button aria-pressed="false"><span>③ 不可逆期</span><small>衰竭/DIC</small></button></div>
+      <div class="note" id="stepDesc">点步骤条，可逐段查看滑膜液的完整循环。</div>
+    </div>
+
+    <div class="card info">
+      
+<h3 style="color:#1F5FA0">三期微循环：同一条血管，三种血流状态</h3>
+<p><b>代偿期</b>：交感兴奋使外周血管收缩、心率加快，血压尚可维持——
+但此时组织已经灌注不足。<b>血压正常不等于没有休克</b>，这是最易漏诊的一期。</p>
+<p><b>失代偿期</b>：乳酸堆积致酸中毒，毛细血管前括约肌松弛而小静脉仍收缩，
+血液淤滞在毛细管网，有效循环量进一步下降，血压开始降低。</p>
+<p><b>不可逆期</b>：微血栓形成（可并发 DIC）、细胞膜与溶酶体破坏，
+出现多器官功能障碍（MODS），对治疗反应差。</p>
+<h3 style="margin-top:16px">早期识别的四个床旁指标</h3>
+<table>
+  <thead><tr><th>指标</th><th>早期表现</th><th>意义</th></tr></thead>
+  <tbody>
+    <tr><th>意识</th><td>烦躁→淡漠</td><td>脑灌注</td></tr>
+    <tr><th>皮肤</th><td>苍白、湿冷、花斑</td><td>外周灌注</td></tr>
+    <tr><th>尿量</th><td>&lt;0.5 mL/kg/h</td><td>肾灌注</td></tr>
+    <tr><th>乳酸</th><td>&gt;2 mmol/L</td><td>组织缺氧</td></tr>
+  </tbody>
+</table>
+
+      
+      
+    </div>
+  </div>
+
+  <footer>本图为教学示意，结构经过简化。数值与判读阈值参见同目录静态版图注。仅用于教学与科普，不替代临床判断。</footer>
+</div>
+<script>
+const CX=500, CY=330;
+const STEP_DESC=["点步骤条查看三期演进。", "<b>① 代偿期（缺血）</b>：交感-肾上腺髓质兴奋：心率↑、外周血管收缩，血压尚可维持；此时已存在组织灌注不足，但血压可能正常。", "<b>② 失代偿期（淤血）</b>：乳酸堆积致酸中毒，毛细血管前括约肌松弛而小静脉仍收缩 → 血液淤滞、有效循环量下降，血压开始下降。", "<b>③ 不可逆期（衰竭）</b>：微血栓形成（可并发 DIC）、细胞膜与溶酶体破坏 → 多器官功能障碍，治疗反应差。"];
+
+(function(){
+  const body=document.body;
+  const $=s=>document.querySelector(s);
+  const $$=s=>Array.from(document.querySelectorAll(s));
+
+  /* ---------- 1 状态机 ---------- */
+  let patho=false;
+  const btnState=$('#btnState'), pill=$('#statePill'), badge=$('#figBadge');
+
+  function applyState(){
+    body.classList.toggle('patho', patho);
+    if(btnState){
+      btnState.setAttribute('aria-pressed', patho?'true':'false');
+      const off=btnState.dataset.labelOff||'', on=btnState.dataset.labelOn||'';
+      btnState.textContent = patho ? off : on;
+      btnState.classList.toggle('patho', patho);
+    }
+    if(pill) pill.textContent = patho ? (pill.dataset.on||'') : (pill.dataset.off||'');
+    if(badge) badge.textContent = patho ? (badge.dataset.on||'') : (badge.dataset.off||'');
+    if(!btnState && !badge) return;
+    $$('.only-normal').forEach(el=>el.style.display = patho?'none':'');
+    $$('.only-patho').forEach(el=>el.style.display = patho?'':'none');
+    if(typeof updateReadout==='function') updateReadout();
+  }
+  if(btnState) btnState.addEventListener('click',()=>{ patho=!patho; applyState(); });
+
+  /* ---------- 2 动效开关 ---------- */
+  let paused=false;
+  const btnMotion=$('#btnMotion');
+  btnMotion.addEventListener('click',()=>{
+    paused=!paused;
+    $$('svg').forEach(s=>{ paused?s.pauseAnimations():s.unpauseAnimations(); });
+    btnMotion.setAttribute('aria-pressed', paused?'true':'false');
+    btnMotion.textContent = paused?'▶ 播放动效':'⏸ 暂停动效';
+    body.classList.toggle('motion-off', paused);
+  });
+
+  /* ---------- 3 图例 = 图层开关 ---------- */
+  $$('.legend button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const on=b.getAttribute('aria-pressed')!=='false';
+      b.setAttribute('aria-pressed', on?'false':'true');
+      const layer=b.dataset.layer;
+      $$('[data-layer="'+layer+'"]').forEach(el=>{
+        el.style.display = on?'none':'';
+      });
+    });
+  });
+
+  /* ---------- 4 步骤条：逐段看 ---------- */
+  let curStep=0;
+  const stepBtns=$$('.steps button');
+  function setStep(i){
+    curStep=i;
+    stepBtns.forEach((b,k)=>b.setAttribute('aria-pressed', k===i?'true':'false'));
+    body.classList.toggle('stepping', i>0);
+    $$('[data-step]').forEach(el=>{
+      const on = (i===0) || (parseInt(el.dataset.step,10)===i);
+      el.toggleAttribute('data-step-on', on && i>0);
+      el.style.opacity = (i===0||on)?'':'0.18';
+      el.style.transition='opacity .3s';
+    });
+    const txt=$('#stepDesc');
+    if(txt) txt.innerHTML = STEP_DESC[i] || '';
+  }
+  stepBtns.forEach((b,k)=>b.addEventListener('click',()=>{
+    setStep(curStep===k?0:k);
+  }));
+
+  /* ---------- 5 可选：形态缩放滑块（仅当页面存在 #rngLevel 时启用） ---------- */
+  const rng=$('#rngLevel'), out=$('#levelOut');
+  let synovLevel=1.0;
+  function updateReadout(){
+    if(!rng) return;
+    const v=synovLevel;
+    if(out) out.textContent = v.toFixed(1)+'×';
+    // 腔体膨胀：缩放积液层
+    const cav=$('#med-cavity');
+    if(cav){
+      const k = 0.94 + 0.20*(v-1);
+      cav.setAttribute('transform',
+        'translate('+(CX*(1-k))+','+(CY*(1-k))+') scale('+k+')');
+    }
+    const bur=$('#med-bursa');
+    if(bur){
+      const k2 = 0.96 + 0.16*(v-1);
+      bur.setAttribute('transform',
+        'translate('+(CX*(1-k2))+','+(CY*(1-k2))+') scale('+k2+')');
+    }
+    const cells=$('#cellsVal');
+    if(cells) cells.textContent = Math.round(200 + 1200*(v-1)) + ' 个/μL';
+    const vol=$('#volVal');
+    if(vol) vol.textContent = (1.0 + 24.0*(v-1)).toFixed(0) + ' mL';
+  }
+  if(rng){
+    rng.addEventListener('input',()=>{
+      synovLevel=parseFloat(rng.value);
+      updateReadout();
+    });
+  }
+
+  applyState();
+  setStep(0);
+
+  /* reduced-motion 兜底：SMIL 不受 CSS 影响，必须显式暂停 */
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    $$('svg').forEach(s=>s.pauseAnimations());
+    btnMotion.textContent='▶ 播放动效（系统已降低动态效果）';
+  }
+})();
+
+setTimeout(()=>{
+  const r=document.getElementById('rngLevel');
+  if(r){ r.dispatchEvent(new Event('input')); }
+},60);
+</script>
+</body>
+</html>
