@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>心动周期 · 动态演示</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#0f172a;color:#e8eef6;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.app{max-width:520px;margin:0 auto;padding:16px 14px 40px}
+h1{margin:0 0 2px;font-size:19px;font-weight:700}
+.sub{color:#8ea3bd;font-size:12.5px;margin-bottom:12px}
+.stage{background:#fff;border-radius:16px;padding:10px 6px 4px;position:relative}
+svg{display:block;width:100%;height:auto}
+.ctl{display:flex;gap:8px;align-items:center;margin-top:12px}
+button{flex:0 0 auto;min-width:64px;height:40px;border-radius:11px;border:1px solid #2a3a52;
+  background:#1b2740;color:#dce6f2;font-size:13.5px;font-weight:600;font-family:inherit;
+  cursor:pointer;transition:.15s}
+button:active{transform:scale(.97)}
+button.primary{background:#0f766e;border-color:#0f766e;color:#fff}
+.range{flex:1;min-width:80px;height:40px;display:flex;align-items:center}
+input[type=range]{width:100%;accent-color:#2dd4bf}
+.phases{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+.ph{padding:7px 4px;border-radius:9px;background:#16233a;border:1px solid #24334c;
+  font-size:11.5px;text-align:center;color:#8ea3bd;cursor:pointer;transition:.15s}
+.ph.on{background:#0f766e;border-color:#2dd4bf;color:#fff;font-weight:700}
+.hint{margin-top:10px;font-size:12px;color:#7f93ad;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>心动周期</h1>
+  <div class="sub">瓣膜只看压力差 · 点期名直接跳转</div>
+
+  <div class="stage">
+    <svg id="cv" viewBox="0 0 400 470" xmlns="http://www.w3.org/2000/svg">
+      <!-- 心房 -->
+      <ellipse cx="118" cy="96" rx="40" ry="20" fill="#ccfbf1" stroke="#0f766e" stroke-width="1.8"/>
+      <text x="118" y="100" text-anchor="middle" font-size="11.5" fill="#0f766e" font-family="inherit">心房</text>
+      <!-- 房室瓣 -->
+      <path id="avL" fill="none" stroke="#0f766e" stroke-width="4.6" stroke-linecap="round"/>
+      <path id="avR" fill="none" stroke="#0f766e" stroke-width="4.6" stroke-linecap="round"/>
+      <text id="avT" x="74" y="138" text-anchor="end" font-size="10.5" fill="#0f766e" font-family="inherit">房室瓣关</text>
+      <!-- 心室 -->
+      <ellipse id="vent" cx="118" cy="210" rx="55" ry="64" fill="#fef3c7" stroke="#b45309" stroke-width="2.2"/>
+      <text x="118" y="215" text-anchor="middle" font-size="11.5" fill="#b45309" font-family="inherit">心室</text>
+      <!-- 血流粒子 -->
+      <g id="dots"></g>
+      <!-- 主动脉 -->
+      <path d="M160,170 C190,148 178,116 206,100" stroke="#b91c1c" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M160,170 C190,148 178,116 206,100" stroke="#b91c1c" stroke-width="18" fill="none"
+            stroke-linecap="round" opacity=".12"/>
+      <path id="svL" fill="none" stroke="#b91c1c" stroke-width="4" stroke-linecap="round"/>
+      <text id="svT" x="178" y="146" text-anchor="middle" font-size="10.5" fill="#b91c1c" font-family="inherit">半月瓣关</text>
+
+      <!-- 压力曲线 -->
+      <text x="200" y="182" font-size="10.5" fill="#64748b" font-family="inherit">室内压</text>
+      <line x1="206" y1="300" x2="372" y2="300" stroke="#e2e8f0" stroke-width="1"/>
+      <line x1="206" y1="300" x2="206" y2="172" stroke="#e2e8f0" stroke-width="1"/>
+      <path id="curveBg" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+      <path id="curveOn" fill="none" stroke="#b91c1c" stroke-width="2.6" stroke-linecap="round"/>
+      <circle id="pdot" r="5" fill="#fff" stroke="#b91c1c" stroke-width="2.6"/>
+      <text id="pval" font-size="11" font-weight="700" fill="#b91c1c" text-anchor="middle" font-family="inherit"></text>
+      <text x="372" y="314" text-anchor="end" font-size="9.5" fill="#94a3b8" font-family="inherit">0.8 s</text>
+
+      <!-- 时间轴 -->
+      <g id="track"></g>
+      <circle id="cursor" cy="408.5" r="6.5" fill="#fff" stroke="#1e293b" stroke-width="2.2"/>
+
+      <!-- 期名 -->
+      <text id="pname" x="200" y="446" text-anchor="middle" font-size="19" font-weight="700"
+            fill="#1e293b" font-family="inherit"></text>
+    </svg>
+  </div>
+
+  <div class="ctl">
+    <button id="btn" class="primary">暂停</button>
+    <div class="range"><input id="spd" type="range" min="0.3" max="2.5" step="0.1" value="1"></div>
+    <button id="rate">75/min</button>
+  </div>
+
+  <div class="phases" id="phases"></div>
+  <div class="hint">瓣膜开闭只看<b>两侧压力差</b>：等容期双瓣全关、容积不变，是判断时相的锚点。</div>
+</div>
+
+<script>
+const PH = [
+  {n:"等容收缩期", d:.06, v:[125,125], p:[5,80],   av:0, sv:0},
+  {n:"快速射血期", d:.12, v:[125, 75], p:[80,120],  av:0, sv:1},
+  {n:"减慢射血期", d:.19, v:[75, 55],  p:[120,105], av:0, sv:1},
+  {n:"等容舒张期", d:.08, v:[55, 55],  p:[105,5],   av:0, sv:0},
+  {n:"快速充盈期", d:.14, v:[55, 110], p:[5,3],     av:1, sv:0},
+  {n:"减慢充盈期", d:.41, v:[110,125], p:[3,5],     av:1, sv:0},
+];
+const PMAX = 135, CX = 118, CY = 210;
+const ARX=38, ARY=44, BRX=55, BRY=64, AVY=134;
+let S = 1.0;  // 节奏：1 秒 = 1 个心动周期（75 次/分）
+
+const lerp = (a,b,t) => a + (b-a)*t;
+// 压力曲线形状：非线性，让曲线像真实心动周期
+function shape(frac){
+  if (frac < .06){                      // 等容收缩：陡升
+    const t = frac/.06; return lerp(5, 80, Math.pow(t, .35));
+  }
+  if (frac < .18){                      // 快速射血：升到峰
+    const t = (frac-.06)/.12; return lerp(80, 120, Math.pow(t,.55));
+  }
+  if (frac < .37){                      // 减慢射血：缓降
+    const t = (frac-.18)/.19; return lerp(120, 105, t);
+  }
+  if (frac < .45){                      // 等容舒张：陡降
+    const t = (frac-.37)/.08; return lerp(105, 5, Math.pow(t,.5));
+  }
+  if (frac < .59){                      // 快速充盈：小波动
+    const t = (frac-.45)/.14; return lerp(5, 3, t);
+  }
+  const t = (frac-.59)/.41; return lerp(3, 5, t);
+}
+function vol(frac){
+  let acc=0;
+  for (const p of PH){
+    if (frac < acc+p.d){ const t=(frac-acc)/p.d; return lerp(p.v[0],p.v[1],t); }
+    acc += p.d;
+  }
+  return PH[5].v[1];
+}
+function phaseAt(frac){
+  let acc=0;
+  for (let i=0;i<PH.length;i++){
+    if (frac < acc+PH[i].d){
+      return {i, t:(frac-acc)/PH[i].d};
+    }
+    acc += PH[i].d;
+  }
+  return {i:PH.length-1, t:1};
+}
+
+// 曲线路径（整周期）
+let CURVE = [];
+for (let k=0;k<=140;k++){
+  const f=k/140, p=shape(f);
+  CURVE.push([206 + 166*f, 300 - 128*(p/PMAX)]);
+}
+const dPath = a => "M" + a.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join(" L");
+document.getElementById('curveBg').setAttribute('d', dPath(CURVE));
+
+// 时间轴分段
+let segEls=[];
+(function(){
+  const g=document.getElementById('track'), x0=30, xw=340; let acc=0;
+  PH.forEach((p,i)=>{
+    const w=xw*p.d, x=x0+xw*acc;
+    const r=document.createElementNS("http://www.w3.org/2000/svg","rect");
+    r.setAttribute("x",x.toFixed(1)); r.setAttribute("y",404);
+    r.setAttribute("width",(w-1.6).toFixed(1)); r.setAttribute("height",9);
+    r.setAttribute("rx",4.5); r.setAttribute("fill","#e6ecf3");
+    g.appendChild(r); segEls.push(r); acc+=p.d;
+  });
+})();
+
+// 期名按钮
+const phEls=[];
+(function(){
+  const box=document.getElementById('phases');
+  PH.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className='ph'; d.textContent=p.n.replace('减慢充盈期','减慢充盈');
+    d.onclick=()=>{ let acc=0; for(let k=0;k<i;k++) acc+=PH[k].d; pos=acc+0.001; };
+    box.appendChild(d); phEls.push(d);
+  });
+})();
+
+function leaf(x1,y1,x2,y2,op,col,w,up){
+  const mx=(x1+x2)/2, my=(y1+y2)/2 + (up?-24:24)*op;
+  return `M${x1},${y1} Q${mx.toFixed(1)},${my.toFixed(1)} ${x2},${y2}`;
+}
+
+const dotsG = document.getElementById('dots');
+let pos = 0, playing = true, rate = 1, last = 0, freq = 1.0;
+
+function render(){
+  const {i,t} = phaseAt(pos);
+  const ph = PH[i];
+  const p = shape(pos), v = vol(pos);
+  const rx = lerp(ARX,BRX,(v-55)/70), ry = lerp(ARY,BRY,(v-55)/70);
+
+  document.getElementById('vent').setAttribute('rx', rx.toFixed(1));
+  document.getElementById('vent').setAttribute('ry', ry.toFixed(1));
+
+  document.getElementById('avL').setAttribute('d', leaf(CX-30,AVY,CX-2,AVY,ph.av,"#0f766e",4.6,true));
+  document.getElementById('avR').setAttribute('d', leaf(CX+2,AVY,CX+30,AVY,ph.av,"#0f766e",4.6,true));
+  document.getElementById('avT').textContent = '房室瓣' + (ph.av?'开':'关');
+  document.getElementById('svL').setAttribute('d', leaf(CX+46,CY-46,CX+64,CY-54,ph.sv,"#b91c1c",4.0,true));
+  document.getElementById('svT').textContent = '半月瓣' + (ph.sv?'开':'关');
+  document.getElementById('avT').setAttribute('fill', ph.av?'#0f766e':'#94a3b8');
+  document.getElementById('svT').setAttribute('fill', ph.sv?'#b91c1c':'#94a3b8');
+
+  // 粒子
+  let h='';
+  if (ph.sv){
+    for(let k=0;k<4;k++){
+      const q=((t*4+k)%4)/4;
+      const px=lerp(CX+32,202,q), py=lerp(160,96,q)+4*Math.sin(q*6+k);
+      h+=`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="3.4" fill="#b91c1c" opacity="${(0.9-0.6*q).toFixed(2)}"/>`;
+    }
+  }
+  if (ph.av){
+    for(let k=0;k<4;k++){
+      const q=((t*4+k)%4)/4;
+      const px=CX+9*Math.sin(q*6+k*1.6), py=lerp(100,190,q);
+      h+=`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="3.4" fill="#0f766e" opacity="${(0.9-0.6*q).toFixed(2)}"/>`;
+    }
+  }
+  dotsG.innerHTML = h;
+
+  // 曲线 + 游标
+  const n = Math.max(1, Math.round(pos*140));
+  document.getElementById('curveOn').setAttribute('d', dPath(CURVE.slice(0,n)));
+  const cx = 206 + 166*pos, cy = 300 - 128*(p/PMAX);
+  const pd = document.getElementById('pdot');
+  pd.setAttribute('cx',cx.toFixed(1)); pd.setAttribute('cy',cy.toFixed(1));
+  const pv = document.getElementById('pval');
+  pv.setAttribute('x', cx.toFixed(1)); pv.setAttribute('y',(cy-11).toFixed(1));
+  pv.textContent = Math.round(p);
+
+  // 时间轴
+  segEls.forEach((r,k)=> r.setAttribute('fill', k===i?'#0f766e':'#e6ecf3'));
+  document.getElementById('cursor').setAttribute('cx',(30+340*pos).toFixed(1));
+  phEls.forEach((e,k)=> e.classList.toggle('on', k===i));
+  document.getElementById('pname').textContent = ph.n;
+}
+
+function loop(ts){
+  if (!last) last = ts;
+  const dt = (ts-last)/1000; last = ts;
+  if (playing){ pos = (pos + dt*S*rate) % 1; }
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById('btn').onclick = e => {
+  playing = !playing;
+  e.target.textContent = playing ? '暂停' : '播放';
+  e.target.classList.toggle('primary', playing);
+};
+document.getElementById('spd').oninput = e => { rate = parseFloat(e.target.value); };
+const RATES = [75, 130, 48];
+let ri = 0;
+document.getElementById('rate').onclick = e => {
+  ri = (ri+1) % RATES.length;
+  const bpm = RATES[ri];
+  S = bpm / 75;                       // 75 次/分 = 1 周期/秒
+  e.target.textContent = bpm + '/min';
+};
+</script>
+</body>
+</html>
