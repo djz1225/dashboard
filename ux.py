@@ -211,6 +211,63 @@ UX_JS = r"""
 
 TO_TOP_HTML = '<button id="toTop" type="button" aria-label="回到顶部" title="回到顶部">↑</button>'
 
+# ===== 全站「返回首页」悬浮按钮 =====
+HOME_CSS = """
+.pghbtn{position:fixed;left:14px;bottom:14px;z-index:96;display:inline-flex;
+  align-items:center;gap:6px;height:42px;padding:0 14px 0 12px;border-radius:999px;
+  background:rgba(255,255,255,.96);border:1px solid #cfe0bf;color:#3f6b4f;
+  font:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;
+  font-size:13.5px;font-weight:700;text-decoration:none;line-height:1;
+  box-shadow:0 8px 22px -10px rgba(40,70,40,.55),0 1px 3px rgba(40,70,40,.10);
+  -webkit-backdrop-filter:saturate(160%) blur(8px);backdrop-filter:saturate(160%) blur(8px);
+  opacity:.94;transition:opacity .18s,transform .18s,background .18s;
+  -webkit-tap-highlight-color:transparent}
+.pghbtn:hover{opacity:1;background:#f2f8ea;border-color:#a9c797;transform:translateY(-2px)}
+.pghbtn:active{transform:translateY(0)}
+.pghbtn svg{width:16px;height:16px;display:block;flex:0 0 auto}
+@media(max-width:560px){.pghbtn{height:38px;padding:0 12px 0 10px;font-size:13px;
+  left:10px;bottom:10px}}
+@media print{.pghbtn{display:none!important}}
+"""
+
+HOME_BTN = ('<a class="pghbtn" href="{href}" aria-label="返回网站首页" title="返回网站首页">'
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" '
+            'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+            '<path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg>'
+            '<span>返回首页</span></a>')
+
+
+def add_home_buttons(site_dir):
+    """给 site_dir 下所有 html（除根 index.html）注入固定「返回首页」按钮。
+    跳过已注入；按目录深度算相对路径。返回处理页数。"""
+    n = 0
+    root = os.path.abspath(site_dir)
+    for dirpath, _dirs, files in os.walk(root):
+        for fn in files:
+            if not fn.lower().endswith(".html"):
+                continue
+            full = os.path.join(dirpath, fn)
+            if os.path.abspath(full) == os.path.join(root, "index.html"):
+                continue
+            try:
+                with open(full, encoding="utf-8", errors="replace") as f:
+                    h = f.read()
+            except OSError:
+                continue
+            if "pghbtn" in h or "</body>" not in h:
+                continue
+            rel = os.path.relpath(dirpath, root)
+            depth = 0 if rel == "." else len([p for p in rel.split(os.sep) if p])
+            href = ("../" * depth + "index.html") if depth else "./index.html"
+            if "</head>" in h and "HOME_CSS" not in h:
+                h = h.replace("</head>", f"<style>{HOME_CSS}</style>\n</head>", 1)
+            h = h.replace("</body>", HOME_BTN.format(href=href) + "\n</body>", 1)
+            with open(full, "w", encoding="utf-8") as f:
+                f.write(h)
+            n += 1
+    return n
+
+
 
 def sticky_nav(sections):
     """sections: [(anchor_id, label), ...]"""
