@@ -875,6 +875,25 @@ def main():
             n_pages += 1
     with open(os.path.join(SITE, "history.html"), "w", encoding="utf-8") as f:
         f.write(build_history_page(hist, d.get("specialties", [])))
+    # ---------- 机制图资源（figs/ 下的 svg + png）→ site/figs/ ----------
+    _figs = os.path.join(OUT, "figs")
+    _sn = 0
+    if os.path.isdir(_figs):
+        _fdst = os.path.join(SITE, "figs")
+        os.makedirs(_fdst, exist_ok=True)
+        for _f in sorted(os.listdir(_figs)):
+            if _f.startswith(".") or not _f.lower().endswith((".svg", ".png", ".webp", ".jpg")):
+                continue
+            shutil.copy(os.path.join(_figs, _f), os.path.join(_fdst, _f))
+            _sn += 1
+        print(f"copied figs -> site/figs/ ({_sn} files)")
+    else:
+        print("WARN: figs/ not found")
+
+    # ---------- 全站注入「返回首页」按钮 ----------
+    _hn = ux.add_home_buttons(SITE)
+    print(f"home button injected into {_hn} html pages")
+
     print("site/index.html +", len(d.get("specialties", [])), "attachments +", n_pages,
           "history pages + history.html ->", SITE)
 
