@@ -121,7 +121,7 @@ function renderList(){
   let html = '';
   for (const [id, title, lv, blocks] of sel) {
     const ch = id.slice(3,5);
-    html += `<div class="card" id="card-${id}">
+    html += `<div class="card" id="card-${id}" data-fig="${(blocks.find(b=>b[0]==='i')||[])[1]||''}">
       <h2>${esc(title)}<span class="lv">第${Number(ch)}章</span></h2>`;
     for (const b of blocks) {
       if (b[0] === 'q') {
@@ -168,6 +168,43 @@ document.getElementById('q').addEventListener('input', e => {
 
 renderChips();
 renderList();
+
+/* 深链定位：physio.html#PH-04-01 → 切到该章并滚动高亮 */
+(function(){
+  function gotoHash(){
+    var h = (location.hash || '').replace('#','').trim();
+    if (!h) return;
+    if (h.indexOf('fig_') === 0) {
+      var cf = document.querySelector('[data-fig="' + h + '"]');
+      if (cf) {
+        var mm = /card-PH-(\d{2})-/.exec(cf.id);
+        if (mm) { curCh = mm[1]; renderChips(); renderList(); }
+        setTimeout(function(){
+          var e2 = document.querySelector('[data-fig="' + h + '"]');
+          if (e2) {
+            e2.scrollIntoView({behavior:'smooth', block:'start'});
+            e2.style.transition = 'box-shadow .4s';
+            e2.style.boxShadow = '0 0 0 3px #0f766e';
+            setTimeout(function(){ e2.style.boxShadow = ''; }, 2400);
+          }
+        }, 80);
+        return;
+      }
+    }
+    var m = /^PH-(\d{2})-/.exec(h) || /^card-PH-(\d{2})-/.exec(h);
+    if (m) { curCh = m[1]; renderChips(); renderList(); }
+    var el = document.getElementById('card-' + h.replace(/^card-/, ''))
+          || document.getElementById(h);
+    if (el) {
+      el.scrollIntoView({behavior:'smooth', block:'start'});
+      el.style.transition = 'box-shadow .4s';
+      el.style.boxShadow = '0 0 0 3px #0f766e';
+      setTimeout(function(){ el.style.boxShadow = ''; }, 2200);
+    }
+  }
+  window.addEventListener('load', function(){ setTimeout(gotoHash, 60); });
+  window.addEventListener('hashchange', gotoHash);
+})();
 </script>
 </body>
 </html>
