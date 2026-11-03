@@ -12,6 +12,7 @@ on:
       - "*.py"
       - "quiz.html"
       - "figs/**"
+      - "med/**"
       - "xz/**"
 
 permissions:
