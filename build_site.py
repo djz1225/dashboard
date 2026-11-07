@@ -919,3 +919,5 @@ if __name__ == "__main__":
 # rebuild: physio chapters order (2cc8)
 
 # rebuild: biochem full 20ch (b1)
+
+# rebuild: biochem lazy 975->220 (lz1)
