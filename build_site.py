@@ -890,7 +890,7 @@ def main():
         _fdst = os.path.join(SITE, "figs")
         os.makedirs(_fdst, exist_ok=True)
         for _f in sorted(os.listdir(_figs)):
-            if _f.startswith(".") or not _f.lower().endswith((".svg", ".png", ".webp", ".jpg", ".jpeg", ".gif", ".mp4")):
+            if _f.startswith(".") or not _f.lower().endswith((".svg", ".png", ".webp", ".jpg", ".jpeg", ".gif", ".mp4", ".webm")):
                 continue
             shutil.copy(os.path.join(_figs, _f), os.path.join(_fdst, _f))
             _sn += 1
@@ -925,3 +925,5 @@ if __name__ == "__main__":
 # rebuild: physio lazy 467->89 (lz2)
 
 # rebuild: webm motion (wm1)
+
+# rebuild: webm whitelist (wm2)
