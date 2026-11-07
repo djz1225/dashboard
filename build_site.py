@@ -921,3 +921,5 @@ if __name__ == "__main__":
 # rebuild: biochem full 20ch (b1)
 
 # rebuild: biochem lazy 975->220 (lz1)
+
+# rebuild: physio lazy 467->89 (lz2)
