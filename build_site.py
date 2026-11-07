@@ -815,6 +815,13 @@ def main():
         print("copied biochem.html (ux injected)")
     else:
         print("WARN: biochem.html not found in", OUT)
+    # 复制过程演示播放器（proc.html）
+    _pc = os.path.join(OUT, "proc.html")
+    if os.path.exists(_pc):
+        shutil.copy(_pc, os.path.join(SITE, "proc.html"))
+        print("copied proc.html")
+    else:
+        print("WARN: proc.html not found in", OUT)
     # 复制西综306考研题库
     _xz = os.path.join(OUT, "xz", "quiz.html")
     if os.path.exists(_xz):
@@ -941,3 +948,5 @@ if __name__ == "__main__":
 # rebuild: proc demo (pd1794091324)
 
 # rebuild: proc player (pp1794094662)
+
+# rebuild: proc copy (1794094981)
