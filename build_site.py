@@ -917,3 +917,5 @@ if __name__ == "__main__":
 # rebuild: quiz figs v3 (9c5d)
 # rebuild: cards with figures (e225)
 # rebuild: physio chapters order (2cc8)
+
+# rebuild: biochem full 20ch (b1)
