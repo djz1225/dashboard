@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="500" viewBox="0 0 1000 500" font-family="Noto Sans CJK SC, PingFang SC, sans-serif">
+<defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#5F6C75"/></marker></defs>
+<rect width="1000" height="500" fill="#FFFFFF"/>
+<text x="30" y="40" font-size="19" fill="#17222b" font-weight="700">乳酸不只是代谢废物：乳酰化把代谢状态写进染色质</text>
+<text x="30" y="66" font-size="12.5" fill="#4E5B64">Lactate（乳酸）→ lactyl-CoA（乳酰辅酶A）→ histone Kla（组蛋白赖氨酸乳酰化）→ mitosis（有丝分裂）</text>
+<rect x="30" y="86" width="290" height="246" rx="12" fill="#F6F9FC" stroke="#DCE6EF" stroke-width="1.2"/><text x="46" y="112" font-size="14.5" fill="#17222b" font-weight="700">① 摄入</text>
+<rect x="60" y="128" width="210" height="42" rx="8" fill="#E8F1FA" stroke="#2C5F9E" stroke-width="1.6"/><text x="165.0" y="146.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">胞外 L-乳酸 ↑</text><text x="165.0" y="164.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">运动 / 糖酵解旺盛 / 肿瘤微环境</text>
+<line x1="165" y1="170" x2="165" y2="199" stroke="#5F6C75" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="60" y="206" width="210" height="42" rx="8" fill="#FDF0E4" stroke="#C0703A" stroke-width="1.6"/><text x="165.0" y="224.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">MCT1 / MCT4 转运</text><text x="165.0" y="242.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">单羧酸转运体，双向</text>
+<line x1="165" y1="248" x2="165" y2="277" stroke="#5F6C75" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="60" y="284" width="210" height="42" rx="8" fill="#E8F1FA" stroke="#2C5F9E" stroke-width="1.6"/><text x="165.0" y="302.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">胞质 L-乳酸池</text><text x="165.0" y="320.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">浓度决定修饰速率</text>
+<rect x="340" y="86" width="320" height="246" rx="12" fill="#F6F9FC" stroke="#DCE6EF" stroke-width="1.2"/><text x="356" y="112" font-size="14.5" fill="#17222b" font-weight="700">② 修饰</text>
+<rect x="370" y="128" width="260" height="42" rx="8" fill="#E8F1FA" stroke="#2C5F9E" stroke-width="1.6"/><text x="500.0" y="154.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">L-乳酸 + 辅酶A（CoA）</text>
+<line x1="500" y1="170" x2="500" y2="199" stroke="#5F6C75" stroke-width="1.8" marker-end="url(#ah)"/><text x="508" y="192.0" font-size="11.5" fill="#4E5B64">ACSF2 / 酰基-CoA 合成酶</text>
+<rect x="370" y="206" width="260" height="42" rx="8" fill="#FDF0E4" stroke="#C0703A" stroke-width="1.6"/><text x="500.0" y="224.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">乳酰辅酶A（lactyl-CoA）</text><text x="500.0" y="242.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">高能供体</text>
+<line x1="500" y1="248" x2="500" y2="277" stroke="#5F6C75" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="370" y="284" width="260" height="42" rx="8" fill="#F1ECFA" stroke="#6B4FA8" stroke-width="1.6"/><text x="500.0" y="302.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">组蛋白 Kla（如 H3K18la）</text><text x="500.0" y="320.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">写入：p300 / 非组蛋白亦可</text>
+<rect x="680" y="86" width="290" height="246" rx="12" fill="#F6F9FC" stroke="#DCE6EF" stroke-width="1.2"/><text x="696" y="112" font-size="14.5" fill="#17222b" font-weight="700">③ 效应</text>
+<rect x="705" y="128" width="240" height="42" rx="8" fill="#F1ECFA" stroke="#6B4FA8" stroke-width="1.6"/><text x="825.0" y="146.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">染色质可及性 ↑</text><text x="825.0" y="164.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">启动子/增强子开放</text>
+<line x1="825" y1="170" x2="825" y2="199" stroke="#5F6C75" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="705" y="206" width="240" height="42" rx="8" fill="#E9F6EE" stroke="#2F8F5B" stroke-width="1.6"/><text x="825.0" y="224.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">有丝分裂相关基因转录 ↑</text><text x="825.0" y="242.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">纺锤体组装、胞质分裂</text>
+<line x1="825" y1="248" x2="825" y2="277" stroke="#5F6C75" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="705" y="284" width="240" height="42" rx="8" fill="#E9F6EE" stroke="#2F8F5B" stroke-width="1.6"/><text x="825.0" y="310.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">增殖推进 / 周期进程加快</text>
+<line x1="322" y1="210" x2="336" y2="210" stroke="#5F6C75" stroke-width="2" marker-end="url(#ah)"/>
+<line x1="662" y1="210" x2="676" y2="210" stroke="#5F6C75" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="30" y="350" width="940" height="104" rx="12" fill="#FFFDF5" stroke="#E6D9AE" stroke-width="1.2"/>
+<text x="48" y="376" font-size="13.5" fill="#17222b" font-weight="700">为什么这条链重要</text>
+<text x="48" y="400" font-size="12.5" fill="#17222b">· 代谢与基因表达不再是两条平行线：一次糖酵解强度的变化，可直接改写染色质状态。</text>
+<text x="48" y="421" font-size="12.5" fill="#17222b">· 解释了「高乳酸微环境 → 细胞增殖」的因果关系，为肿瘤、缺血再灌注、免疫细胞活化提供共同语言。</text>
+<text x="48" y="442" font-size="12.5" fill="#17222b">· 可干预点：MCT 转运、ACSF2、p300 三类节点，均有小分子抑制剂在研（多为临床前研究）。</text>
+<text x="30" y="482" font-size="11.5" fill="#4E5B64">依据：2026 年乳酸/乳酰化研究综述整合（属解读，细节以原文为准）；本图用于机制理解，不作诊断依据。</text>
+</svg>
