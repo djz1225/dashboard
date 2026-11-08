@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>生物化学知识依赖总览</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#eef2f7;color:#16202e;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:10px 12px 96px}
+.top{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:2px 0 12px}
+.back{display:inline-flex;align-items:center;min-height:34px;padding:0 13px;
+  font-size:12.5px;color:#475569;text-decoration:none;background:#fff;
+  border:1px solid #dbe4ee;border-radius:999px}
+.back:active{background:#f1f5f9}
+h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
+.sub{font-size:12.5px;color:#8095a8;line-height:1.6;margin-bottom:14px}
+.sec{display:flex;align-items:center;gap:7px;font-size:12px;color:#0f766e;
+  font-weight:700;margin:16px 0 9px}
+.sec::before{content:"";width:3px;height:13px;border-radius:2px;background:#0f766e}
+.sec::after{content:"";flex:1;height:1px;background:#e3ebf3}
+/* 学科卡（L1） */
+.scard{display:block;background:#fff;border-radius:14px;padding:14px 15px;
+  margin-bottom:10px;text-decoration:none;color:inherit;
+  box-shadow:0 1px 3px rgba(15,23,42,.06),0 8px 22px rgba(15,23,42,.05);
+  border:1px solid #e6eef6;transition:transform .12s}
+.scard:active{transform:scale(.985)}
+.scard .st{display:flex;align-items:center;gap:9px;font-size:15.5px;
+  font-weight:700;margin-bottom:5px}
+.scard .sd{font-size:12.5px;color:#8095a8;line-height:1.6}
+.scard .sm{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.pill{font-size:11px;padding:3px 9px;border-radius:999px;background:#eff6f5;
+  color:#0f766e;font-weight:600}
+.pill.g{background:#f4f7fa;color:#6b7c8d}
+/* 知识点卡（L2/L3） */
+.kcard{display:flex;gap:11px;background:#fff;border-radius:12px;padding:11px 13px;
+  margin-bottom:8px;border:1px solid #e6eef6;text-decoration:none;color:inherit;
+  box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.kcard:active{background:#f8fbfd}
+.knum{flex:0 0 26px;height:26px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:11.5px;font-weight:700;color:#fff}
+.kbody{flex:1 1 auto;min-width:0}
+.kt{font-size:13.5px;font-weight:700;margin-bottom:3px}
+.kd{font-size:11.5px;color:#8095a8;line-height:1.55}
+/* 横排切换 */
+.hwrap{position:relative}
+.hwrap::after{content:"";position:absolute;right:0;top:0;bottom:9px;width:26px;
+  pointer-events:none;background:linear-gradient(90deg,rgba(238,242,247,0),#eef2f7);
+  border-radius:0 8px 8px 0}
+.hrow{display:flex;gap:7px;overflow-x:auto;padding:2px 0 9px;scrollbar-width:none}
+.hrow::-webkit-scrollbar{display:none}
+.hbtn{flex:0 0 auto;min-height:36px;padding:0 14px;border-radius:11px;
+  background:#fff;border:1px solid #dbe4ee;color:#4a5a6b;font-size:13px;
+  font-weight:600;cursor:pointer;white-space:nowrap;display:inline-flex;
+  align-items:center;gap:5px}
+.hbtn.on{background:#0f766e;color:#fff;border-color:#0f766e}
+.hbtn i{font-style:normal;font-size:10px;padding:1px 5px;border-radius:6px;
+  background:#eff6f5;color:#0f766e;font-weight:700;letter-spacing:.2px}
+.hbtn.on i{background:rgba(255,255,255,.22);color:#fff}
+.step{display:flex;align-items:center;gap:6px;justify-content:space-between;
+  font-size:11.5px;color:#8ea0b2;margin:0 3px 7px}
+.step b{color:#0f766e;font-weight:700}
+.hlab{display:flex;align-items:center;gap:7px;font-size:11.5px;color:#a8b6c4;
+  font-weight:700;margin:2px 0 5px}
+.hlab::after{content:"";flex:1;height:1px;background:#e8eff6}
+.stage{display:none;background:#fff;border-radius:16px;padding:8px 8px 4px;
+  box-shadow:0 1px 3px rgba(15,23,42,.06),0 10px 28px rgba(15,23,42,.06)}
+.stage.on{display:block}
+.stage svg{display:block;width:100%;height:auto;border-radius:10px}
+.desc{font-size:12px;color:#8095a8;text-align:center;margin:7px 4px 8px;
+  line-height:1.5}
+.tip{margin-top:10px;padding:8px 10px;background:#fff;border-radius:10px;
+  font-size:11.5px;color:#a8b6c4;text-align:center;line-height:1.5}
+.foot{text-align:center;font-size:11px;color:#b6c4d2;margin:22px 0 0;
+  line-height:1.7}
+
+.smctl{display:flex;align-items:center;gap:6px;margin:8px 2px 2px;
+  padding:6px 8px;background:#f6fafc;border:1px solid #e3ebf3;border-radius:9px}
+.smbtn{flex:0 0 auto;min-width:34px;height:30px;padding:0 9px;
+  font:600 13px/30px -apple-system,'PingFang SC',sans-serif;
+  color:#3f5468;background:#fff;border:1px solid #dbe6f0;border-radius:8px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.smbtn:active{transform:scale(.95)}
+.smbtn.on{background:#0f766e;color:#fff;border-color:#0f766e}
+.smlab{flex:1 1 auto;text-align:right;font-size:11px;color:#8ea0b2}
+</style></head>
+<body><div class="wrap">
+<div class="top"><a class="back" href="../index.html">← 学科列表</a><a class="back" href="player.html">🎬 进入演示</a><a class="back" href="../../index.html">看板首页</a></div>
+<h1>生物化学知识依赖总览</h1>
+<div class="sub">6 层 39 个核心知识点，按「先基础、后应用」排列；点任意一项跳到对应演示</div>
+<div class="sec" style="color:#0f766e">L0 基础：大分子与酶</div>
+<div class="sd" style="font-size:11.5px;color:#8095a8;margin:-4px 0 9px;line-height:1.6">后面所有代谢都要用到：蛋白质结构、酶动力学、辅酶</div>
+<a class="kcard" href="player.html#c-sh02_inhibit">
+  <div class="knum" style="background:#0f766e">01</div>
+  <div class="kbody"><div class="kt">酶的可逆抑制</div>
+  <div class="kd">第02章 · 竞争性 Km↑、非竞争 Vmax↓、反竞争两者都↓</div></div></a>
+<a class="kcard" href="player.html#c-sh02_mm">
+  <div class="knum" style="background:#0f766e">02</div>
+  <div class="kbody"><div class="kt">米氏方程的饱和</div>
+  <div class="kd">第02章 · 底物少则线性，[S]=Km 半速，过量则饱和</div></div></a>
+<a class="kcard" href="player.html#c-sh01_fold">
+  <div class="knum" style="background:#0f766e">03</div>
+  <div class="kbody"><div class="kt">蛋白质折叠四级</div>
+  <div class="kd">第01章 · 一级序列 → 二级 → 三级 → 四级，驱动力逐层不同</div></div></a>
+<a class="kcard" href="player.html#c-sh01_denature">
+  <div class="knum" style="background:#0f766e">04</div>
+  <div class="kbody"><div class="kt">变性与盐析</div>
+  <div class="kd">第01章 · 变性毁构象不可逆；盐析只沉淀、稀释即复溶</div></div></a>
+<a class="kcard" href="player.html#c-sh01_hb">
+  <div class="knum" style="background:#0f766e">05</div>
+  <div class="kbody"><div class="kt">Hb 与 Mb 的氧解离曲线</div>
+  <div class="kd">第01章 · Hb 是 S 形（正协同），Mb 是双曲线（只储不运）</div></div></a>
+<a class="kcard" href="player.html#c-sh02_zymogen">
+  <div class="knum" style="background:#0f766e">06</div>
+  <div class="kbody"><div class="kt">酶原激活</div>
+  <div class="kd">第02章 · 切掉一段激活肽，活性中心暴露；级联放大</div></div></a>
+<a class="kcard" href="player.html#c-sh03_denature">
+  <div class="knum" style="background:#0f766e">07</div>
+  <div class="kbody"><div class="kt">核酸变性与 Tm</div>
+  <div class="kd">第03章 · 增色效应；GC 含量越高 Tm 越高</div></div></a>
+<a class="kcard" href="player.html#c-sh06_vitk">
+  <div class="knum" style="background:#0f766e">08</div>
+  <div class="kbody"><div class="kt">维生素 K 与 γ-羧化</div>
+  <div class="kd">第06章 · 凝血因子 Ⅱ Ⅶ Ⅸ Ⅹ 需 γ-羧化才有活性</div></div></a>
+<div class="sec" style="color:#c0392b">L1 能量代谢主干</div>
+<div class="sd" style="font-size:11.5px;color:#8095a8;margin:-4px 0 9px;line-height:1.6">糖 → 乙酰CoA → 三羧酸循环 → 呼吸链，一条主线串起产能</div>
+<a class="kcard" href="player.html#c-proc_glycolysis">
+  <div class="knum" style="background:#c0392b">01</div>
+  <div class="kbody"><div class="kt">糖酵解</div>
+  <div class="kd">第07章 · 投 2 收 4，净 2 ATP；三个不可逆点就是三个调控点</div></div></a>
+<a class="kcard" href="player.html#c-proc_tca">
+  <div class="knum" style="background:#c0392b">02</div>
+  <div class="kbody"><div class="kt">三羧酸循环</div>
+  <div class="kd">第07章 · 一轮 3NADH+1FADH₂+1GTP = 10 ATP</div></div></a>
+<a class="kcard" href="player.html#c-sh08_chemiosmosis">
+  <div class="knum" style="background:#c0392b">03</div>
+  <div class="kbody"><div class="kt">化学渗透与 ATP 合酶</div>
+  <div class="kd">第08章 · 质子梯度驱动 F₀F₁ 马达，4 H⁺ 合成 1 ATP</div></div></a>
+<a class="kcard" href="player.html#c-sh08_chain">
+  <div class="knum" style="background:#c0392b">04</div>
+  <div class="kbody"><div class="kt">呼吸链四个复合体</div>
+  <div class="kd">第08章 · Ⅰ 泵 4、Ⅲ 泵 4、Ⅳ 泵 2，共 10 H⁺；Ⅱ 不泵</div></div></a>
+<a class="kcard" href="player.html#c-sh07_glycolysis">
+  <div class="knum" style="background:#c0392b">05</div>
+  <div class="kbody"><div class="kt">糖酵解的三调控点</div>
+  <div class="kd">第07章 · 己糖激酶、PFK-1、丙酮酸激酶催化的三步不可逆</div></div></a>
+<a class="kcard" href="player.html#c-sh07_tca">
+  <div class="knum" style="background:#c0392b">06</div>
+  <div class="kbody"><div class="kt">三羧酸循环的收支</div>
+  <div class="kd">第07章 · 3NADH+1FADH₂+1GTP，折合 10 ATP</div></div></a>
+<a class="kcard" href="player.html#c-sh12_states">
+  <div class="knum" style="background:#c0392b">07</div>
+  <div class="kbody"><div class="kt">进食-空腹-饥饿切换</div>
+  <div class="kd">第12章 · 胰岛素/胰高血糖素比值决定燃料选择</div></div></a>
+<div class="sec" style="color:#7b4bb7">L2 脂与酮体</div>
+<div class="sd" style="font-size:11.5px;color:#8095a8;margin:-4px 0 9px;line-height:1.6">脂肪酸靠 β-氧化进同一循环；肝造酮体但自己不用</div>
+<a class="kcard" href="player.html#c-proc_betaox">
+  <div class="knum" style="background:#7b4bb7">01</div>
+  <div class="kbody"><div class="kt">β-氧化</div>
+  <div class="kd">第09章 · 16 碳切 7 刀，产 8 乙酰CoA，净 106 ATP</div></div></a>
+<a class="kcard" href="player.html#c-sh09_ketone">
+  <div class="knum" style="background:#7b4bb7">02</div>
+  <div class="kbody"><div class="kt">酮体：肝造不用</div>
+  <div class="kd">第09章 · 肝缺琥珀酰CoA转硫酶，只能造不能烧</div></div></a>
+<a class="kcard" href="player.html#c-sh09_beta">
+  <div class="knum" style="background:#7b4bb7">03</div>
+  <div class="kbody"><div class="kt">β-氧化的四步循环</div>
+  <div class="kd">第09章 · 脱氢-加水-再脱氢-硫解，每轮切下 1 个乙酰CoA</div></div></a>
+<div class="sec" style="color:#1f6fb2">L3 含氮废物</div>
+<div class="sd" style="font-size:11.5px;color:#8095a8;margin:-4px 0 9px;line-height:1.6">氨基酸脱氨 → 尿素；嘌呤分解 → 尿酸，肝是两条路的枢纽</div>
+<a class="kcard" href="player.html#c-sh10_ammonia">
+  <div class="knum" style="background:#1f6fb2">01</div>
+  <div class="kbody"><div class="kt">血氨两来源三去路</div>
+  <div class="kd">第10章 · 氨必须解毒：主要去路是在肝合成尿素</div></div></a>
+<a class="kcard" href="player.html#c-sh10_urea">
+  <div class="knum" style="background:#1f6fb2">02</div>
+  <div class="kbody"><div class="kt">尿素循环</div>
+  <div class="kd">第10章 · 5 步、4 个高能键、2 个氮源；CPS-Ⅰ 需 AGA 激活</div></div></a>
+<a class="kcard" href="player.html#c-sh11_urate">
+  <div class="knum" style="background:#1f6fb2">03</div>
+  <div class="kbody"><div class="kt">尿酸与别嘌醇</div>
+  <div class="kd">第11章 · 人缺尿酸氧化酶，别嘌醇抑制黄嘌呤氧化酶</div></div></a>
+<div class="sec" style="color:#b45309">L4 遗传信息流</div>
+<div class="sd" style="font-size:11.5px;color:#8095a8;margin:-4px 0 9px;line-height:1.6">DNA → RNA → 蛋白；复制半不连续、转录单链、翻译三位点</div>
+<a class="kcard" href="player.html#c-proc_replication">
+  <div class="knum" style="background:#b45309">01</div>
+  <div class="kbody"><div class="kt">复制叉</div>
+  <div class="kd">第14章 · 一条连续、一条分段 —— 半不连续的根源</div></div></a>
+<a class="kcard" href="player.html#c-proc_transcription">
+  <div class="knum" style="background:#b45309">02</div>
+  <div class="kbody"><div class="kt">转录</div>
+  <div class="kd">第15章 · 不需引物；σ 识别启动子，只抄一条链</div></div></a>
+<a class="kcard" href="player.html#c-proc_translation">
+  <div class="knum" style="background:#b45309">03</div>
+  <div class="kbody"><div class="kt">翻译</div>
+  <div class="kd">第16章 · A/P/E 三位点循环，每氨基酸耗 4 个高能键</div></div></a>
+<a class="kcard" href="player.html#c-proc_central">
+  <div class="knum" style="background:#b45309">04</div>
+  <div class="kbody"><div class="kt">中心法则</div>
+  <div class="kd">第—章 · 五条信息流；信息只从核酸流向蛋白</div></div></a>
+<a class="kcard" href="player.html#c-sh13_gene">
+  <div class="knum" style="background:#b45309">05</div>
+  <div class="kbody"><div class="kt">断裂基因与剪接</div>
+  <div class="kd">第13章 · 外显子与内含子相间；剪接后才连续</div></div></a>
+<a class="kcard" href="player.html#c-sh14_fork">
+  <div class="knum" style="background:#b45309">06</div>
+  <div class="kbody"><div class="kt">复制体的分工</div>
+  <div class="kd">第14章 · 解旋、引物、聚合酶Ⅲ、聚合酶Ⅰ、连接酶各管一段</div></div></a>
+<a class="kcard" href="player.html#c-sh14_telomere">
+  <div class="knum" style="background:#b45309">07</div>
+  <div class="kbody"><div class="kt">端粒与端粒酶</div>
+  <div class="kd">第14章 · 末端复制问题；端粒酶本质是逆转录酶</div></div></a>
+<a class="kcard" href="player.html#c-sh15_transcribe">
+  <div class="knum" style="background:#b45309">08</div>
+  <div class="kbody"><div class="kt">转录的起始与终止</div>
+  <div class="kd">第15章 · σ 因子识别启动子；发夹+寡 U 终止</div></div></a>
+<a class="kcard" href="player.html#c-sh15_splice">
+  <div class="knum" style="background:#b45309">09</div>
+  <div class="kbody"><div class="kt">剪接两次酯交换</div>
+  <div class="kd">第15章 · 剪接体催化；可变剪接产生多种 mRNA</div></div></a>
+<a class="kcard" href="player.html#c-sh16_ribosome">
+  <div class="knum" style="background:#b45309">10</div>
+  <div class="kbody"><div class="kt">核糖体三位点</div>
+  <div class="kd">第16章 · A 进位、P 成肽、E 释放；每氨基酸 4 个高能键</div></div></a>
+<a class="kcard" href="player.html#c-sh17_lac">
+  <div class="knum" style="background:#b45309">11</div>
+  <div class="kbody"><div class="kt">乳糖操纵子</div>
+  <div class="kd">第17章 · CAP 正调控 + 阻遏蛋白负调控的双重逻辑</div></div></a>
+<div class="sec" style="color:#15803d">L5 组织特异与整合</div>
+<div class="sd" style="font-size:11.5px;color:#8095a8;margin:-4px 0 9px;line-height:1.6">同一套通路在不同器官里有不同分工</div>
+<a class="kcard" href="player.html#c-proc_raas">
+  <div class="knum" style="background:#15803d">01</div>
+  <div class="kbody"><div class="kt">RAAS 升压链</div>
+  <div class="kd">第08章 · 失血 → 肾素 → 血管紧张素Ⅱ → 血压回升</div></div></a>
+<a class="kcard" href="player.html#c-sh25_bilirubin">
+  <div class="knum" style="background:#15803d">02</div>
+  <div class="kbody"><div class="kt">两种胆红素</div>
+  <div class="kd">第25章 · 未结合脂溶性不能经尿排；结合型水溶性可排</div></div></a>
+<a class="kcard" href="player.html#c-sh26_g6pd">
+  <div class="knum" style="background:#15803d">03</div>
+  <div class="kbody"><div class="kt">G6PD 与蚕豆病</div>
+  <div class="kd">第26章 · NADPH 不足时谷胱甘肽还原不了，红细胞破裂</div></div></a>
+<a class="kcard" href="player.html#c-sh21_camp">
+  <div class="knum" style="background:#15803d">04</div>
+  <div class="kbody"><div class="kt">cAMP-PKA 级联放大</div>
+  <div class="kd">第21章 · 一个信号放大万倍；PDE 负责降解终止</div></div></a>
+<a class="kcard" href="player.html#c-sh21_rtk">
+  <div class="knum" style="background:#15803d">05</div>
+  <div class="kbody"><div class="kt">RTK 两条主路</div>
+  <div class="kd">第21章 · Ras-MAPK 管增殖；PI3K-Akt 管存活</div></div></a>
+<a class="kcard" href="player.html#c-sh22_warburg">
+  <div class="knum" style="background:#15803d">06</div>
+  <div class="kbody"><div class="kt">Warburg 效应</div>
+  <div class="kd">第22章 · 有氧也糖酵解：要的是合成前体与 NADPH</div></div></a>
+<a class="kcard" href="player.html#c-sh23_brca">
+  <div class="knum" style="background:#15803d">07</div>
+  <div class="kbody"><div class="kt">BRCA 与 PARP 合成致死</div>
+  <div class="kd">第23章 · 两条修复通路同时坏才死，坏一个还能活</div></div></a>
+</div><script>
+(function(g){
+  var SPEEDS=[0.5,1,1.5];
+  function makeBar(svg){
+    var wrap=document.createElement('div'); wrap.className='smctl';
+    function btn(t,ti){var b=document.createElement('button');b.type='button';
+      b.className='smbtn';b.textContent=t;if(ti)b.title=ti;return b;}
+    var bPrev=btn('\u2039','上一相位'), bPlay=btn('\u23f8','暂停 / 继续'),
+        bNext=btn('\u203a','下一相位'), bSpeed=btn('1\u00d7','切换速度'),
+        bReset=btn('\u21ba','回到开头');
+    var lab=document.createElement('span'); lab.className='smlab';
+
+    var dur=0;
+    svg.querySelectorAll('animate[dur]').forEach(function(a){
+      var v=parseFloat(a.getAttribute('dur'))||0; if(v>dur) dur=v; });
+    dur=dur||10;
+
+    var marks=[];
+    svg.querySelectorAll('animate[dur]').forEach(function(a){
+      var v=parseFloat(a.getAttribute('dur'))||0;
+      if(Math.abs(v-dur)>0.01) return;
+      var kt=(a.getAttribute('keyTimes')||'').trim(); if(!kt) return;
+      kt.split(';').forEach(function(x){var q=parseFloat(x);
+        if(!isNaN(q)&&q>0.03&&q<0.97) marks.push(q); }); });
+    marks.sort(function(a,b){return a-b});
+    var groups=[];
+    marks.forEach(function(m){
+      if(groups.length && m-groups[groups.length-1].last<0.05){
+        var q=groups[groups.length-1]; q.sum+=m; q.n+=1; q.last=m;
+      } else groups.push({sum:m,n:1,last:m});
+    });
+    var uniq=[0];
+    groups.forEach(function(q){var v=q.sum/q.n;
+      if(v-uniq[uniq.length-1]>0.04) uniq.push(v);});
+    if(uniq.length<2) uniq=[0,0.5,1];
+    if(uniq[uniq.length-1]<0.96) uniq.push(1);
+    uniq=uniq.map(function(v){return Math.round(v*1000)/1000});
+    var nStep=Math.max(uniq.length-1,1);
+
+    var t=0, playing=true, speed=1, last=0, raf=null;
+    function manual(){try{if(!svg.animationsPaused())svg.pauseAnimations();}catch(e){}}
+    function apply(){manual();try{svg.setCurrentTime(t%dur);}catch(e){}}
+    function paint(){
+      bPlay.textContent=playing?'\u23f8':'\u25b6';
+      bPlay.classList.toggle('on',playing);
+      bSpeed.textContent=speed+'\u00d7';
+      var now=t/dur,k=0;
+      for(var i=0;i<uniq.length-1;i++) if(now>=uniq[i]-1e-6) k=i;
+      lab.textContent='\u7b2c '+(k+1)+' / '+nStep+' \u6b65';
+    }
+    function loop(now){
+      if(!playing) return;
+      if(!last) last=now;
+      var dt=(now-last)/1000; last=now;
+      t+=dt*speed; if(t>=dur) t-=dur;
+      apply(); paint(); raf=requestAnimationFrame(loop);
+    }
+    function play(){playing=true;last=0;raf=requestAnimationFrame(loop);paint();}
+    function pause(){playing=false;if(raf)cancelAnimationFrame(raf);raf=null;apply();paint();}
+    bPlay.onclick=function(){playing?pause():play();};
+    bSpeed.onclick=function(){var i=SPEEDS.indexOf(speed);
+      speed=SPEEDS[(i+1)%SPEEDS.length]; last=0; paint();};
+    function step(d){
+      pause();
+      var best=0,bd=1e9;
+      for(var i=0;i<uniq.length;i++){var q=Math.abs(t/dur-uniq[i]);
+        if(q<bd){bd=q;best=i;}}
+      var ni=Math.max(0,Math.min(best+d,uniq.length-1));
+      t=Math.min(uniq[ni]*dur+0.012,dur-0.002);
+      apply(); paint();
+    }
+    bPrev.onclick=function(){step(-1);};
+    bNext.onclick=function(){step(1);};
+    bReset.onclick=function(){pause();t=0;apply();paint();};
+
+    [bPrev,bPlay,bNext,bSpeed,bReset].forEach(function(b){wrap.appendChild(b);});
+    wrap.appendChild(lab);
+
+    manual(); apply(); paint();
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting) play(); else pause(); });
+      },{rootMargin:'120px'});
+      io.observe(svg.closest('.stage')||svg);
+    } else play();
+    return wrap;
+  }
+  g.initSmilCtl=function(root){
+    (root||document).querySelectorAll('.stage').forEach(function(st){
+      if(st.dataset.ctl) return;
+      var svg=st.querySelector('svg'); if(!svg||!svg.pauseAnimations) return;
+      // 只有「有真实循环动画」的图才加控件：
+      //   至少 2 个 animate，且最大 dur > 1s（排除只有一个标题淡入的静态图）
+      var durs=[], mx=0;
+      svg.querySelectorAll('animate[dur]').forEach(function(a){
+        var v=parseFloat(a.getAttribute('dur'))||0; durs.push(v); if(v>mx) mx=v;});
+      if(durs.length<2 || mx<=1) { st.dataset.ctl='1'; st.classList.add('static'); return; }
+      st.dataset.ctl='1';
+      st.appendChild(makeBar(svg));
+    });
+  };
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded',function(){g.initSmilCtl()});
+  else g.initSmilCtl();
+})(window);
+</script></body></html>
