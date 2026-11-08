@@ -354,7 +354,7 @@ MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 __THEME__
 <title>每日追踪看板</title><style>__CSS__</style></head><body><div class="wrap">
 <header><h1>每日追踪看板</h1><div class="updated" id="updated">__UPDATEDBADGE__</div>
-<div class="toolnav"><a href="xz/videos.html">🎬 考研西综 306 成套视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="physio.html">🧠 生理学速记卡</a><a href="biochem.html">⚗️ 生物化学速记卡</a><a href="quiz.html">🩺 医师定考刷题</a><a href="med/index.html">🧬 医学动态图库（按学科）</a></div></header>
+<div class="toolnav"><a href="xz/videos.html">🎬 考研西综 306 成套视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="physio.html">🧠 生理学速记卡</a><a href="biochem.html">⚗️ 生物化学速记卡</a><a href="proc.html">🎛️ 交互式过程演示（可暂停/逐步）</a><a href="quiz.html">🩺 医师定考刷题</a><a href="med/index.html">🧬 医学动态图库（按学科）</a></div></header>
 __SNAV__
 
 <h2 id="s1">一、大盘行情</h2>
@@ -818,8 +818,9 @@ def main():
     # 复制过程演示播放器（proc.html）
     _pc = os.path.join(OUT, "proc.html")
     if os.path.exists(_pc):
-        shutil.copy(_pc, os.path.join(SITE, "proc.html"))
-        print("copied proc.html")
+        ux.write_injected(_pc, os.path.join(SITE, "proc.html"),
+                          mode="page", color="#0f766e")
+        print("copied proc.html (ux injected)")
     else:
         print("WARN: proc.html not found in", OUT)
     # 复制西综306考研题库
@@ -915,44 +916,22 @@ def main():
 if __name__ == "__main__":
     main()
 # rebuild-trigger: med interactive page
-# rebuild: 纳入 med/<slug>/ 子目录图库文件
-# rebuild: typography v5 med gallery (7b78)
-# rebuild: quiz figs + knee v5 (ae56)
-# rebuild: metformin + 3 motions (3990)
-# rebuild: quiz anatomy v2 (ef6c)
-# rebuild: quiz anatomy final (007e)
-# rebuild: quiz figs v3 (9c5d)
-# rebuild: cards with figures (e225)
-# rebuild: physio chapters order (2cc8)
 
-# rebuild: biochem full 20ch (b1)
 
-# rebuild: biochem lazy 975->220 (lz1)
 
-# rebuild: physio lazy 467->89 (lz2)
 
-# rebuild: webm motion (wm1)
 
-# rebuild: webm whitelist (wm2)
 
-# rebuild: io video (io1)
 
-# rebuild: io video retry (io2 1794066627)
 
-# rebuild: webm proper duration (wd1794067893)
 
-# rebuild: posters + webm (p1794069567)
 
-# rebuild: gif back (g1794089490)
 
-# rebuild: proc demo (pd1794091324)
 
-# rebuild: proc player (pp1794094662)
 
-# rebuild: proc copy (1794094981)
 
 # build trigger 20261108001710
 
-# rebuild: physio figs v2 (p21794099440)
 
-# rebuild: biochem figs v2 (b21794107112)
+
+# rebuild: add proc nav (na1794108397)
