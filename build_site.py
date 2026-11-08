@@ -38,8 +38,8 @@ SRC_MAP = {
     "降胆固醇": "https://www.chinacirculation.org/",
     "T2DM": "https://guide.medlive.cn/",
 }
-SPEC_ORDER = ["肾内科", "内分泌·体重管理", "心血管"]
-COLORS = {"肾内科": "#3f6b4f", "内分泌·体重管理": "#3b6ea5", "心血管": "#b5651d"}
+SPEC_ORDER = ["肾内科", "内分泌·体重管理", "心血管", "基础医学"]
+COLORS = {"肾内科": "#3f6b4f", "内分泌·体重管理": "#3b6ea5", "心血管": "#b5651d", "基础医学": "#6b4f8b"}
 PALETTE = ["#3f6b4f", "#3b6ea5", "#b5651d", "#8b5cf6", "#c0392b", "#0e9488"]
 
 def esc(t):
@@ -381,14 +381,14 @@ __SNAV__
 <div class="tbl"><h3>美股 · 行业跌幅前 10</h3><table id="usDn">__USDN__</table></div>
 </div>
 
-<h2 id="s3">三、三专科指南 · 数据概览</h2>
+<h2 id="s3">三、指南追踪 · 数据概览</h2>
 <div class="grid g2">__OVERVIEW__</div>
 
-<h2 id="s4">四、三专科指南 · 重点提要</h2>
+<h2 id="s4">四、指南追踪 · 重点提要</h2>
 <div class="grid g2">__SPECS__</div>
 <div style="margin-top:6px">__HISTLINK__</div>
 
-<h2 id="s5">五、三专科 · 最新发表文章</h2>
+<h2 id="s5">五、专科 · 最新发表文章</h2>
 <div class="grid g2">__ARTS__</div>
 
 <footer>行情来源：新浪财经（A股指数 / 行业板块、美股指数 / SPDR 11 行业 ETF）。专科内容由每日对比提要文件与文章库自动解析，点击标题/链接可查原文。<span class="uxperiod">__PERIOD__</span></footer>
@@ -564,8 +564,8 @@ def find_links(source):
     return links[:3]
 
 # ---------- 往期提要（历史归档 + 上下篇导航） ----------
-SPEC_SLUG = {"肾内科": "kidney", "内分泌": "endocrine", "心血管": "cardio"}
-SPEC_DISP = {"肾内科": "肾内科", "内分泌": "内分泌·体重管理", "心血管": "心血管"}
+SPEC_SLUG = {"肾内科": "kidney", "内分泌": "endocrine", "心血管": "cardio", "基础医学": "basic"}
+SPEC_DISP = {"肾内科": "肾内科", "内分泌": "内分泌·体重管理", "心血管": "心血管", "基础医学": "基础医学"}
 HIST_DIRS = [os.path.join(OUT, "specialties"), OUT, "/sandbox/workspace/outputs"]
 
 def slug_of(key):
@@ -753,10 +753,10 @@ def build_history_page(history, specs):
     return f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {ux.theme_meta()}
-<title>往期提要 · 三专科每日对比</title><style>{ATT_CSS}{MAIN_CSS}{NAV_CSS}{ux.UX_CSS}
+<title>往期提要 · 专科每日对比</title><style>{ATT_CSS}{MAIN_CSS}{NAV_CSS}{ux.UX_CSS}
 .hcols .scard{{margin:0}}</style></head><body><div class="wrap" style="max-width:1180px">
 <header style="border-bottom:2px solid #3f6b4f"><h1 style="color:#3f6b4f">📚 往期提要</h1>
-<div class="updated">三专科每日对比提要 · 共 {total} 篇 · 按日期倒序</div></header>
+<div class="updated">专科每日对比提要 · 共 {total} 篇 · 按日期倒序</div></header>
 <div class="nav-btns" style="margin:18px 0">
 <a class="nb mid" href="index.html">← 返回看板首页</a>
 </div>
@@ -764,7 +764,7 @@ def build_history_page(history, specs):
 <footer style="margin-top:22px">点击任一日期进入该篇提要，篇内提供「上一篇 / 下一篇」导航。</footer>
 </div>{ux.TO_TOP_HTML}<script>{ux.UX_JS}</script></body></html>"""
 
-SPECS_ORDER = [("肾内科", "肾内科"), ("内分泌", "内分泌·体重管理"), ("心血管", "心血管")]
+SPECS_ORDER = [("肾内科", "肾内科"), ("内分泌", "内分泌·体重管理"), ("心血管", "心血管"), ("基础医学", "基础医学")]
 
 def refresh_xz_videos():
     """每次构建自动刷新「考研西综 306 成套视频」数据；失败则沿用旧 videos.json"""
