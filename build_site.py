@@ -356,7 +356,7 @@ MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 __THEME__
 <title>每日追踪看板</title><style>__CSS__</style></head><body><div class="wrap">
 <header><h1>每日追踪看板</h1><div class="updated" id="updated">__UPDATEDBADGE__</div>
-<div class="toolnav"><a class="hot" href="med/index.html">🧬 医学动态图库（全部动图·可暂停）</a><a href="physio.html">🧠 生理学速记卡</a><a href="biochem.html">⚗️ 生物化学速记卡</a><a href="proc.html">🎛️ 交互式过程演示</a><a href="xz/videos.html">🎬 考研西综 306 视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="quiz.html">🩺 医师定考刷题</a></div></header>
+<div class="toolnav"><a class="hot" href="med/index.html">🧬 医学动态演示图库（按学科·可暂停）</a><a href="physio.html">🧠 生理学速记卡</a><a href="biochem.html">⚗️ 生物化学速记卡</a><a href="xz/videos.html">🎬 考研西综 306 视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="quiz.html">🩺 医师定考刷题</a></div></header>
 __SNAV__
 
 <h2 id="s1">一、大盘行情</h2>
@@ -917,6 +917,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+# rebuild-trigger: med interactive page
 
 
 
@@ -935,7 +936,4 @@ if __name__ == "__main__":
 
 
 
-
-
-
-# rebuild: phase cluster fix (1794118093)
+# rebuild: add proc nav (na1794108397)
