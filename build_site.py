@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """生成看板网站 v3：护眼配色 + 图表化 + 表格化，专科内容更丰富、易读"""
-import json, os, re, html, shutil
+import json, os, re, html, shutil, sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import ux  # 统一交互/视觉增强组件（见 ux.py）
 
 OUT = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(OUT, "site")
@@ -107,7 +110,7 @@ def idx_cards(items):
         cls = "up" if pct >= 0 else "down"
         out.append(f'<div class="icard"><div class="iname">{it["name"]}</div>'
                    f'<div class="iprice">{it["price"]:,.2f}</div>'
-                   f'<div class="ipct {cls}">{sign}{pct:.2f}%</div></div>')
+                   f'<div class="ipct">{ux.pct_chip(pct)}</div></div>')
     return "\n".join(out)
 
 def sec_rows(items):
@@ -118,7 +121,7 @@ def sec_rows(items):
         pct = it["pct"]; sign = "+" if pct >= 0 else ""
         cls = "up" if pct >= 0 else "down"
         out.append(f'<tr><td class="rk">{i}</td><td class="nm">{it["name"]}</td>'
-                   f'<td class="pc {cls}">{sign}{pct:.2f}%</td></tr>')
+                   f'<td class="pc">{ux.pct_chip(pct)}</td></tr>')
     return "\n".join(out)
 
 # ---------- 专科提要（要点表格化） ----------
@@ -241,6 +244,12 @@ header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:fle
 h1{font-size:26px;font-weight:800;color:var(--acc);letter-spacing:.5px}
 .updated{color:var(--mut);font-size:14px}
 .updated .live{color:#8fa287;font-size:12px;margin-left:6px}
+.toolnav{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.toolnav a{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:10px;
+  background:#f2f7ec;border:1px solid #dbe7cf;color:#345b42;font-weight:700;font-size:13.5px;text-decoration:none}
+.toolnav a:hover{background:#e9f2df;border-color:#b9d3a6}
+.toolnav a.hot{background:#0f766e;color:#fff;border-color:#0f766e;font-weight:700}
+.toolnav a.hot:hover{background:#115e59;border-color:#115e59}
 h2{font-size:19px;margin:30px 0 14px;color:#1d3a28;border-left:5px solid var(--acc);padding-left:12px}
 .grid{display:grid;gap:14px}
 .g4{grid-template-columns:repeat(4,1fr)}
@@ -294,10 +303,12 @@ tr:last-child td{border-bottom:none}
 .pts li:before{content:"";position:absolute;left:0;top:.72em;width:6px;height:6px;border-radius:50%;background:#9ab98c}
 .pts li.sub{color:var(--acc);font-weight:700;margin-top:6px}
 .pts li.sub:before{width:12px;height:3px;border-radius:2px;top:.62em;background:var(--acc)}
-.tw{margin:6px 0 8px 36px;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid #e0e9d6;border-radius:8px}
+.tw{margin:6px 0 8px 36px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  border:1px solid #e0e9d6;border-radius:8px}
 .tw.tall{max-height:76vh;overflow-y:auto}
 .tw table.itbl{margin:0;width:100%;font-size:15.5px;border-collapse:separate;border-spacing:0}
-.tw table.itbl thead th{position:sticky;top:0;z-index:5;background:#eef5e9;font-size:14.5px;white-space:nowrap;box-shadow:inset 0 -2px 0 #cfe0c2}
+.tw table.itbl thead th{position:sticky;top:0;z-index:5;background:#eef5e9;font-size:14.5px;
+  white-space:nowrap;box-shadow:inset 0 -2px 0 #cfe0c2}
 .tw table.itbl tbody td{border-bottom:1px solid #eaf0e2;background:#fff}
 .tw table.itbl tbody tr:nth-child(even) td{background:#fbfdf9}
 .tw.tall table.itbl thead th{box-shadow:inset 0 -2px 0 #cfe0c2,0 2px 6px rgba(40,70,40,.08)}
@@ -353,13 +364,16 @@ td,th{padding:6px 5px}
 
 MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+__THEME__
 <title>每日追踪看板</title><style>__CSS__</style></head><body><div class="wrap">
-<header><h1>每日追踪看板</h1><div class="updated" id="updated">数据更新：__UPDATED__<span class="live">· 自动刷新中</span></div></header>
+<header><h1>每日追踪看板</h1><div class="updated" id="updated">__UPDATEDBADGE__</div>
+<div class="toolnav"><a class="hot" href="med/index.html">🧬 医学动态演示图库（按学科·可暂停）</a><a href="physio.html">🧠 生理学速记卡</a><a href="biochem.html">⚗️ 生物化学速记卡</a><a href="xz/videos.html">🎬 考研西综 306 视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="quiz.html">🩺 医师定考刷题</a></div></header>
+__SNAV__
 
-<h2>一、大盘行情</h2>
+<h2 id="s1">一、大盘行情</h2>
 <div class="grid g4" id="cnIdx">__CNIDX__</div><div style="height:14px"></div><div class="grid g4" id="usIdx">__USIDX__</div>
 
-<h2>二、板块涨跌榜（涨 / 跌 前 10）</h2>
+<h2 id="s2">二、板块涨跌榜（涨 / 跌 前 10）</h2>
 <div class="grid g2">
 <div class="tbl"><h3>A股 · 行业涨幅前 10</h3><table id="cnUp">__CNUP__</table></div>
 <div class="tbl"><h3>A股 · 行业跌幅前 10</h3><table id="cnDn">__CNDN__</table></div>
@@ -367,40 +381,45 @@ MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <div class="tbl"><h3>美股 · 行业跌幅前 10</h3><table id="usDn">__USDN__</table></div>
 </div>
 
-<h2>三、三专科指南 · 数据概览</h2>
+<h2 id="s3">三、三专科指南 · 数据概览</h2>
 <div class="grid g2">__OVERVIEW__</div>
 
-<h2>四、三专科指南 · 重点提要</h2>
+<h2 id="s4">四、三专科指南 · 重点提要</h2>
 <div class="grid g2">__SPECS__</div>
 <div style="margin-top:6px">__HISTLINK__</div>
 
-<h2>五、三专科 · 最新发表文章</h2>
+<h2 id="s5">五、三专科 · 最新发表文章</h2>
 <div class="grid g2">__ARTS__</div>
 
-<footer>行情来源：新浪财经（A股指数 / 行业板块、美股指数 / SPDR 11 行业 ETF）。专科内容由每日对比提要文件与文章库自动解析，点击标题/链接可查原文。</footer>
+<footer>行情来源：新浪财经（A股指数 / 行业板块、美股指数 / SPDR 11 行业 ETF）。专科内容由每日对比提要文件与文章库自动解析，点击标题/链接可查原文。<span class="uxperiod">__PERIOD__</span></footer>
 </div>
+__TOTOP__
 <script>
 (function(){
   function $(id){return document.getElementById(id);}
   var last=null;
-  function sgn(p){return p>=0?'+':'';}
-  function cls(p){return p>=0?'up':'down';}
+  function sgn(p){return p>0?'+':'';}
+  function ar(p){return p>0?'▲':(p<0?'▼':'—');}
+  function cls(p){return p>0?'up':(p<0?'down':'flat');}
+  function pill(p){p=Number(p);return '<span class="pill '+cls(p)+'"><span class="ar">'+ar(p)+'</span>'+sgn(p)+p.toFixed(2)+'%</span>';}
   function fmt(n){var t=Number(n).toFixed(2).split('.');t[0]=t[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');return t.join('.');}
   function idxHTML(items){
     if(!items||!items.length)return '<div class="mut">获取中…</div>';
-    return items.map(function(it){var p=Number(it.pct);
-      return '<div class="icard"><div class="iname">'+it.name+'</div><div class="iprice">'+fmt(it.price)+'</div><div class="ipct '+cls(p)+'">'+sgn(p)+p.toFixed(2)+'%</div></div>';
+    return items.map(function(it){
+      return '<div class="icard"><div class="iname">'+it.name+'</div><div class="iprice">'+fmt(it.price)+'</div><div class="ipct">'+pill(it.pct)+'</div></div>';
     }).join('');
   }
   function secHTML(items){
     if(!items||!items.length)return '<tr><td colspan="3" class="mut">暂无数据</td></tr>';
-    return items.map(function(it,i){var p=Number(it.pct);
-      return '<tr><td class="rk">'+(i+1)+'</td><td class="nm">'+it.name+'</td><td class="pc '+cls(p)+'">'+sgn(p)+p.toFixed(2)+'%</td></tr>';
+    return items.map(function(it,i){
+      return '<tr><td class="rk">'+(i+1)+'</td><td class="nm">'+it.name+'</td><td class="pc">'+pill(it.pct)+'</td></tr>';
     }).join('');
   }
   function set(id,html){var e=$(id);if(e)e.innerHTML=html;}
   function apply(d){
-    var u=$('updated');if(u&&d.updated)u.innerHTML='数据更新：'+d.updated+'<span class="live">· 自动刷新中</span>';
+    var u=$('updated');
+    if(u&&d.updated){u.innerHTML='数据更新：<b>'+d.updated+'</b><span class="live">自动刷新中</span><span class="rel" data-bjtime="'+d.updated+'">刚刚</span>';
+      if(window.__uxRefreshRel)window.__uxRefreshRel();}
     set('cnIdx',idxHTML(d.cn_index));
     set('usIdx',idxHTML(d.us_index));
     set('cnUp',secHTML((d.cn_sectors||{}).up));
@@ -418,9 +437,29 @@ MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
   setTimeout(tick,4000);
 })();
 </script>
+<script>__UXJS__</script>
 </body></html>"""
 
 ATT_CSS = """
+.med-fig{margin:18px 0;padding:10px;background:#fbfbfa;border:1px solid #e2e2dc;border-radius:10px;overflow:hidden}
+.med-fig svg{display:block;width:100%;height:auto}
+/* 动态图降级：prefers-reduced-motion 的 animation:none 管不到 SMIL，
+   直接把动画层摘掉（display:none !important 保证压过 SVG 内部样式）。 */
+@media (prefers-reduced-motion:reduce){
+  .med-fig .med-flow,.med-fig .med-pulse,.med-fig .med-block-pulse{display:none!important}
+}
+@media print{
+  .med-fig .med-flow,.med-fig .med-pulse{display:none!important}
+}
+/* 动态图：SMIL 动画由 SVG 内部驱动。CSS 的 animation:none 管不了 SMIL，
+   但用 display:none 把动画层摘掉，视觉即静止且不参与绘制（开销极低）。
+   这是内联 SVG 场景下 reduced-motion 最稳的做法。 */
+@media (prefers-reduced-motion:reduce){
+  .med-fig .med-flow,.med-fig .med-pulse,.med-fig .med-block-pulse{display:none}
+}
+@media print{
+  .med-fig .med-flow,.med-fig .med-pulse{display:none}
+}
 :root{--bg:#eef3e8;--card:#fff;--ink:#20301f;--mut:#5a6b56;--line:#d3ddc7;--acc:#3f6b4f;}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.8;padding:28px 18px}
@@ -439,6 +478,28 @@ th{background:#eef5e9;font-weight:700;color:#1d3a28}
 .back{display:inline-block;margin-top:10px;color:#3b6ea5;font-weight:600;text-decoration:none}
 @media(max-width:680px){body{padding:16px 10px}.wrap{padding:18px 14px;border-radius:10px}h2{font-size:20px}h3{font-size:17px}h4{font-size:15.5px}p,li{font-size:15px}table{font-size:14px}td,th{padding:6px 7px}}
 """
+
+def md_sections(md):
+    """从提要 md 抽取一级章节（供粘性章节导航使用）"""
+    secs = []
+    for raw in (md or "").splitlines():
+        s = raw.rstrip()
+        if s.startswith("## "):
+            head = s[3:].strip()
+            if re.match(r"^[一二三四五六七八九十]+、", head) and "总结" not in head and "重复" not in head:
+                lab = re.sub(r"^[一二三四五六七八九十]+、\s*", "", head)
+                lab = re.sub(r"[\u2b50\u26a0\ufe0f\u2705\u274c\U0001f300-\U0001faff\U0001f000-\U0001f2ff]", "", lab).strip()
+                lab = lab.replace("\u201c", "").replace("\u201d", "").replace('"', "")
+                lab = re.sub(r"[\u201c\u201d\"（）()【】\[\]]", "", lab)
+                head_part = re.split(r"[:：——|｜]", lab)[0].strip()
+                if 3 <= len(head_part) <= 14:
+                    lab = head_part
+                lab = re.sub(r"^[\s\-–—:：|/\\]+", "", lab).strip()
+                if len(lab) > 14:
+                    lab = lab[:14] + "…"
+                secs.append((f"i{len(secs)+1}", lab or f"第 {len(secs)+1} 节"))
+    return secs
+
 
 def md_to_html(md):
     out, in_tbl = [], False; sec_n = 0
@@ -485,13 +546,15 @@ def build_attachment(s):
     src = esc(s.get("source", "")) if s.get("source") else ""
     return f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{esc(s["specialty"])} · 原文详解</title><style>{ATT_CSS}</style></head><body><div class="wrap">
+{ux.theme_meta()}
+<title>{esc(s["specialty"])} · 原文详解</title><style>{ATT_CSS}{ux.UX_CSS}</style></head><body><div class="wrap">
+{ux.sticky_nav(md_sections(s.get("md",""))) if len(md_sections(s.get("md",""))) >= 2 else ""}
 <h2>{esc(s["specialty"])} · 重点提要原文详解</h2>
 <p class="q">日期：{s["date"]} ｜ 来源：每日对比提要文件自动解析</p>
 <div class="src"><b>内容出处：</b>{src or "见下方正文"}<br>{link_html}</div>
 {body}
 <a class="back" href="index.html">← 返回看板</a>
-</div></body></html>"""
+</div>{ux.TO_TOP_HTML}<script>{ux.UX_JS}</script></body></html>"""
 
 def find_links(source):
     links = []
@@ -605,26 +668,69 @@ def nav_bar(key, rows, idx, where="top"):
             f'<div class="nav-btns">{prev}<a class="nb mid" href="history.html">返回列表</a>{nxt}</div>'
             f'</div>')
 
+# ---------- 医学插图注入 ----------
+# 用法：提要 md 里单独一行写 <!--FIG:slug-->，构建时把 figs/<slug>.svg 内联进正文。
+# 找不到图渲染为空，不报错；同一 slug 只读一次盘。
+FIG_DIR = os.path.join(OUT, "figs")
+FIG_TOKENS = {}
+
+def figure_html(slug):
+    """读取 figs/<slug>.svg，返回可直接内联的 HTML；缺失返回空串。"""
+    path = os.path.join(FIG_DIR, slug + ".svg")
+    if not os.path.isfile(path):
+        return ""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            svg = fh.read()
+    except OSError:
+        return ""
+    # SVG 已内联样式与 width/height，直接内联；套 <img> 会丢样式
+    return '<figure class="med-fig" data-slug="' + esc(slug) + '">' + svg + '</figure>'
+
+def inject_figures(md):
+    """把 <!--FIG:slug--> 换成哨兵令牌 ZFIGnZ。
+    必须先换令牌、后交给 md_to_html：正文会被 esc() 处理，直接塞 HTML 会被转义。"""
+    if not md or "FIG:" not in md:
+        return md
+    def swap(match):
+        token = "ZFIG" + str(len(FIG_TOKENS)) + "Z"
+        FIG_TOKENS[token] = figure_html(match.group(1))
+        return token
+    return re.sub(r"<!--\s*FIG:\s*([a-z0-9_-]+)\s*-->", swap, md)
+
+def restore_figures(body):
+    """md_to_html 之后把哨兵令牌还原成真正的 HTML。"""
+    if not body or "ZFIG" not in body:
+        return body
+    for token, html_out in FIG_TOKENS.items():
+        body = body.replace(token, html_out)
+    return body
+
 def build_spec_page(key, rows, idx):
     cur = rows[idx]
     disp = SPEC_DISP.get(key, key)
     md = load_md(cur.get("file", ""))
-    body = md_to_html(md) if md else '<div class="mut">原文文件缺失（' + esc(cur.get("file", "")) + '）</div>'
+    if md:
+        body = restore_figures(md_to_html(inject_figures(md)))
+    else:
+        body = '<div class="mut">原文文件缺失（' + esc(cur.get("file", "")) + '）</div>'
     src = find_source(md)
     links = find_links(src)
     link_html = " ".join(f'<a href="{u}" target="_blank">原文出处 {i+1} ↗</a>' for i, u in enumerate(links))
     title = cur.get("title") or f'{disp} · {cur["date"]} 重点提要'
     return f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{esc(title)} · {esc(disp)} {cur["date"]}</title><style>{ATT_CSS}{NAV_CSS}</style></head><body><div class="wrap">
+{ux.theme_meta()}
+<title>{esc(title)} · {esc(disp)} {cur["date"]}</title><style>{ATT_CSS}{NAV_CSS}{ux.UX_CSS}</style></head><body><div class="wrap">
 {nav_bar(key, rows, idx, "top")}
+{ux.sticky_nav(md_sections(md)) if len(md_sections(md)) >= 2 else ""}
 <h2>{esc(disp)} · 重点提要</h2>
 <p class="q">日期：{cur["date"]} ｜ 来源：每日对比提要文件自动解析（{esc(cur.get("file",""))}）</p>
 <div class="src"><b>内容出处：</b>{esc(src) if src else "见下方正文"}<br>{link_html}</div>
 {body}
 {nav_bar(key, rows, idx, "bottom")}
 <p style="margin-top:14px"><a class="back" href="index.html">← 返回看板首页</a> <a class="back" href="history.html" style="margin-left:16px">📚 往期提要列表</a></p>
-</div></body></html>"""
+</div>{ux.TO_TOP_HTML}<script>{ux.UX_JS}</script></body></html>"""
 
 def history_links(history):
     total = sum(len(v) for v in (history or {}).values())
@@ -646,7 +752,8 @@ def build_history_page(history, specs):
     total = sum(len(v) for v in (history or {}).values())
     return f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>往期提要 · 三专科每日对比</title><style>{ATT_CSS}{MAIN_CSS}{NAV_CSS}
+{ux.theme_meta()}
+<title>往期提要 · 三专科每日对比</title><style>{ATT_CSS}{MAIN_CSS}{NAV_CSS}{ux.UX_CSS}
 .hcols .scard{{margin:0}}</style></head><body><div class="wrap" style="max-width:1180px">
 <header style="border-bottom:2px solid #3f6b4f"><h1 style="color:#3f6b4f">📚 往期提要</h1>
 <div class="updated">三专科每日对比提要 · 共 {total} 篇 · 按日期倒序</div></header>
@@ -655,17 +762,38 @@ def build_history_page(history, specs):
 </div>
 <div class="hcols">{"".join(cols)}</div>
 <footer style="margin-top:22px">点击任一日期进入该篇提要，篇内提供「上一篇 / 下一篇」导航。</footer>
-</div></body></html>"""
+</div>{ux.TO_TOP_HTML}<script>{ux.UX_JS}</script></body></html>"""
 
 SPECS_ORDER = [("肾内科", "肾内科"), ("内分泌", "内分泌·体重管理"), ("心血管", "心血管")]
 
+def refresh_xz_videos():
+    """每次构建自动刷新「考研西综 306 成套视频」数据；失败则沿用旧 videos.json"""
+    if os.environ.get("XZ_VIDEOS_REFRESH", "1") == "0":
+        return
+    try:
+        sys.path.insert(0, OUT)
+        import xz_videos
+        n = xz_videos.refresh(verbose=True)
+        print(f"[xz-videos] refreshed {n} items")
+    except Exception as e:
+        print(f"[xz-videos] refresh skipped: {type(e).__name__}: {e}")
+
+
 def main():
+    refresh_xz_videos()
     with open(os.path.join(OUT, "data.json"), encoding="utf-8") as f:
         d = json.load(f)
     os.makedirs(SITE, exist_ok=True)
     hist = d.get("specialty_history", {}) or {}
-    html_main = (MAIN_TPL.replace("__CSS__", MAIN_CSS + NAV_CSS)
-                 .replace("__UPDATED__", d.get("updated", ""))
+    html_main = (MAIN_TPL.replace("__CSS__", MAIN_CSS + NAV_CSS + ux.UX_CSS)
+                 .replace("__THEME__", ux.theme_meta())
+                 .replace("__SNAV__", ux.sticky_nav([
+                     ("s1", "大盘行情"), ("s2", "板块涨跌榜"), ("s3", "数据概览"),
+                     ("s4", "重点提要"), ("s5", "最新文章")]))
+                 .replace("__TOTOP__", ux.TO_TOP_HTML)
+                 .replace("__UXJS__", ux.UX_JS)
+                 .replace("__PERIOD__", ux.period_note())
+                 .replace("__UPDATEDBADGE__", ux.updated_badge(d.get("updated", "")))
                  .replace("__CNIDX__", idx_cards(d.get("cn_index", [])))
                  .replace("__USIDX__", idx_cards(d.get("us_index", [])))
                  .replace("__CNUP__", sec_rows(d.get("cn_sectors", {}).get("up", [])))
@@ -677,6 +805,86 @@ def main():
                  .replace("__HISTLINK__", history_links(hist))
                  .replace("__ARTS__", art_table(d.get("articles", []))))
     shutil.copy(os.path.join(OUT, "data.json"), os.path.join(SITE, "data.json"))
+    # 复制刷题小程序（quiz.html）到站点根目录，并注入 theme-color / 回顶按钮
+    _quiz = os.path.join(OUT, "quiz.html")
+    if os.path.exists(_quiz):
+        ux.write_injected(_quiz, os.path.join(SITE, "quiz.html"), mode="quiz", color="#0f766e")
+        print("copied quiz.html (ux injected) ->", os.path.join(SITE, "quiz.html"))
+    else:
+        print("WARN: quiz.html not found in", OUT)
+    # 复制生理学速记卡（physio.html）
+    _phys = os.path.join(OUT, "physio.html")
+    if os.path.exists(_phys):
+        ux.write_injected(_phys, os.path.join(SITE, "physio.html"),
+                          mode="quiz", color="#0f766e")
+        print("copied physio.html (ux injected)")
+    else:
+        print("WARN: physio.html not found in", OUT)
+    # 复制生物化学速记卡（biochem.html）
+    _bi = os.path.join(OUT, "biochem.html")
+    if os.path.exists(_bi):
+        ux.write_injected(_bi, os.path.join(SITE, "biochem.html"),
+                          mode="quiz", color="#9a3412")
+        print("copied biochem.html (ux injected)")
+    else:
+        print("WARN: biochem.html not found in", OUT)
+    # 复制过程演示播放器（proc.html）
+    _pc = os.path.join(OUT, "proc.html")
+    if os.path.exists(_pc):
+        ux.write_injected(_pc, os.path.join(SITE, "proc.html"),
+                          mode="page", color="#0f766e")
+        print("copied proc.html (ux injected)")
+    else:
+        print("WARN: proc.html not found in", OUT)
+    # 复制西综306考研题库
+    _xz = os.path.join(OUT, "xz", "quiz.html")
+    if os.path.exists(_xz):
+        os.makedirs(os.path.join(SITE, "xz"), exist_ok=True)
+        ux.write_injected(_xz, os.path.join(SITE, "xz", "quiz.html"), mode="quiz", color="#0f766e")
+        print("copied xz/quiz.html (ux injected)")
+    else:
+        print("WARN: xz/quiz.html not found")
+    # 西综成套教学视频导航页：服务端直出卡片（弱网/断网也能看到内容）
+    _vj = os.path.join(OUT, "xz", "videos.json")
+    if os.path.exists(_vj):
+        try:
+            sys.path.insert(0, OUT)
+            import xz_page
+            _p1, _p2, _n = xz_page.build(_vj, os.path.join(SITE, "xz"))
+            shutil.copy(_vj, os.path.join(SITE, "xz", "videos.json"))
+            _pj = os.path.join(OUT, "xz", "videos_parts.json")
+            _np = xz_page.build_play_pages(_vj, _pj, os.path.join(SITE, "xz"))
+            if os.path.exists(_pj):
+                shutil.copy(_pj, os.path.join(SITE, "xz", "videos_parts.json"))
+            print(f"built xz/videos.html (SSR, {_n} items) + {_np} play pages")
+        except Exception as e:
+            print("WARN: xz page build failed:", type(e).__name__, e)
+    else:
+        print("WARN: xz/videos.json not found")
+
+    # 医学图库（med/ 目录）：递归复制全部（index.html / data.json /
+    # <slug>/{mechanism.svg,anatomy.svg,motion.html,meta.json}）
+    _med = os.path.join(OUT, "med")
+    if os.path.isdir(_med):
+        _dst = os.path.join(SITE, "med")
+        os.makedirs(_dst, exist_ok=True)
+        _mn = _md = 0
+        for _root, _dirs, _files in os.walk(_med):
+            _rel = os.path.relpath(_root, _med)
+            _tgt = _dst if _rel == "." else os.path.join(_dst, _rel)
+            os.makedirs(_tgt, exist_ok=True)
+            for _f in sorted(_files):
+                if _f.startswith(".") or _f.endswith((".py", ".pyc")):
+                    continue
+                shutil.copy(os.path.join(_root, _f), os.path.join(_tgt, _f))
+                if _f.endswith(".html"):
+                    _mn += 1
+                else:
+                    _md += 1
+        print(f"copied medical gallery -> site/med/ ({_mn} html + {_md} assets)")
+    else:
+        print("WARN: med/ not found")
+
     with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as f:
         f.write(html_main)
     for s in d.get("specialties", []):
@@ -696,8 +904,47 @@ def main():
             n_pages += 1
     with open(os.path.join(SITE, "history.html"), "w", encoding="utf-8") as f:
         f.write(build_history_page(hist, d.get("specialties", [])))
+    # ---------- 机制图资源（figs/ 下的 svg + png）→ site/figs/ ----------
+    _figs = os.path.join(OUT, "figs")
+    _sn = 0
+    if os.path.isdir(_figs):
+        _fdst = os.path.join(SITE, "figs")
+        os.makedirs(_fdst, exist_ok=True)
+        for _f in sorted(os.listdir(_figs)):
+            if _f.startswith(".") or not _f.lower().endswith((".svg", ".png", ".webp", ".jpg", ".jpeg", ".gif", ".mp4", ".webm")):
+                continue
+            shutil.copy(os.path.join(_figs, _f), os.path.join(_fdst, _f))
+            _sn += 1
+        print(f"copied figs -> site/figs/ ({_sn} files)")
+    else:
+        print("WARN: figs/ not found")
+
+    # ---------- 全站注入「返回首页」按钮 ----------
+    _hn = ux.add_home_buttons(SITE)
+    print(f"home button injected into {_hn} html pages")
+
     print("site/index.html +", len(d.get("specialties", [])), "attachments +", n_pages,
           "history pages + history.html ->", SITE)
 
 if __name__ == "__main__":
     main()
+# rebuild-trigger: med interactive page
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# build trigger 20261108001710
+
+
+
+# rebuild: add proc nav (na1794108397)
