@@ -246,6 +246,8 @@ h1{font-size:26px;font-weight:800;color:var(--acc);letter-spacing:.5px}
 .toolnav a{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:10px;
   background:#f2f7ec;border:1px solid #dbe7cf;color:#345b42;font-weight:700;font-size:13.5px;text-decoration:none}
 .toolnav a:hover{background:#e9f2df;border-color:#b9d3a6}
+.toolnav a.hot{background:#0f766e;color:#fff;border-color:#0f766e;font-weight:700}
+.toolnav a.hot:hover{background:#115e59;border-color:#115e59}
 h2{font-size:19px;margin:30px 0 14px;color:#1d3a28;border-left:5px solid var(--acc);padding-left:12px}
 .grid{display:grid;gap:14px}
 .g4{grid-template-columns:repeat(4,1fr)}
@@ -354,7 +356,7 @@ MAIN_TPL = r"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 __THEME__
 <title>每日追踪看板</title><style>__CSS__</style></head><body><div class="wrap">
 <header><h1>每日追踪看板</h1><div class="updated" id="updated">__UPDATEDBADGE__</div>
-<div class="toolnav"><a href="xz/videos.html">🎬 考研西综 306 成套视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="physio.html">🧠 生理学速记卡</a><a href="biochem.html">⚗️ 生物化学速记卡</a><a href="proc.html">🎛️ 交互式过程演示（可暂停/逐步）</a><a href="quiz.html">🩺 医师定考刷题</a><a href="med/index.html">🧬 医学动态图库（按学科）</a></div></header>
+<div class="toolnav"><a class="hot" href="med/index.html">🧬 医学动态图库（全部动图·可暂停）</a><a href="physio.html">🧠 生理学速记卡</a><a href="biochem.html">⚗️ 生物化学速记卡</a><a href="proc.html">🎛️ 交互式过程演示</a><a href="xz/videos.html">🎬 考研西综 306 视频</a><a href="xz/quiz.html">📝 西综 306 刷题</a><a href="quiz.html">🩺 医师定考刷题</a></div></header>
 __SNAV__
 
 <h2 id="s1">一、大盘行情</h2>
@@ -915,6 +917,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+# rebuild-trigger: med interactive page
 
 
 
@@ -933,7 +936,4 @@ if __name__ == "__main__":
 
 
 
-
-# rebuild: force refresh proc nav (1794108907)
-
-# rebuild: nav fix (1794109301)
+# rebuild: add proc nav (na1794108397)
