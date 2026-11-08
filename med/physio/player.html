@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>生理学 · 动态演示</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#eef2f7;color:#16202e;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:10px 12px 96px}
+.top{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:2px 0 12px}
+.back{display:inline-flex;align-items:center;min-height:34px;padding:0 13px;
+  font-size:12.5px;color:#475569;text-decoration:none;background:#fff;
+  border:1px solid #dbe4ee;border-radius:999px}
+.back:active{background:#f1f5f9}
+h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
+.sub{font-size:12.5px;color:#8095a8;line-height:1.6;margin-bottom:14px}
+.sec{display:flex;align-items:center;gap:7px;font-size:12px;color:#0f766e;
+  font-weight:700;margin:16px 0 9px}
+.sec::before{content:"";width:3px;height:13px;border-radius:2px;background:#0f766e}
+.sec::after{content:"";flex:1;height:1px;background:#e3ebf3}
+/* 学科卡（L1） */
+.scard{display:block;background:#fff;border-radius:14px;padding:14px 15px;
+  margin-bottom:10px;text-decoration:none;color:inherit;
+  box-shadow:0 1px 3px rgba(15,23,42,.06),0 8px 22px rgba(15,23,42,.05);
+  border:1px solid #e6eef6;transition:transform .12s}
+.scard:active{transform:scale(.985)}
+.scard .st{display:flex;align-items:center;gap:9px;font-size:15.5px;
+  font-weight:700;margin-bottom:5px}
+.scard .sd{font-size:12.5px;color:#8095a8;line-height:1.6}
+.scard .sm{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.pill{font-size:11px;padding:3px 9px;border-radius:999px;background:#eff6f5;
+  color:#0f766e;font-weight:600}
+.pill.g{background:#f4f7fa;color:#6b7c8d}
+/* 知识点卡（L2/L3） */
+.kcard{display:flex;gap:11px;background:#fff;border-radius:12px;padding:11px 13px;
+  margin-bottom:8px;border:1px solid #e6eef6;text-decoration:none;color:inherit;
+  box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.kcard:active{background:#f8fbfd}
+.knum{flex:0 0 26px;height:26px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:11.5px;font-weight:700;color:#fff}
+.kbody{flex:1 1 auto;min-width:0}
+.kt{font-size:13.5px;font-weight:700;margin-bottom:3px}
+.kd{font-size:11.5px;color:#8095a8;line-height:1.55}
+/* 横排切换 */
+.hwrap{position:relative}
+.hwrap::after{content:"";position:absolute;right:0;top:0;bottom:9px;width:26px;
+  pointer-events:none;background:linear-gradient(90deg,rgba(238,242,247,0),#eef2f7);
+  border-radius:0 8px 8px 0}
+.hrow{display:flex;gap:7px;overflow-x:auto;padding:2px 0 9px;scrollbar-width:none}
+.hrow::-webkit-scrollbar{display:none}
+.hbtn{flex:0 0 auto;min-height:36px;padding:0 14px;border-radius:11px;
+  background:#fff;border:1px solid #dbe4ee;color:#4a5a6b;font-size:13px;
+  font-weight:600;cursor:pointer;white-space:nowrap;display:inline-flex;
+  align-items:center;gap:5px}
+.hbtn.on{background:#0f766e;color:#fff;border-color:#0f766e}
+.hbtn i{font-style:normal;font-size:10px;padding:1px 5px;border-radius:6px;
+  background:#eff6f5;color:#0f766e;font-weight:700;letter-spacing:.2px}
+.hbtn.on i{background:rgba(255,255,255,.22);color:#fff}
+.step{display:flex;align-items:center;gap:6px;justify-content:space-between;
+  font-size:11.5px;color:#8ea0b2;margin:0 3px 7px}
+.step b{color:#0f766e;font-weight:700}
+.hlab{display:flex;align-items:center;gap:7px;font-size:11.5px;color:#a8b6c4;
+  font-weight:700;margin:2px 0 5px}
+.hlab::after{content:"";flex:1;height:1px;background:#e8eff6}
+.stage{display:none;background:#fff;border-radius:16px;padding:8px 8px 4px;
+  box-shadow:0 1px 3px rgba(15,23,42,.06),0 10px 28px rgba(15,23,42,.06)}
+.stage.on{display:block}
+.stage svg{display:block;width:100%;height:auto;border-radius:10px}
+.desc{font-size:12px;color:#8095a8;text-align:center;margin:7px 4px 8px;
+  line-height:1.5}
+.tip{margin-top:10px;padding:8px 10px;background:#fff;border-radius:10px;
+  font-size:11.5px;color:#a8b6c4;text-align:center;line-height:1.5}
+.foot{text-align:center;font-size:11px;color:#b6c4d2;margin:22px 0 0;
+  line-height:1.7}
+
+.smctl{display:flex;align-items:center;gap:6px;margin:8px 2px 2px;
+  padding:6px 8px;background:#f6fafc;border:1px solid #e3ebf3;border-radius:9px}
+.smbtn{flex:0 0 auto;min-width:34px;height:30px;padding:0 9px;
+  font:600 13px/30px -apple-system,'PingFang SC',sans-serif;
+  color:#3f5468;background:#fff;border:1px solid #dbe6f0;border-radius:8px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.smbtn:active{transform:scale(.95)}
+.smbtn.on{background:#0f766e;color:#fff;border-color:#0f766e}
+.smlab{flex:1 1 auto;text-align:right;font-size:11px;color:#8ea0b2}
+</style></head>
+<body><div class="wrap">
+<div class="top">
+  <a class="back" href="index.html">← 知识依赖总览</a>
+  <a class="back" href="../index.html">学科列表</a>
+  <a class="back" href="../../index.html">看板首页</a>
+</div>
+<h1>生理学 · 动态演示</h1>
+<div class="sub">上排切学科，下排切知识点；每张可暂停 / 逐步 / 变速</div>
+
+<div class="hlab">学科</div>
+<div class="hwrap"><div class="hrow"><a class="hbtn on" href="player.html">🧠 生理学</a><a class="hbtn" href="../biochem/player.html">⚗️ 生物化学</a></div></div>
+
+<div class="hlab" id="klab">知识点</div>
+<div class="hwrap"><div class="hrow" id="krow"></div></div>
+
+<div id="stages"></div>
+
+<div class="tip">⏸ 暂停后停在当前步　·　‹ › 逐相位　·　1× 点击变速　·　↺ 回到开头</div>
+<div class="foot">共 26 张动图　|　内容依据人卫第10版教材</div>
+</div><script>
+(function(g){
+  var SPEEDS=[0.5,1,1.5];
+  function makeBar(svg){
+    var wrap=document.createElement('div'); wrap.className='smctl';
+    function btn(t,ti){var b=document.createElement('button');b.type='button';
+      b.className='smbtn';b.textContent=t;if(ti)b.title=ti;return b;}
+    var bPrev=btn('\u2039','上一相位'), bPlay=btn('\u23f8','暂停 / 继续'),
+        bNext=btn('\u203a','下一相位'), bSpeed=btn('1\u00d7','切换速度'),
+        bReset=btn('\u21ba','回到开头');
+    var lab=document.createElement('span'); lab.className='smlab';
+
+    var dur=0;
+    svg.querySelectorAll('animate[dur]').forEach(function(a){
+      var v=parseFloat(a.getAttribute('dur'))||0; if(v>dur) dur=v; });
+    dur=dur||10;
+
+    var marks=[];
+    svg.querySelectorAll('animate[dur]').forEach(function(a){
+      var v=parseFloat(a.getAttribute('dur'))||0;
+      if(Math.abs(v-dur)>0.01) return;
+      var kt=(a.getAttribute('keyTimes')||'').trim(); if(!kt) return;
+      kt.split(';').forEach(function(x){var q=parseFloat(x);
+        if(!isNaN(q)&&q>0.03&&q<0.97) marks.push(q); }); });
+    marks.sort(function(a,b){return a-b});
+    var groups=[];
+    marks.forEach(function(m){
+      if(groups.length && m-groups[groups.length-1].last<0.05){
+        var q=groups[groups.length-1]; q.sum+=m; q.n+=1; q.last=m;
+      } else groups.push({sum:m,n:1,last:m});
+    });
+    var uniq=[0];
+    groups.forEach(function(q){var v=q.sum/q.n;
+      if(v-uniq[uniq.length-1]>0.04) uniq.push(v);});
+    if(uniq.length<2) uniq=[0,0.5,1];
+    if(uniq[uniq.length-1]<0.96) uniq.push(1);
+    uniq=uniq.map(function(v){return Math.round(v*1000)/1000});
+    var nStep=Math.max(uniq.length-1,1);
+
+    var t=0, playing=true, speed=1, last=0, raf=null;
+    function manual(){try{if(!svg.animationsPaused())svg.pauseAnimations();}catch(e){}}
+    function apply(){manual();try{svg.setCurrentTime(t%dur);}catch(e){}}
+    function paint(){
+      bPlay.textContent=playing?'\u23f8':'\u25b6';
+      bPlay.classList.toggle('on',playing);
+      bSpeed.textContent=speed+'\u00d7';
+      var now=t/dur,k=0;
+      for(var i=0;i<uniq.length-1;i++) if(now>=uniq[i]-1e-6) k=i;
+      lab.textContent='\u7b2c '+(k+1)+' / '+nStep+' \u6b65';
+    }
+    function loop(now){
+      if(!playing) return;
+      if(!last) last=now;
+      var dt=(now-last)/1000; last=now;
+      t+=dt*speed; if(t>=dur) t-=dur;
+      apply(); paint(); raf=requestAnimationFrame(loop);
+    }
+    function play(){playing=true;last=0;raf=requestAnimationFrame(loop);paint();}
+    function pause(){playing=false;if(raf)cancelAnimationFrame(raf);raf=null;apply();paint();}
+    bPlay.onclick=function(){playing?pause():play();};
+    bSpeed.onclick=function(){var i=SPEEDS.indexOf(speed);
+      speed=SPEEDS[(i+1)%SPEEDS.length]; last=0; paint();};
+    function step(d){
+      pause();
+      var best=0,bd=1e9;
+      for(var i=0;i<uniq.length;i++){var q=Math.abs(t/dur-uniq[i]);
+        if(q<bd){bd=q;best=i;}}
+      var ni=Math.max(0,Math.min(best+d,uniq.length-1));
+      t=Math.min(uniq[ni]*dur+0.012,dur-0.002);
+      apply(); paint();
+    }
+    bPrev.onclick=function(){step(-1);};
+    bNext.onclick=function(){step(1);};
+    bReset.onclick=function(){pause();t=0;apply();paint();};
+
+    [bPrev,bPlay,bNext,bSpeed,bReset].forEach(function(b){wrap.appendChild(b);});
+    wrap.appendChild(lab);
+
+    manual(); apply(); paint();
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting) play(); else pause(); });
+      },{rootMargin:'120px'});
+      io.observe(svg.closest('.stage')||svg);
+    } else play();
+    return wrap;
+  }
+  g.initSmilCtl=function(root){
+    (root||document).querySelectorAll('.stage').forEach(function(st){
+      if(st.dataset.ctl) return;
+      var svg=st.querySelector('svg'); if(!svg||!svg.pauseAnimations) return;
+      // 只有「有真实循环动画」的图才加控件：
+      //   至少 2 个 animate，且最大 dur > 1s（排除只有一个标题淡入的静态图）
+      var durs=[], mx=0;
+      svg.querySelectorAll('animate[dur]').forEach(function(a){
+        var v=parseFloat(a.getAttribute('dur'))||0; durs.push(v); if(v>mx) mx=v;});
+      if(durs.length<2 || mx<=1) { st.dataset.ctl='1'; st.classList.add('static'); return; }
+      st.dataset.ctl='1';
+      st.appendChild(makeBar(svg));
+    });
+  };
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded',function(){g.initSmilCtl()});
+  else g.initSmilCtl();
+})(window);
+</script><script>
+const DATA = [{"cid":"01_feedback","t":"负反馈：扰动被拉回","d":"血压升高被感受器检出，经中枢比较后引起心率下降与血管舒张，血压回落到调定点；四条边依次亮起表示信号绕行一圈。","f":"01_feedback.svg","lv":0,"ln":"L0 基础：调节原理与膜电位"},{"cid":"01_regulation","t":"三种调节方式","d":"神经调节经反射弧最快最准，体液调节经血液较慢较广，自身调节只在局部起效；下方三个点以不同速度沿时间轴推进。","f":"01_regulation.svg","lv":0,"ln":"L0 基础：调节原理与膜电位"},{"cid":"membrane","t":"膜通道与离子流","d":"0 期 Na+ 通道开放致去极化，2 期 Ca2+ 内流形成平台，3 期 K+ 外流复极；静息由 Na-K 泵与 K+ 漏通道维持 -90 mV。动画为慢放，真实动作电位约 2","f":"membrane.svg","lv":0,"ln":"L0 基础：调节原理与膜电位"},{"cid":"ecc","t":"心肌兴奋-收缩耦联","d":"动作电位沿肌膜与 T 管内传，L 型钙通道开放使少量钙内流，触发肌浆网 RyR2 释放大量钙；钙结合肌钙蛋白使原肌球蛋白移位，横桥摆动拉动细肌丝向 M 线滑入，I 带变窄而 A","f":"ecc.svg","lv":1,"ln":"L1 细胞与血液"},{"cid":"03_hemostasis","t":"生理性止血三阶段","d":"血管受损后先痉挛收缩减少血流，血小板黏附聚集形成松软血栓，凝血级联把纤维蛋白原转为纤维蛋白网加固；血流粒子在第三阶段后不再外漏。","f":"03_hemostasis.svg","lv":1,"ln":"L1 细胞与血液"},{"cid":"03_coagulation","t":"凝血级联","d":"内源性与外源性两条路径分别在Ⅹ处汇合，进入共同途径；凝血酶进一步放大纤维蛋白生成。APTT 反映内源，PT 反映外源。","f":"03_coagulation.svg","lv":1,"ln":"L1 细胞与血液"},{"cid":"cardiac_v6","t":"左心 · 心动周期","d":"左心房为静脉血，经二尖瓣充盈左心室；左心室收缩使室内压超过主动脉压时主动脉瓣开放射血。图为慢放，真实一个心动周期约 0.8 秒，心率 75 次每分。","f":"cardiac_v6.svg","lv":2,"ln":"L2 循环与呼吸"},{"cid":"ap_smil","t":"心室肌动作电位","d":"0 期 Na+ 内流去极化，2 期 Ca2+ 内流形成平台，3 期 K+ 外流复极。动画慢放，真实动作电位约 200 毫秒。","f":"ap_smil.svg","lv":2,"ln":"L2 循环与呼吸"},{"cid":"05_ventilation","t":"肺通气：动力与阻力","d":"膈肌收缩下移使胸廓扩大、肺内压低于大气压，气体入肺；平静呼气靠肺弹性回缩被动完成。弹性阻力约占七成。","f":"05_ventilation.svg","lv":2,"ln":"L2 循环与呼吸"},{"cid":"05_odc","t":"氧解离曲线","d":"标准 S 形曲线与右移曲线对比；40 mmHg 时饱和度约 75%，100 mmHg 时约 98%，右移利于组织释氧。","f":"05_odc.svg","lv":2,"ln":"L2 循环与呼吸"},{"cid":"06_gastric","t":"胃液分泌三时相","d":"头期由视嗅咀嚼经迷走神经引起，分泌约占三成；胃期由食物扩张与蛋白刺激 G 细胞，约占六成；肠期由食糜入十二指肠引起，约占一成。","f":"06_gastric.svg","lv":3,"ln":"L3 代谢、消化与排泄"},{"cid":"06_absorption","t":"小肠吸收两条路","d":"绒毛内毛细血管接收葡萄糖与氨基酸经门静脉入肝；中央乳糜管接收脂肪经淋巴入血，绕过肝脏。","f":"06_absorption.svg","lv":3,"ln":"L3 代谢、消化与排泄"},{"cid":"07_thermoreg","t":"体温调节","d":"产热与散热如天平两端，由下丘脑调定点 37℃ 统一协调；发热是调定点上移的主动过程，中暑是散热失败的被动升温。","f":"07_thermoreg.svg","lv":3,"ln":"L3 代谢、消化与排泄"},{"cid":"07_energy","t":"能量代谢测定","d":"间接测热法通过 O2 消耗与 CO2 产量算呼吸商，再查表求得产热量；三大营养素每升氧的产热不同。","f":"07_energy.svg","lv":3,"ln":"L3 代谢、消化与排泄"},{"cid":"08_filtration","t":"肾小球滤过","d":"入球端有效滤过压约 10 mmHg 驱动滤过；血浆胶体渗透压沿毛细血管升高，滤过压递减至零达到滤过平衡。","f":"08_filtration.svg","lv":3,"ln":"L3 代谢、消化与排泄"},{"cid":"08_loop","t":"髓袢逆流倍增","d":"降支只透水、升支只透盐，两个方向相反的流动使组织液渗透压从皮质 300 升至髓质 1200 mOsm/L，这是尿液浓缩的基础。","f":"08_loop.svg","lv":3,"ln":"L3 代谢、消化与排泄"},{"cid":"09_vision","t":"眼的折光与感光","d":"平行光经角膜与晶状体两次折射聚焦于视网膜；视杆管暗视、视锥管明视与辨色；近视眼轴过长、远视眼轴过短。","f":"09_vision.svg","lv":4,"ln":"L4 神经与感官"},{"cid":"09_cochlea","t":"耳蜗频率-位置编码","d":"基底膜从蜗底到蜗顶变宽变软，不同频率的行波在不同位置达到最大振幅：高频靠蜗底、低频靠蜗顶。","f":"09_cochlea.svg","lv":4,"ln":"L4 神经与感官"},{"cid":"10_synapse","t":"化学突触传递","d":"动作电位到末梢引起钙内流，小泡释放递质，递质结合后膜受体使离子通道开放，产生 EPSP 并叠加至阈电位。传递是单向的。","f":"10_synapse.svg","lv":4,"ln":"L4 神经与感官"},{"cid":"10_stretch","t":"牵张反射","d":"肌肉被动拉长使肌梭伸长，Ⅰa 类纤维放电经脊髓单突触兴奋 α 运动神经元，引起同一肌肉收缩。膝跳反射即此环路。","f":"10_stretch.svg","lv":4,"ln":"L4 神经与感官"},{"cid":"11_hpa","t":"下丘脑-垂体-靶腺轴","d":"三级激素逐级放大，靶腺激素经长负反馈抑制上游；长期外源激素会造成皮质萎缩。另两个轴结构同构。","f":"11_hpa.svg","lv":5,"ln":"L5 内分泌与生殖"},{"cid":"11_glucose","t":"血糖稳态","d":"胰岛素是唯一降糖激素，促摄取与合成；升糖激素有五种，以胰高血糖素与肾上腺素为主。两侧粒子表示激素流向血糖池。","f":"11_glucose.svg","lv":5,"ln":"L5 内分泌与生殖"},{"cid":"12_menstrual","t":"月经周期四激素时序","d":"FSH 促卵泡发育，雌激素出现两个峰，LH 峰触发排卵；黄体期孕激素升高，撤退后月经来潮。","f":"12_menstrual.svg","lv":5,"ln":"L5 内分泌与生殖"},{"cid":"12_pregnancy","t":"妊娠的激素交接","d":"滋养细胞分泌 hCG 保住黄体维持孕激素；孕 8~10 周胎盘接手，hCG 回落而孕激素继续维持。","f":"12_pregnancy.svg","lv":5,"ln":"L5 内分泌与生殖"},{"cid":"13_growth","t":"生长速度两个突增期","d":"生长速度不是匀速：婴儿期与青春期各有一次突增；前者以营养与甲状腺激素为主，后者靠 GH 与性激素协同。","f":"13_growth.svg","lv":6,"ln":"L6 整体与老化"},{"cid":"13_aging","t":"衰老：储备下降","d":"三个年龄段的最大能力与静息功能对比：静息功能下降有限，但储备逐年减少，因此应激时容易失代偿。","f":"13_aging.svg","lv":6,"ln":"L6 整体与老化"}];
+(function(){
+  const krow=document.getElementById('krow'), stages=document.getElementById('stages');
+  let cur=null;
+  DATA.forEach(function(d,i){
+    const b=document.createElement('button');
+    b.className='hbtn'+(i===0?' on':'');
+    b.dataset.cid=d.cid;
+    const nm=document.createElement('span');
+    nm.textContent=d.t.split('：')[0];
+    b.appendChild(nm);
+    if(d.ln){
+      const t=document.createElement('i');
+      t.textContent=d.ln.split(' ')[0];
+      t.title=d.ln;
+      b.appendChild(t);
+    }
+    b.onclick=function(){ show(d.cid); };
+    krow.appendChild(b);
+
+    const st=document.createElement('div');
+    st.className='stage'; st.id='st-'+d.cid;
+    st.dataset.src=d.f;
+    stages.appendChild(st);
+  });
+  const cache={};
+  function show(cid){
+    document.querySelectorAll('#krow .hbtn').forEach(function(x){
+      var on=(x.dataset.cid===cid);
+      x.classList.toggle('on', on);
+      if(on && x.scrollIntoView)
+        x.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+    });
+    const rec0=DATA.find(function(y){return y.cid===cid;});
+    const klab=document.getElementById('klab');
+    if(klab) klab.innerHTML='知识点'+(rec0&&rec0.ln
+      ? '<b style="color:#0f766e;font-weight:700;margin-left:6px">'+rec0.ln+'</b>' : '');
+    document.querySelectorAll('.stage').forEach(x=>
+      x.classList.toggle('on', x.id==='st-'+cid));
+    const on=document.getElementById('st-'+cid);
+    if(on) on.scrollIntoView({behavior:'smooth',block:'nearest'});
+    history.replaceState(null,'','#c-'+cid);
+    if(!on) return;
+    if(on.dataset.ctl){ if(window.initSmilCtl) window.initSmilCtl(); return; }
+    const rec=DATA.find(x=>x.cid===cid);
+    if(!rec) return;
+    on.innerHTML='<div class="desc" style="padding:24px 0">载入中…</div>';
+    fetch('figs/'+rec.f).then(r=>r.text()).then(txt=>{
+      on.innerHTML=txt+'<div class="desc">'+rec.d+'</div>';
+      if(window.initSmilCtl) window.initSmilCtl();
+    }).catch(()=>{
+      on.innerHTML='<div class="desc">载入失败，请刷新重试</div>';
+    });
+  }
+  // 初始：hash 指定 or 第一个
+  const h=(location.hash||'').replace('#c-','');
+  const target=DATA.find(x=>x.cid===h)||DATA[0];
+  if(target) show(target.cid);
+  window.addEventListener('hashchange',function(){
+    const hh=(location.hash||'').replace('#c-','');
+    if(hh) show(hh);
+  });
+})();
+</script></body></html>
