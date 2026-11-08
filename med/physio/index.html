@@ -40,6 +40,9 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
 .kbody{flex:1 1 auto;min-width:0}
 .kt{font-size:13.5px;font-weight:700;margin-bottom:3px}
 .kd{font-size:11.5px;color:#8095a8;line-height:1.55}
+.pbadge{display:inline-block;margin-left:5px;padding:0 5px;font-size:10px;
+  line-height:15px;border-radius:4px;background:#0f766e;color:#fff;
+  font-weight:700;vertical-align:1px}
 /* 横排切换 */
 .hwrap{position:relative}
 .hwrap::after{content:"";position:absolute;right:0;top:0;bottom:9px;width:26px;
@@ -87,7 +90,7 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
 <body><div class="wrap">
 <div class="top"><a class="back" href="../index.html">← 学科列表</a><a class="back" href="player.html">🎬 进入演示</a><a class="back" href="../../index.html">看板首页</a></div>
 <h1>生理学知识依赖总览</h1>
-<div class="sub">49 张动态图按「先基础、后应用」排成 7 层；点任意一项跳到对应演示</div>
+<div class="sub">55 张动态图按「先基础、后应用」排成 7 层；点任意一项跳到对应演示</div>
 <div class="sec" style="color:#0f766e">L0 基础：调节原理与膜电位</div>
 <div class="sd" style="font-size:11.5px;color:#8095a8;margin:-4px 0 9px;line-height:1.6">后面所有章节都在用这三件事：反馈、调节方式、离子跨膜</div>
 <a class="kcard" href="player.html#c-01_feedback">
@@ -98,6 +101,10 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="knum" style="background:#0f766e">02</div>
   <div class="kbody"><div class="kt">三种调节方式</div>
   <div class="kd">第01章 · 神经最快、体液较广、自身调节最局部</div></div></a>
+<a class="kcard" href="player.html#c-proc_feedback">
+  <div class="knum" style="background:#0f766e">01b</div>
+  <div class="kbody"><div class="kt">负反馈·过程版<span class="pbadge">动</span></div>
+  <div class="kd">第01章 · 偏离→比较→反向调节→回拉</div></div></a>
 <a class="kcard" href="player.html#c-membrane">
   <div class="knum" style="background:#0f766e">03</div>
   <div class="kbody"><div class="kt">膜通道与离子流</div>
@@ -110,8 +117,12 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="kd">第02章 · 钙致钙释放，肌丝只滑入不缩短</div></div></a>
 <a class="kcard" href="player.html#c-proc_crossbridge">
   <div class="knum" style="background:#2c5f9e">04c</div>
-  <div class="kbody"><div class="kt">横桥循环·过程版</div>
+  <div class="kbody"><div class="kt">横桥循环·过程版<span class="pbadge">动</span></div>
   <div class="kd">第02章 · Ca²⁺ 只负责允许，ATP 才是拉手</div></div></a>
+<a class="kcard" href="player.html#c-proc_ecc">
+  <div class="knum" style="background:#2c5f9e">04d</div>
+  <div class="kbody"><div class="kt">兴奋收缩耦联·过程版<span class="pbadge">动</span></div>
+  <div class="kd">第02章 · T 管深入→钙释放→TnC→横桥</div></div></a>
 <a class="kcard" href="player.html#c-03_hemostasis">
   <div class="knum" style="background:#2c5f9e">05</div>
   <div class="kbody"><div class="kt">止血三阶段</div>
@@ -122,8 +133,12 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="kd">第03章 · 内外源在Ⅹ汇合，逐级放大</div></div></a>
 <a class="kcard" href="player.html#c-proc_coagulation">
   <div class="knum" style="background:#2c5f9e">03b</div>
-  <div class="kbody"><div class="kt">凝血级联·过程版</div>
+  <div class="kbody"><div class="kt">凝血级联·过程版<span class="pbadge">动</span></div>
   <div class="kd">第03章 · 内源慢、外源快，都汇到 Ⅹ；凝血酶正反馈爆发</div></div></a>
+<a class="kcard" href="player.html#c-proc_hemostasis">
+  <div class="knum" style="background:#2c5f9e">05b</div>
+  <div class="kbody"><div class="kt">止血三阶段·过程版<span class="pbadge">动</span></div>
+  <div class="kd">第03章 · 先堵、再固、后清</div></div></a>
 <div class="sec" style="color:#c0392b">L2 循环与呼吸</div>
 <div class="sd" style="font-size:11.5px;color:#8095a8;margin:-4px 0 9px;line-height:1.6">心脏泵血与呼吸换气，共同维持 O2/CO2 与血压</div>
 <a class="kcard" href="player.html#c-cardiac_v6">
@@ -136,15 +151,15 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="kd">第04章 · 平台期是心肌不能强直收缩的根源</div></div></a>
 <a class="kcard" href="player.html#c-proc_action_potential">
   <div class="knum" style="background:#c0392b">04b</div>
-  <div class="kbody"><div class="kt">动作电位·过程版</div>
+  <div class="kbody"><div class="kt">动作电位·过程版<span class="pbadge">动</span></div>
   <div class="kd">第04章 · Na⁺ 进 / Ca²⁺ 撑平台 / K⁺ 出，五期成形态</div></div></a>
 <a class="kcard" href="player.html#c-proc_cardiac">
   <div class="knum" style="background:#c0392b">07c</div>
-  <div class="kbody"><div class="kt">心动周期·过程版</div>
+  <div class="kbody"><div class="kt">心动周期·过程版<span class="pbadge">动</span></div>
   <div class="kd">第04章 · 瓣膜只看压差；等容期容积不变、压力剧变</div></div></a>
 <a class="kcard" href="player.html#c-proc_baroreflex">
   <div class="knum" style="background:#c0392b">17b</div>
-  <div class="kbody"><div class="kt">压力感受器反射·过程版</div>
+  <div class="kbody"><div class="kt">压力感受器反射·过程版<span class="pbadge">动</span></div>
   <div class="kd">第04章 · 被拉一下就降压；阻力下降是关键</div></div></a>
 <a class="kcard" href="player.html#c-05_ventilation">
   <div class="knum" style="background:#c0392b">09</div>
@@ -156,15 +171,15 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="kd">第05章 · S 形三段；右移利于组织释氧</div></div></a>
 <a class="kcard" href="player.html#c-proc_ventilation">
   <div class="knum" style="background:#c0392b">09b</div>
-  <div class="kbody"><div class="kt">肺通气·过程版</div>
+  <div class="kbody"><div class="kt">肺通气·过程版<span class="pbadge">动</span></div>
   <div class="kd">第05章 · 吸气主动、平静呼气被动；只看压差</div></div></a>
 <a class="kcard" href="player.html#c-proc_odc">
   <div class="knum" style="background:#c0392b">10c</div>
-  <div class="kbody"><div class="kt">氧解离曲线·过程版</div>
+  <div class="kbody"><div class="kt">氧解离曲线·过程版<span class="pbadge">动</span></div>
   <div class="kd">第05章 · S 形三段：携氧 / 释氧 / 储备</div></div></a>
 <a class="kcard" href="player.html#c-proc_chemoreg">
   <div class="knum" style="background:#c0392b">09c</div>
-  <div class="kbody"><div class="kt">呼吸化学调节·过程版</div>
+  <div class="kbody"><div class="kt">呼吸化学调节·过程版<span class="pbadge">动</span></div>
   <div class="kd">第05章 · CO₂ 主信号；低氧需 <60 才起效</div></div></a>
 <div class="sec" style="color:#b45309">L3 代谢、消化与排泄</div>
 <div class="sd" style="font-size:11.5px;color:#8095a8;margin:-4px 0 9px;line-height:1.6">能量与体温、营养吸收、肾脏滤过与浓缩</div>
@@ -178,19 +193,19 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="kd">第06章 · 糖与氨基酸走门静脉；脂肪走淋巴</div></div></a>
 <a class="kcard" href="player.html#c-proc_gastric">
   <div class="knum" style="background:#b45309">06b</div>
-  <div class="kbody"><div class="kt">胃液分泌·过程版</div>
+  <div class="kbody"><div class="kt">胃液分泌·过程版<span class="pbadge">动</span></div>
   <div class="kd">第06章 · 头期 30% / 胃期 60% / 肠期 10%，汇到一台泵</div></div></a>
 <a class="kcard" href="player.html#c-proc_absorption">
   <div class="knum" style="background:#b45309">12b</div>
-  <div class="kbody"><div class="kt">小肠吸收·过程版</div>
+  <div class="kbody"><div class="kt">小肠吸收·过程版<span class="pbadge">动</span></div>
   <div class="kd">第06章 · 糖与氨基酸走门脉，脂肪走淋巴</div></div></a>
 <a class="kcard" href="player.html#c-proc_pancreas">
   <div class="knum" style="background:#b45309">11c</div>
-  <div class="kbody"><div class="kt">胰液分泌·过程版</div>
+  <div class="kbody"><div class="kt">胰液分泌·过程版<span class="pbadge">动</span></div>
   <div class="kd">第06章 · 腺泡管酶、导管管水，两者互相放大</div></div></a>
 <a class="kcard" href="player.html#c-proc_digest">
   <div class="knum" style="background:#b45309">13b</div>
-  <div class="kbody"><div class="kt">消化整体调节·过程版</div>
+  <div class="kbody"><div class="kt">消化整体调节·过程版<span class="pbadge">动</span></div>
   <div class="kd">第06章 · 神经快、激素远、局部自主</div></div></a>
 <a class="kcard" href="player.html#c-07_thermoreg">
   <div class="knum" style="background:#b45309">13</div>
@@ -202,7 +217,7 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="kd">第07章 · 测 O2 与 CO2 算呼吸商再查表</div></div></a>
 <a class="kcard" href="player.html#c-proc_thermoreg">
   <div class="knum" style="background:#b45309">07b</div>
-  <div class="kbody"><div class="kt">体温调节·过程版</div>
+  <div class="kbody"><div class="kt">体温调节·过程版<span class="pbadge">动</span></div>
   <div class="kd">第07章 · 产热与散热围着 37 ℃ 转；发热是调定点上移</div></div></a>
 <a class="kcard" href="player.html#c-08_filtration">
   <div class="knum" style="background:#b45309">15</div>
@@ -214,19 +229,19 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="kd">第08章 · 降支透水、升支透盐，梯度 300→1200</div></div></a>
 <a class="kcard" href="player.html#c-proc_filtration">
   <div class="knum" style="background:#b45309">08b</div>
-  <div class="kbody"><div class="kt">肾小球滤过·过程版</div>
+  <div class="kbody"><div class="kt">肾小球滤过·过程版<span class="pbadge">动</span></div>
   <div class="kd">第08章 · 三层膜筛 + EFP 10 mmHg，出球端滤过停止</div></div></a>
 <a class="kcard" href="player.html#c-proc_loop">
   <div class="knum" style="background:#b45309">16b</div>
-  <div class="kbody"><div class="kt">逆流倍增·过程版</div>
+  <div class="kbody"><div class="kt">逆流倍增·过程版<span class="pbadge">动</span></div>
   <div class="kd">第08章 · 降支失水、升支排盐，300 → 1200</div></div></a>
 <a class="kcard" href="player.html#c-proc_reabsorb">
   <div class="knum" style="background:#b45309">15b</div>
-  <div class="kbody"><div class="kt">重吸收分配·过程版</div>
+  <div class="kbody"><div class="kt">重吸收分配·过程版<span class="pbadge">动</span></div>
   <div class="kd">第08章 · 67% 打底在近端，2% 定调在集合管</div></div></a>
 <a class="kcard" href="player.html#c-proc_uradilution">
   <div class="knum" style="background:#b45309">16c</div>
-  <div class="kbody"><div class="kt">尿浓缩稀释·过程版</div>
+  <div class="kbody"><div class="kt">尿浓缩稀释·过程版<span class="pbadge">动</span></div>
   <div class="kd">第08章 · 梯度由髓袢建，ADH 管开关</div></div></a>
 <div class="sec" style="color:#6b46c1">L4 神经与感官</div>
 <div class="sd" style="font-size:11.5px;color:#8095a8;margin:-4px 0 9px;line-height:1.6">信息传入与传出；感受器换能。注意：自主神经其实横向调控 L2~L3 的循环、呼吸与消化</div>
@@ -240,8 +255,16 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="kd">第09章 · 高频靠蜗底、低频靠蜗顶</div></div></a>
 <a class="kcard" href="player.html#c-proc_sensory">
   <div class="knum" style="background:#6b46c1">17c</div>
-  <div class="kbody"><div class="kt">感受器换能·过程版</div>
+  <div class="kbody"><div class="kt">感受器换能·过程版<span class="pbadge">动</span></div>
   <div class="kd">第09章 · 强度看频率、部位看通道</div></div></a>
+<a class="kcard" href="player.html#c-proc_vision">
+  <div class="knum" style="background:#6b46c1">17d</div>
+  <div class="kbody"><div class="kt">视觉换能·过程版<span class="pbadge">动</span></div>
+  <div class="kd">第09章 · 光让感受器超极化（反常）</div></div></a>
+<a class="kcard" href="player.html#c-proc_cochlea">
+  <div class="knum" style="background:#6b46c1">18b</div>
+  <div class="kbody"><div class="kt">耳蜗行波·过程版<span class="pbadge">动</span></div>
+  <div class="kd">第09章 · 蜗底高频、蜗顶低频</div></div></a>
 <a class="kcard" href="player.html#c-10_synapse">
   <div class="knum" style="background:#6b46c1">19</div>
   <div class="kbody"><div class="kt">化学突触传递</div>
@@ -252,8 +275,12 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="kd">第10章 · 肌梭→Ⅰa→脊髓→α→同一肌肉收缩</div></div></a>
 <a class="kcard" href="player.html#c-proc_synapse">
   <div class="knum" style="background:#6b46c1">10b</div>
-  <div class="kbody"><div class="kt">突触传递·过程版</div>
+  <div class="kbody"><div class="kt">突触传递·过程版<span class="pbadge">动</span></div>
   <div class="kd">第10章 · 电→化学→电；Ca²⁺ 是唯一触发开关</div></div></a>
+<a class="kcard" href="player.html#c-proc_stretch">
+  <div class="knum" style="background:#6b46c1">20b</div>
+  <div class="kbody"><div class="kt">牵张反射·过程版<span class="pbadge">动</span></div>
+  <div class="kd">第10章 · 单突触最短反射弧</div></div></a>
 <div class="sec" style="color:#15803d">L5 内分泌与生殖</div>
 <div class="sd" style="font-size:11.5px;color:#8095a8;margin:-4px 0 9px;line-height:1.6">慢而广的体液调节；轴系、血糖、生殖周期</div>
 <a class="kcard" href="player.html#c-11_hpa">
@@ -266,7 +293,7 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="kd">第11章 · 一路降对五路升</div></div></a>
 <a class="kcard" href="player.html#c-proc_hpa">
   <div class="knum" style="background:#15803d">21b</div>
-  <div class="kbody"><div class="kt">三级轴·过程版</div>
+  <div class="kbody"><div class="kt">三级轴·过程版<span class="pbadge">动</span></div>
   <div class="kd">第11章 · 逐级放大、逐级专一 + 长负反馈</div></div></a>
 <a class="kcard" href="player.html#c-12_menstrual">
   <div class="knum" style="background:#15803d">23</div>
@@ -278,11 +305,11 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="kd">第12章 · hCG 救黄体，孕 8~10 周胎盘接手</div></div></a>
 <a class="kcard" href="player.html#c-proc_menstrual">
   <div class="knum" style="background:#15803d">23b</div>
-  <div class="kbody"><div class="kt">月经周期·过程版</div>
+  <div class="kbody"><div class="kt">月经周期·过程版<span class="pbadge">动</span></div>
   <div class="kd">第12章 · 雌激素两峰、孕激素单峰；LH 峰后排卵</div></div></a>
 <a class="kcard" href="player.html#c-proc_pregnancy">
   <div class="knum" style="background:#15803d">24b</div>
-  <div class="kbody"><div class="kt">妊娠激素交接·过程版</div>
+  <div class="kbody"><div class="kt">妊娠激素交接·过程版<span class="pbadge">动</span></div>
   <div class="kd">第12章 · hCG 救黄体 → 胎盘 8~10 周接手</div></div></a>
 <div class="sec" style="color:#a8791a">L6 整体与老化</div>
 <div class="sd" style="font-size:11.5px;color:#8095a8;margin:-4px 0 9px;line-height:1.6">把前面所有环节放到时间轴上：生长与衰老</div>
@@ -296,7 +323,7 @@ h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
   <div class="kd">第13章 · 静息尚可但最大能力降，故易失代偿</div></div></a>
 <a class="kcard" href="player.html#c-proc_growth">
   <div class="knum" style="background:#a8791a">25b</div>
-  <div class="kbody"><div class="kt">生长激素轴·过程版</div>
+  <div class="kbody"><div class="kt">生长激素轴·过程版<span class="pbadge">动</span></div>
   <div class="kd">第13章 · GH 脉冲；长骨增长靠肝 IGF-1</div></div></a>
 </div><script>
 (function(g){
