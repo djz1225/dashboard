@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>生物化学 · 动态演示</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#eef2f7;color:#16202e;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:10px 12px 96px}
+.top{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:2px 0 12px}
+.back{display:inline-flex;align-items:center;min-height:34px;padding:0 13px;
+  font-size:12.5px;color:#475569;text-decoration:none;background:#fff;
+  border:1px solid #dbe4ee;border-radius:999px}
+.back:active{background:#f1f5f9}
+h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
+.sub{font-size:12.5px;color:#8095a8;line-height:1.6;margin-bottom:14px}
+.sec{display:flex;align-items:center;gap:7px;font-size:12px;color:#0f766e;
+  font-weight:700;margin:16px 0 9px}
+.sec::before{content:"";width:3px;height:13px;border-radius:2px;background:#0f766e}
+.sec::after{content:"";flex:1;height:1px;background:#e3ebf3}
+/* 学科卡（L1） */
+.scard{display:block;background:#fff;border-radius:14px;padding:14px 15px;
+  margin-bottom:10px;text-decoration:none;color:inherit;
+  box-shadow:0 1px 3px rgba(15,23,42,.06),0 8px 22px rgba(15,23,42,.05);
+  border:1px solid #e6eef6;transition:transform .12s}
+.scard:active{transform:scale(.985)}
+.scard .st{display:flex;align-items:center;gap:9px;font-size:15.5px;
+  font-weight:700;margin-bottom:5px}
+.scard .sd{font-size:12.5px;color:#8095a8;line-height:1.6}
+.scard .sm{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.pill{font-size:11px;padding:3px 9px;border-radius:999px;background:#eff6f5;
+  color:#0f766e;font-weight:600}
+.pill.g{background:#f4f7fa;color:#6b7c8d}
+/* 知识点卡（L2/L3） */
+.kcard{display:flex;gap:11px;background:#fff;border-radius:12px;padding:11px 13px;
+  margin-bottom:8px;border:1px solid #e6eef6;text-decoration:none;color:inherit;
+  box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.kcard:active{background:#f8fbfd}
+.knum{flex:0 0 26px;height:26px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:11.5px;font-weight:700;color:#fff}
+.kbody{flex:1 1 auto;min-width:0}
+.kt{font-size:13.5px;font-weight:700;margin-bottom:3px}
+.kd{font-size:11.5px;color:#8095a8;line-height:1.55}
+/* 横排切换 */
+.hwrap{position:relative}
+.hwrap::after{content:"";position:absolute;right:0;top:0;bottom:9px;width:26px;
+  pointer-events:none;background:linear-gradient(90deg,rgba(238,242,247,0),#eef2f7);
+  border-radius:0 8px 8px 0}
+.hrow{display:flex;gap:7px;overflow-x:auto;padding:2px 0 9px;scrollbar-width:none}
+.hrow::-webkit-scrollbar{display:none}
+.hbtn{flex:0 0 auto;min-height:36px;padding:0 14px;border-radius:11px;
+  background:#fff;border:1px solid #dbe4ee;color:#4a5a6b;font-size:13px;
+  font-weight:600;cursor:pointer;white-space:nowrap;display:inline-flex;
+  align-items:center;gap:5px}
+.hbtn.on{background:#0f766e;color:#fff;border-color:#0f766e}
+.hbtn i{font-style:normal;font-size:10px;padding:1px 5px;border-radius:6px;
+  background:#eff6f5;color:#0f766e;font-weight:700;letter-spacing:.2px}
+.hbtn.on i{background:rgba(255,255,255,.22);color:#fff}
+.step{display:flex;align-items:center;gap:6px;justify-content:space-between;
+  font-size:11.5px;color:#8ea0b2;margin:0 3px 7px}
+.step b{color:#0f766e;font-weight:700}
+.hlab{display:flex;align-items:center;gap:7px;font-size:11.5px;color:#a8b6c4;
+  font-weight:700;margin:2px 0 5px}
+.hlab::after{content:"";flex:1;height:1px;background:#e8eff6}
+.stage{display:none;background:#fff;border-radius:16px;padding:8px 8px 4px;
+  box-shadow:0 1px 3px rgba(15,23,42,.06),0 10px 28px rgba(15,23,42,.06)}
+.stage.on{display:block}
+.stage svg{display:block;width:100%;height:auto;border-radius:10px}
+.desc{font-size:12px;color:#8095a8;text-align:center;margin:7px 4px 8px;
+  line-height:1.5}
+.tip{margin-top:10px;padding:8px 10px;background:#fff;border-radius:10px;
+  font-size:11.5px;color:#a8b6c4;text-align:center;line-height:1.5}
+.foot{text-align:center;font-size:11px;color:#b6c4d2;margin:22px 0 0;
+  line-height:1.7}
+
+.smctl{display:flex;align-items:center;gap:6px;margin:8px 2px 2px;
+  padding:6px 8px;background:#f6fafc;border:1px solid #e3ebf3;border-radius:9px}
+.smbtn{flex:0 0 auto;min-width:34px;height:30px;padding:0 9px;
+  font:600 13px/30px -apple-system,'PingFang SC',sans-serif;
+  color:#3f5468;background:#fff;border:1px solid #dbe6f0;border-radius:8px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.smbtn:active{transform:scale(.95)}
+.smbtn.on{background:#0f766e;color:#fff;border-color:#0f766e}
+.smlab{flex:1 1 auto;text-align:right;font-size:11px;color:#8ea0b2}
+</style></head>
+<body><div class="wrap">
+<div class="top">
+  <a class="back" href="index.html">← 知识依赖总览</a>
+  <a class="back" href="../index.html">学科列表</a>
+  <a class="back" href="../../index.html">看板首页</a>
+</div>
+<h1>生物化学 · 动态演示</h1>
+<div class="sub">上排切学科，下排切知识点；每张可暂停 / 逐步 / 变速</div>
+
+<div class="hlab">学科</div>
+<div class="hwrap"><div class="hrow"><a class="hbtn" href="../physio/player.html">🧠 生理学</a><a class="hbtn on" href="player.html">⚗️ 生物化学</a></div></div>
+
+<div class="hlab" id="klab">知识点</div>
+<div class="hwrap"><div class="hrow" id="krow"></div></div>
+
+<div id="stages"></div>
+
+<div class="tip">⏸ 暂停后停在当前步　·　‹ › 逐相位　·　1× 点击变速　·　↺ 回到开头</div>
+<div class="foot">共 39 张动图　|　内容依据人卫第10版教材</div>
+</div><script>
+(function(g){
+  var SPEEDS=[0.5,1,1.5];
+  function makeBar(svg){
+    var wrap=document.createElement('div'); wrap.className='smctl';
+    function btn(t,ti){var b=document.createElement('button');b.type='button';
+      b.className='smbtn';b.textContent=t;if(ti)b.title=ti;return b;}
+    var bPrev=btn('\u2039','上一相位'), bPlay=btn('\u23f8','暂停 / 继续'),
+        bNext=btn('\u203a','下一相位'), bSpeed=btn('1\u00d7','切换速度'),
+        bReset=btn('\u21ba','回到开头');
+    var lab=document.createElement('span'); lab.className='smlab';
+
+    var dur=0;
+    svg.querySelectorAll('animate[dur]').forEach(function(a){
+      var v=parseFloat(a.getAttribute('dur'))||0; if(v>dur) dur=v; });
+    dur=dur||10;
+
+    var marks=[];
+    svg.querySelectorAll('animate[dur]').forEach(function(a){
+      var v=parseFloat(a.getAttribute('dur'))||0;
+      if(Math.abs(v-dur)>0.01) return;
+      var kt=(a.getAttribute('keyTimes')||'').trim(); if(!kt) return;
+      kt.split(';').forEach(function(x){var q=parseFloat(x);
+        if(!isNaN(q)&&q>0.03&&q<0.97) marks.push(q); }); });
+    marks.sort(function(a,b){return a-b});
+    var groups=[];
+    marks.forEach(function(m){
+      if(groups.length && m-groups[groups.length-1].last<0.05){
+        var q=groups[groups.length-1]; q.sum+=m; q.n+=1; q.last=m;
+      } else groups.push({sum:m,n:1,last:m});
+    });
+    var uniq=[0];
+    groups.forEach(function(q){var v=q.sum/q.n;
+      if(v-uniq[uniq.length-1]>0.04) uniq.push(v);});
+    if(uniq.length<2) uniq=[0,0.5,1];
+    if(uniq[uniq.length-1]<0.96) uniq.push(1);
+    uniq=uniq.map(function(v){return Math.round(v*1000)/1000});
+    var nStep=Math.max(uniq.length-1,1);
+
+    var t=0, playing=true, speed=1, last=0, raf=null;
+    function manual(){try{if(!svg.animationsPaused())svg.pauseAnimations();}catch(e){}}
+    function apply(){manual();try{svg.setCurrentTime(t%dur);}catch(e){}}
+    function paint(){
+      bPlay.textContent=playing?'\u23f8':'\u25b6';
+      bPlay.classList.toggle('on',playing);
+      bSpeed.textContent=speed+'\u00d7';
+      var now=t/dur,k=0;
+      for(var i=0;i<uniq.length-1;i++) if(now>=uniq[i]-1e-6) k=i;
+      lab.textContent='\u7b2c '+(k+1)+' / '+nStep+' \u6b65';
+    }
+    function loop(now){
+      if(!playing) return;
+      if(!last) last=now;
+      var dt=(now-last)/1000; last=now;
+      t+=dt*speed; if(t>=dur) t-=dur;
+      apply(); paint(); raf=requestAnimationFrame(loop);
+    }
+    function play(){playing=true;last=0;raf=requestAnimationFrame(loop);paint();}
+    function pause(){playing=false;if(raf)cancelAnimationFrame(raf);raf=null;apply();paint();}
+    bPlay.onclick=function(){playing?pause():play();};
+    bSpeed.onclick=function(){var i=SPEEDS.indexOf(speed);
+      speed=SPEEDS[(i+1)%SPEEDS.length]; last=0; paint();};
+    function step(d){
+      pause();
+      var best=0,bd=1e9;
+      for(var i=0;i<uniq.length;i++){var q=Math.abs(t/dur-uniq[i]);
+        if(q<bd){bd=q;best=i;}}
+      var ni=Math.max(0,Math.min(best+d,uniq.length-1));
+      t=Math.min(uniq[ni]*dur+0.012,dur-0.002);
+      apply(); paint();
+    }
+    bPrev.onclick=function(){step(-1);};
+    bNext.onclick=function(){step(1);};
+    bReset.onclick=function(){pause();t=0;apply();paint();};
+
+    [bPrev,bPlay,bNext,bSpeed,bReset].forEach(function(b){wrap.appendChild(b);});
+    wrap.appendChild(lab);
+
+    manual(); apply(); paint();
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting) play(); else pause(); });
+      },{rootMargin:'120px'});
+      io.observe(svg.closest('.stage')||svg);
+    } else play();
+    return wrap;
+  }
+  g.initSmilCtl=function(root){
+    (root||document).querySelectorAll('.stage').forEach(function(st){
+      if(st.dataset.ctl) return;
+      var svg=st.querySelector('svg'); if(!svg||!svg.pauseAnimations) return;
+      // 只有「有真实循环动画」的图才加控件：
+      //   至少 2 个 animate，且最大 dur > 1s（排除只有一个标题淡入的静态图）
+      var durs=[], mx=0;
+      svg.querySelectorAll('animate[dur]').forEach(function(a){
+        var v=parseFloat(a.getAttribute('dur'))||0; durs.push(v); if(v>mx) mx=v;});
+      if(durs.length<2 || mx<=1) { st.dataset.ctl='1'; st.classList.add('static'); return; }
+      st.dataset.ctl='1';
+      st.appendChild(makeBar(svg));
+    });
+  };
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded',function(){g.initSmilCtl()});
+  else g.initSmilCtl();
+})(window);
+</script><script>
+const DATA = [{"cid":"sh02_inhibit","t":"三种可逆抑制的区别","d":"竞争性抑制剂占据活性中心，底物增多可将其挤走；非竞争性抑制剂结合在活性中心外，减少有效酶量；反竞争性抑制剂只结合酶-底物复合物。","f":"sh02_inhibit.svg","lv":0,"ln":"L0 基础：大分子与酶"},{"cid":"sh02_mm","t":"米氏方程与饱和曲线","d":"底物浓度很低时速度与浓度成正比；达到Km时速度为最大速度的一半；底物过量时酶被全部占据，速度趋于Vmax不再增加。","f":"sh02_mm.svg","lv":0,"ln":"L0 基础：大分子与酶"},{"cid":"sh01_fold","t":"蛋白质折叠的四级层次","d":"一条肽链先形成α螺旋，再靠疏水作用塌缩成三级结构，多条肽链以非共价键组装成四级结构。","f":"sh01_fold.svg","lv":0,"ln":"L0 基础：大分子与酶"},{"cid":"sh01_denature","t":"蛋白质变性与盐析的区别","d":"加热、强酸碱、重金属破坏空间构象，一级结构不变但活性丧失且不可逆；高浓度中性盐只使蛋白沉淀，构象与活性保持，稀释可复溶。","f":"sh01_denature.svg","lv":0,"ln":"L0 基础：大分子与酶"},{"cid":"sh01_hb","t":"血红蛋白的正协同与玻尔效应","d":"第一个氧结合后引发T态向R态转变，其余亚基亲和力骤升，形成S形氧解离曲线；酸性、二氧化碳与高温使曲线右移。","f":"sh01_hb.svg","lv":0,"ln":"L0 基础：大分子与酶"},{"cid":"sh02_zymogen","t":"酶原激活的机制","d":"酶原比活性酶多一段激活肽，掩蔽活性中心；肠激酶或酸将其有限水解去除后，活性中心暴露、酶被激活，已激活的酶再激活更多酶原。","f":"sh02_zymogen.svg","lv":0,"ln":"L0 基础：大分子与酶"},{"cid":"sh03_denature","t":"DNA 变性与复性","d":"升温使氢键断裂、双链解开，260nm紫外吸收升高（增色效应）；缓慢降温可恢复双螺旋（复性）。变性不断共价键，故可逆。","f":"sh03_denature.svg","lv":0,"ln":"L0 基础：大分子与酶"},{"cid":"sh06_vitk","t":"维生素 K 循环与 γ-羧化","d":"维生素K还原型作为辅因子，使凝血因子的谷氨酸残基γ-羧化；自身氧化为环氧化物后必须被还原才能复用。华法林抑制此还原，故抗凝。","f":"sh06_vitk.svg","lv":0,"ln":"L0 基础：大分子与酶"},{"cid":"proc_glycolysis","t":"糖酵解：投资两笔、回收四笔","d":"葡萄糖进入细胞后先花2个ATP被激活，再裂解成两个三碳糖，两个三碳糖各回收2个ATP共得4个，同时产生2个NADH；净得2ATP。己糖激酶、PFK-1、丙酮酸激","f":"proc_glycolysis.svg","lv":1,"ln":"L1 能量代谢主干"},{"cid":"proc_tca","t":"三羧酸循环：一轮的收支","d":"乙酰CoA与草酰乙酸缩合成6碳柠檬酸，两次脱羧放出2个CO₂，三处脱氢生成3NADH、一处生成1FADH₂，再加1个底物水平磷酸化的GTP，合计每轮10个ATP","f":"proc_tca.svg","lv":1,"ln":"L1 能量代谢主干"},{"cid":"sh08_chemiosmosis","t":"化学渗透与氧化磷酸化","d":"电子传递把质子泵到膜间隙形成电化学梯度，内膜不通透使梯度得以维持；质子只能经ATP合酶F₀回流，驱动F₁旋转催化ADP与Pi生成ATP。","f":"sh08_chemiosmosis.svg","lv":1,"ln":"L1 能量代谢主干"},{"cid":"sh08_chain","t":"呼吸链：电子单向流动","d":"电子沿氧化还原电位递增的方向单向传递，最终把O₂还原为水；三个复合体泵出质子建立梯度。复合体Ⅱ不泵质子，故FADH₂少产ATP。","f":"sh08_chain.svg","lv":1,"ln":"L1 能量代谢主干"},{"cid":"sh07_glycolysis","t":"糖酵解的两段式收支","d":"糖酵解在胞质进行，前段投资2个ATP，后段回收4个ATP与2个NADH；净得2个ATP与2分子丙酮酸。","f":"sh07_glycolysis.svg","lv":1,"ln":"L1 能量代谢主干"},{"cid":"sh07_tca","t":"三羧酸循环一轮的收支","d":"每轮三羧酸循环产生3个NADH、1个FADH₂、1个GTP，按2.5与1.5折算合计10个ATP；草酰乙酸在循环末再生。","f":"sh07_tca.svg","lv":1,"ln":"L1 能量代谢主干"},{"cid":"sh12_states","t":"进食—空腹—饥饿的代谢切换","d":"进食后以葡萄糖为主并储存；空腹早期依赖肝糖原，12小时后转向糖异生；长期饥饿时脂肪动员与酮体生成成为主要供能方式。方向由胰岛素与胰高血糖素比值决定。","f":"sh12_states.svg","lv":1,"ln":"L1 能量代谢主干"},{"cid":"proc_betaox","t":"β-氧化：碳链被一刀刀切短","d":"16碳软脂酸先耗2个高能键活化成脂酰CoA，再经肉碱穿梭进入线粒体基质；每轮依次脱氢生成FADH₂、加水、再脱氢生成NADH、硫解切下1个乙酰CoA，碳链净短2","f":"proc_betaox.svg","lv":2,"ln":"L2 脂与酮体"},{"cid":"sh09_ketone","t":"酮体的生成与利用","d":"肝以乙酰CoA为原料生成酮体，但缺乏琥珀酰CoA转硫酶无法利用；酮体经血液运至脑、心、骨骼肌氧化供能，长期饥饿时可占脑供能的60~70%。","f":"sh09_ketone.svg","lv":2,"ln":"L2 脂与酮体"},{"cid":"sh09_beta","t":"脂肪酸 β-氧化","d":"长链脂肪酸先在胞质活化并经肉碱穿梭进入线粒体，每轮β-氧化脱氢、加水、再脱氢、硫解，砍下一个乙酰CoA。软脂酸经7轮净生成106个ATP。","f":"sh09_beta.svg","lv":2,"ln":"L2 脂与酮体"},{"cid":"sh10_ammonia","t":"血氨的来源与去路","d":"血氨主要来自氨基酸脱氨基与肠道细菌产氨；去路以肝合成尿素为主，其次为合成谷氨酰胺运输与肾排铵盐。肝功能衰竭时血氨升高可致肝性脑病。","f":"sh10_ammonia.svg","lv":3,"ln":"L3 含氮废物"},{"cid":"sh10_urea","t":"尿素循环五步","d":"氨与二氧化碳在CPS-Ⅰ催化下合成氨甲酰磷酸，与鸟氨酸结合成瓜氨酸出线粒体，再接上第二个氮（天冬氨酸），最终水解释放尿素并使鸟氨酸再生。","f":"sh10_urea.svg","lv":3,"ln":"L3 含氮废物"},{"cid":"sh11_urate","t":"嘌呤分解与尿酸生成","d":"嘌呤核苷酸逐步降解为次黄嘌呤与鸟嘌呤，再经黄嘌呤氧化酶氧化为黄嘌呤、最终生成尿酸。人类缺乏尿酸氧化酶，尿酸为终产物，过高即结晶析出致痛风。","f":"sh11_urate.svg","lv":3,"ln":"L3 含氮废物"},{"cid":"proc_replication","t":"复制叉：一条连续，一条分段","d":"DNA复制时解旋酶打开双链形成复制叉；引物酶合成RNA引物；前导链连续延伸，随从链反向分段合成冈崎片段，再切除引物、补齐并由连接酶封口，形成半不连续复制。","f":"proc_replication.svg","lv":4,"ln":"L4 遗传信息流"},{"cid":"proc_transcription","t":"转录：只抄一条链","d":"转录由RNA聚合酶完成：σ因子识别启动子，局部解链形成转录泡，从+1位直接起始（不需引物），沿模板3′→5′延伸、新链5′→3′生长，遇发夹或ρ因子终止；真核还","f":"proc_transcription.svg","lv":4,"ln":"L4 遗传信息流"},{"cid":"proc_translation","t":"翻译：三位点循环","d":"翻译在核糖体上进行：氨酰-tRNA进入A位，肽基转移酶把P位肽链转到A位，核糖体再沿mRNA前移一个密码子；遇终止密码子由释放因子识别，肽链水解释放。每延长一个","f":"proc_translation.svg","lv":4,"ln":"L4 遗传信息流"},{"cid":"proc_central","t":"中心法则：五条信息流","d":"中心法则：DNA复制把信息传给子代，转录成mRNA，翻译成蛋白质；逆转录与RNA复制是病毒补充的两条路径。蛋白质不能反向决定核酸序列，信息流单向。","f":"proc_central.svg","lv":4,"ln":"L4 遗传信息流"},{"cid":"sh13_gene","t":"断裂基因与剪接","d":"真核基因由外显子与内含子相间构成，转录后经剪接去除内含子、拼接外显子，才能形成成熟mRNA。可变剪接使同一基因产生多种mRNA。","f":"sh13_gene.svg","lv":4,"ln":"L4 遗传信息流"},{"cid":"sh14_fork","t":"DNA 复制的半不连续","d":"DNA聚合酶只能沿5′→3′方向延伸，因此以复制叉移动方向为参照，一条链可连续合成（前导链），另一条只能分段合成冈崎片段（随从链）。","f":"sh14_fork.svg","lv":4,"ln":"L4 遗传信息流"},{"cid":"sh14_telomere","t":"端粒与端粒酶","d":"线性DNA复制时末端引物去除后无法补齐，端粒逐代缩短；端粒酶以自身RNA为模板延长3′端，是逆转录酶，在生殖细胞、干细胞与多数肿瘤中高表达。","f":"sh14_telomere.svg","lv":4,"ln":"L4 遗传信息流"},{"cid":"sh15_transcribe","t":"转录的起始与延伸","d":"RNA聚合酶由σ因子识别启动子（-35与-10区）后起始转录，局部解链形成开放复合物，按5′→3′延伸新链；转录不需引物，只转录一条链。","f":"sh15_transcribe.svg","lv":4,"ln":"L4 遗传信息流"},{"cid":"sh15_splice","t":"RNA 剪接的两次酯交换","d":"剪接体识别5′剪接位点与分支点后，经两次酯交换把内含子以套索形式切除、并把相邻外显子连接成成熟mRNA。可变剪接使一个基因可产生多种mRNA。","f":"sh15_splice.svg","lv":4,"ln":"L4 遗传信息流"},{"cid":"sh16_ribosome","t":"核糖体三位点循环","d":"氨酰-tRNA进入A位，肽酰转移酶（由rRNA催化）把肽链转到新氨基酸上，随后核糖体沿mRNA移位一格，空载tRNA从E位退出。","f":"sh16_ribosome.svg","lv":4,"ln":"L4 遗传信息流"},{"cid":"sh17_lac","t":"乳糖操纵子的双重调控","d":"乳糖存在时阻遏蛋白从操纵基因脱落（负调控解除）；葡萄糖低时cAMP升高、CAP结合启动子上游（正调控）。两者同时满足才高效转录。","f":"sh17_lac.svg","lv":4,"ln":"L4 遗传信息流"},{"cid":"proc_raas","t":"RAAS 升压链条","d":"失血使肾灌注压下降，球旁细胞释放肾素；肾素在Leu-Val处切开血管紧张素原，得到十肽血管紧张素Ⅰ；ACE再切掉末端两肽，生成八肽血管紧张素Ⅱ；后者收缩血管、促","f":"proc_raas.svg","lv":5,"ln":"L5 组织特异与整合"},{"cid":"sh25_bilirubin","t":"胆红素的生成、转运与排泄","d":"血红蛋白降解生成未结合胆红素，与白蛋白结合运至肝，在肝内与葡萄糖醛酸结合成水溶性结合胆红素后排入胆汁。未结合型脂溶性高，过量时可透过血脑屏障致核黄疸。","f":"sh25_bilirubin.svg","lv":5,"ln":"L5 组织特异与整合"},{"cid":"sh26_g6pd","t":"G6PD 缺乏致溶血的链条","d":"G6PD缺乏时NADPH生成不足，谷胱甘肽无法还原，红细胞在氧化性诱因下血红蛋白与膜脂被氧化，形成Heinz小体并溶血。Coombs试验阴性是与免疫性溶血的关键","f":"sh26_g6pd.svg","lv":5,"ln":"L5 组织特异与整合"},{"cid":"sh21_camp","t":"cAMP 级联的放大","d":"一个激素分子结合受体后激活多个G蛋白，每个腺苷酸环化酶生成大量cAMP，cAMP激活PKA使众多底物磷酸化，逐级放大可达10⁴~10⁶倍。","f":"sh21_camp.svg","lv":5,"ln":"L5 组织特异与整合"},{"cid":"sh21_rtk","t":"受体酪氨酸激酶的两条主路","d":"配体结合使RTK二聚化并自身磷酸化，磷酸酪氨酸位点招募接头蛋白，分别启动Ras-MAPK（促增殖）与PI3K-Akt（抑凋亡、促存活）两条通路。","f":"sh21_rtk.svg","lv":5,"ln":"L5 组织特异与整合"},{"cid":"sh22_warburg","t":"Warburg 效应","d":"肿瘤细胞即使在有氧条件下也大量进行糖酵解。虽然每分子葡萄糖产ATP少，但通量大、可提供生物合成前体与NADPH，并产生乳酸酸化微环境。","f":"sh22_warburg.svg","lv":5,"ln":"L5 组织特异与整合"},{"cid":"sh23_brca","t":"PARP 抑制剂与 BRCA 的合成致死","d":"抑制PARP使单链断裂堆积并在复制时转为双链断裂。正常细胞可用同源重组修复，而BRCA1/2缺陷的肿瘤细胞丧失该能力，因而被选择性杀死。","f":"sh23_brca.svg","lv":5,"ln":"L5 组织特异与整合"}];
+(function(){
+  const krow=document.getElementById('krow'), stages=document.getElementById('stages');
+  let cur=null;
+  DATA.forEach(function(d,i){
+    const b=document.createElement('button');
+    b.className='hbtn'+(i===0?' on':'');
+    b.dataset.cid=d.cid;
+    const nm=document.createElement('span');
+    nm.textContent=d.t.split('：')[0];
+    b.appendChild(nm);
+    if(d.ln){
+      const t=document.createElement('i');
+      t.textContent=d.ln.split(' ')[0];
+      t.title=d.ln;
+      b.appendChild(t);
+    }
+    b.onclick=function(){ show(d.cid); };
+    krow.appendChild(b);
+
+    const st=document.createElement('div');
+    st.className='stage'; st.id='st-'+d.cid;
+    st.dataset.src=d.f;
+    stages.appendChild(st);
+  });
+  const cache={};
+  function show(cid){
+    document.querySelectorAll('#krow .hbtn').forEach(function(x){
+      var on=(x.dataset.cid===cid);
+      x.classList.toggle('on', on);
+      if(on && x.scrollIntoView)
+        x.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+    });
+    const rec0=DATA.find(function(y){return y.cid===cid;});
+    const klab=document.getElementById('klab');
+    if(klab) klab.innerHTML='知识点'+(rec0&&rec0.ln
+      ? '<b style="color:#0f766e;font-weight:700;margin-left:6px">'+rec0.ln+'</b>' : '');
+    document.querySelectorAll('.stage').forEach(x=>
+      x.classList.toggle('on', x.id==='st-'+cid));
+    const on=document.getElementById('st-'+cid);
+    if(on) on.scrollIntoView({behavior:'smooth',block:'nearest'});
+    history.replaceState(null,'','#c-'+cid);
+    if(!on) return;
+    if(on.dataset.ctl){ if(window.initSmilCtl) window.initSmilCtl(); return; }
+    const rec=DATA.find(x=>x.cid===cid);
+    if(!rec) return;
+    on.innerHTML='<div class="desc" style="padding:24px 0">载入中…</div>';
+    fetch('figs/'+rec.f).then(r=>r.text()).then(txt=>{
+      on.innerHTML=txt+'<div class="desc">'+rec.d+'</div>';
+      if(window.initSmilCtl) window.initSmilCtl();
+    }).catch(()=>{
+      on.innerHTML='<div class="desc">载入失败，请刷新重试</div>';
+    });
+  }
+  // 初始：hash 指定 or 第一个
+  const h=(location.hash||'').replace('#c-','');
+  const target=DATA.find(x=>x.cid===h)||DATA[0];
+  if(target) show(target.cid);
+  window.addEventListener('hashchange',function(){
+    const hh=(location.hash||'').replace('#c-','');
+    if(hh) show(hh);
+  });
+})();
+</script></body></html>
