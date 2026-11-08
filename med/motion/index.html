@@ -29,8 +29,8 @@ button:active{transform:scale(.97)}
 </style></head>
 <body><div class="app">
 <h1>生理学动态图库</h1>
-<div class="sub">人卫第10版 · 13 章 · 纯 SVG + SMIL，零脚本动画；每图配一句结论</div>
-<div class="nav"><a href="overview.html">← 知识依赖总览</a><a href="../index.html">网站首页</a></div>
+<div class="sub">人卫第10版 · 13 章 · 26 张动图；每张可暂停 / 逐步 / 变速，每图配一句结论</div>
+<div class="nav"><a href="overview.html">← 知识依赖总览</a><a href="../../proc.html">🎛️ 交互式过程演示（分步讲解）</a><a href="../index.html">图库首页</a><a href="../../index.html">网站首页</a></div>
 <h3 class="grp">第 01 章 绪论</h3>
 <section class="card" id="c-01_feedback">
   <div class="head"><span class="lab">01</span><h2>负反馈：扰动被拉回</h2></div>
@@ -207,14 +207,85 @@ button:active{transform:scale(.97)}
 
 document.querySelectorAll('.card').forEach(function(c){
   var svg=c.querySelector('svg'); if(!svg||!svg.pauseAnimations) return;
-  var bar=document.createElement('div'); bar.className='pause';
-  var b=document.createElement('button');
-  function sync(){ b.textContent = svg.animationsPaused() ? '▶ 播放' : '⏸ 暂停'; }
-  b.onclick=function(){
-    if(svg.animationsPaused()) svg.unpauseAnimations(); else svg.pauseAnimations();
-    sync();
-  };
-  sync(); bar.appendChild(b); c.appendChild(bar);
+  var bar=document.createElement('div'); bar.className='smctl';
+  function btn(t,ti){var b=document.createElement('button');b.type='button';
+    b.className='smbtn';b.textContent=t;if(ti)b.title=ti;return b;}
+  var bPrev=btn('‹','上一相位'),
+      bPlay=btn('⏸','暂停 / 继续'),
+      bNext=btn('›','下一相位'),
+      bSpeed=btn('1×','切换速度 0.5/1/1.5');
+  var lab=document.createElement('span'); lab.className='smlab';
+
+  var dur=0;
+  svg.querySelectorAll('animate[dur]').forEach(function(a){
+    var v=parseFloat(a.getAttribute('dur'))||0; if(v>dur) dur=v; });
+  dur=dur||10;
+
+  var marks=[0];
+  svg.querySelectorAll('animate[dur]').forEach(function(a){
+    var v=parseFloat(a.getAttribute('dur'))||0;
+    if(Math.abs(v-dur)>0.01) return;
+    var kt=(a.getAttribute('keyTimes')||'').trim(); if(!kt) return;
+    kt.split(';').forEach(function(x){var q=parseFloat(x);
+      if(!isNaN(q)&&q>0.02&&q<0.98) marks.push(q); }); });
+  marks.sort(function(a,b){return a-b});
+  var uniq=[0];
+  marks.forEach(function(m){ if(m-uniq[uniq.length-1]>0.01) uniq.push(m); });
+  if(uniq.length<2) uniq=[0,0.5,1];
+  if(uniq[uniq.length-1]<0.98) uniq.push(1);
+  var nStep=Math.max(uniq.length-1,1);
+
+  var t=0, playing=true, speed=1, last=0, raf=null;
+  var SPEEDS=[0.5,1,1.5];
+
+  function manual(){ try{ if(!svg.animationsPaused()) svg.pauseAnimations(); }catch(e){} }
+  function apply(){ manual(); try{ svg.setCurrentTime(t%dur); }catch(e){} }
+  function paint(){
+    bPlay.textContent = playing ? '⏸' : '▶';
+    bPlay.classList.toggle('on', playing);
+    bSpeed.textContent = speed + '×';
+    var now=t/dur, k=0;
+    for(var i=0;i<uniq.length-1;i++) if(now>=uniq[i]-1e-6) k=i;
+    lab.textContent='第 '+(k+1)+' / '+nStep+' 步';
+  }
+  function loop(now){
+    if(!playing) return;
+    if(!last) last=now;
+    var dt=(now-last)/1000; last=now;
+    t+=dt*speed; if(t>=dur) t-=dur;
+    apply(); paint();
+    raf=requestAnimationFrame(loop);
+  }
+  function play(){ playing=true; last=0; raf=requestAnimationFrame(loop); paint(); }
+  function pause(){ playing=false; if(raf) cancelAnimationFrame(raf); raf=null;
+                    apply(); paint(); }
+
+  bPlay.onclick=function(){ playing?pause():play(); };
+  bSpeed.onclick=function(){ var i=SPEEDS.indexOf(speed);
+    speed=SPEEDS[(i+1)%SPEEDS.length]; last=0; paint(); };
+  function step(d){
+    pause();
+    var best=0,bd=1e9;
+    for(var i=0;i<uniq.length;i++){ var q=Math.abs(t/dur-uniq[i]); if(q<bd){bd=q;best=i;} }
+    var ni=Math.max(0,Math.min(best+d,uniq.length-1));
+    t=Math.min(uniq[ni]*dur+0.012, dur-0.002);
+    apply(); paint();
+  }
+  bPrev.onclick=function(){ step(-1); };
+  bNext.onclick=function(){ step(1); };
+
+  [bPrev,bPlay,bNext,bSpeed].forEach(function(b){ bar.appendChild(b); });
+  bar.appendChild(lab);
+  c.appendChild(bar);
+
+  // 进视口才播放，离屏暂停（省 CPU）
+  manual(); apply(); paint();
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting) play(); else pause(); });
+    },{rootMargin:'120px'});
+    io.observe(c);
+  } else { play(); }
 });
 </script>
 </body></html>
