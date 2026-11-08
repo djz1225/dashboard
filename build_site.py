@@ -954,3 +954,5 @@ if __name__ == "__main__":
 # build trigger 20261108001710
 
 # rebuild: physio figs v2 (p21794099440)
+
+# rebuild: biochem figs v2 (b21794107112)
