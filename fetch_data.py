@@ -192,7 +192,7 @@ def fetch_us_sectors():
     return {"up": rows[:10], "down": rows[-10:][::-1]}
 
 # ---------------- 三专科结构化解析 ----------------
-SPECS = [("肾内科", "肾内科"), ("内分泌", "内分泌·体重管理"), ("心血管", "心血管")]
+SPECS = [("肾内科", "肾内科"), ("内分泌", "内分泌·体重管理"), ("心血管", "心血管"), ("基础医学", "基础医学")]
 
 def _clean(s):
     s = s.strip()
@@ -286,6 +286,8 @@ def parse_md(md, disp, date):
 
 def _guess_specialty(md):
     head = md[:400]
+    if "基础医学" in head and "生理学" in md[:2500]:
+        return "基础医学", "基础医学"
     if "心血管" in head:
         return "心血管", "心血管"
     if "内分泌" in head:
@@ -357,6 +359,8 @@ def _key_from_name(fn):
         return "内分泌", "内分泌·体重管理"
     if fn.startswith("心血管"):
         return "心血管", "心血管"
+    if fn.startswith("基础医学"):
+        return "基础医学", "基础医学"
     return None, None
 
 def fetch_specialty_history():
