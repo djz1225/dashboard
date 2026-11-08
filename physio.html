@@ -52,12 +52,21 @@ footer{text-align:center;font-size:12.5px;color:#4E5B64;padding:20px}
 @supports (padding: max(0px)){
   header{padding-top:max(16px, env(safe-area-inset-top))}
 }
+header .hact{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}
+header .hact a{display:inline-flex;align-items:center;min-height:30px;padding:0 11px;
+  font-size:12.5px;color:#fff;text-decoration:none;background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.45);border-radius:999px}
+header .hact a.alt{background:#fff;color:#0f766e;font-weight:700;border-color:#fff}
 </style>
 </head>
 <body>
 <header>
   <h1>生理学速记卡</h1>
   <div class="sub">人卫第10版 · 13 章 · 机制推演 + 一句话结论</div>
+  <div class="hact">
+    <a class="alt" href="med/physio/player.html">🎬 生理动态演示</a>
+    <a href="med/index.html">🧬 动态演示图库</a>
+  </div>
 </header>
 <div class="wrap">
   <div class="toolbar">
