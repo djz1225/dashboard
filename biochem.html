@@ -79,7 +79,7 @@ footer{text-align:center;font-size:12.5px;color:#4E5B64;padding:20px}
   <h1>生物化学速记卡</h1>
   <div class="sub">人卫第10版 · 高国全 汤其群 2024 · 一句话结论 + 动态机制图</div>
   <div class="hact">
-    <a class="home alt" href="proc.html">🎛️ 交互式过程演示</a>
+    <a class="home alt" href="med/biochem/player.html">🎬 生化动态演示</a>
     <a class="home" href="index.html">返回首页</a>
   </div>
 </header>
@@ -297,29 +297,42 @@ renderList();
       dur = mx || 10;
     }
 
-    // 相位点：只取「dur 等于主周期」的 animate，且剔除两端
-    var marks = [0];
+    // 相位点：收集主周期 animate 的全部 keyTimes，再按 0.05 聚类。
+    // 关键：同一张图里各动画的 keyTimes 会略有差异（0.295/0.299/0.303），
+    // 聚类后只剩真实相位；同时把「0;1」这类两点动画自然吞掉。
+    var marks = [];
     try {
       svg.querySelectorAll('animate[dur]').forEach(function (a) {
         var v = parseFloat(a.getAttribute('dur')) || 0;
-        if (Math.abs(v - dur) > 0.01) return;          // 跳过短动画
+        if (Math.abs(v - dur) > 0.01) return;
         var kt = (a.getAttribute('keyTimes') || '').trim();
         if (!kt) return;
         kt.split(';').forEach(function (x) {
           var q = parseFloat(x);
-          if (!isNaN(q) && q > 0.02 && q < 0.98) marks.push(q);
+          if (!isNaN(q) && q > 0.03 && q < 0.97) marks.push(q);
         });
       });
     } catch (e) { }
-    // 去重：把「硬切换对」（相差 <0.01）合成一个点，保留真实相位
     marks.sort(function (a, b) { return a - b; });
-    var uniq = [0];
+
+    // 聚类：相邻差值 < 0.05 视为同一档，取均值
+    var groups = [];
     marks.forEach(function (m) {
-      var last = uniq[uniq.length - 1];
-      if (m - last > 0.01) uniq.push(m);       // 只合并硬切换对
+      if (groups.length && m - groups[groups.length - 1].last < 0.05) {
+        var g = groups[groups.length - 1];
+        g.sum += m; g.n += 1; g.last = m;
+      } else {
+        groups.push({ sum: m, n: 1, last: m });
+      }
+    });
+    var uniq = [0];
+    groups.forEach(function (g) {
+      var v = g.sum / g.n;
+      if (v - uniq[uniq.length - 1] > 0.04) uniq.push(v);
     });
     if (uniq.length < 2) uniq = [0, 0.5, 1];
-    if (uniq[uniq.length - 1] < 0.98) uniq.push(1);
+    if (uniq[uniq.length - 1] < 0.96) uniq.push(1);
+    uniq = uniq.map(function (v) { return Math.round(v * 1000) / 1000; });
 
     var t = 0, playing = true, speed = 1, last = 0, raf = null;
 
