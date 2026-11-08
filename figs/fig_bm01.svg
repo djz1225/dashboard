@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="500" viewBox="0 0 1000 500" font-family="Noto Sans CJK SC, PingFang SC, sans-serif">
+<defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#5F6C75"/></marker></defs>
+<rect width="1000" height="500" fill="#FFFFFF"/>
+<text x="28" y="38" font-size="19" fill="#17222b" font-weight="700">心肌收缩力的开关在钙库：一次放电，两种钙流</text>
+<text x="28" y="63" font-size="12.5" fill="#4E5B64">AP（动作电位）→ Cav1.2（L 型钙通道）→ RyR2（雷诺定受体 2）→ CICR（钙致钙释放）→ 肌钙蛋白 C</text>
+<rect x="30" y="84" width="290" height="248" rx="12" fill="#F6F9FC" stroke="#DCE6EF" stroke-width="1.2"/>
+<text x="46" y="110" font-size="14.5" fill="#17222b" font-weight="700">① 触发</text>
+<rect x="47.0" y="128" width="256" height="44" rx="8" fill="#E8F1FA" stroke="#2C5F9E" stroke-width="1.6"/><text x="175.0" y="147.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">动作电位到达 T 管</text><text x="175.0" y="165.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">膜电位去极化</text>
+<line x1="175.0" y1="172" x2="175.0" y2="199" stroke="#5F6C75" stroke-width="1.8" marker-end="url(#ah)"/><text x="182.0" y="193.0" font-size="11.5" fill="#4E5B64">去极化传入 T 管</text>
+<rect x="47.0" y="206" width="256" height="44" rx="8" fill="#FDF0E4" stroke="#C0703A" stroke-width="1.6"/><text x="175.0" y="225.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">Cav1.2 通道开放</text><text x="175.0" y="243.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">L 型钙通道，二氢吡啶敏感</text>
+<line x1="175.0" y1="250" x2="175.0" y2="277" stroke="#5F6C75" stroke-width="1.8" marker-end="url(#ah)"/><text x="182.0" y="271.0" font-size="11.5" fill="#4E5B64">Ca2+ 内流约 10%</text>
+<rect x="47.0" y="284" width="256" height="44" rx="8" fill="#F1ECFA" stroke="#6B4FA8" stroke-width="1.6"/><text x="175.0" y="303.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">少量 Ca2+ 进入胞质</text><text x="175.0" y="321.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">占收缩所需总量的约 10%</text>
+<rect x="340" y="84" width="320" height="248" rx="12" fill="#F6F9FC" stroke="#DCE6EF" stroke-width="1.2"/>
+<text x="356" y="110" font-size="14.5" fill="#17222b" font-weight="700">② 核心机制</text>
+<rect x="357.0" y="128" width="286" height="44" rx="8" fill="#FDF0E4" stroke="#C0703A" stroke-width="1.6"/><text x="500.0" y="147.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">Ca2+ 结合 RyR2</text><text x="500.0" y="165.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">肌浆网膜钙释放通道</text>
+<line x1="500.0" y1="172" x2="500.0" y2="199" stroke="#5F6C75" stroke-width="1.8" marker-end="url(#ah)"/><text x="507.0" y="193.0" font-size="11.5" fill="#4E5B64">钙敏感开关</text>
+<rect x="357.0" y="206" width="286" height="44" rx="8" fill="#F1ECFA" stroke="#6B4FA8" stroke-width="1.6"/><text x="500.0" y="225.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">钙致钙释放（CICR）</text><text x="500.0" y="243.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">再生式放大，正反馈</text>
+<line x1="500.0" y1="250" x2="500.0" y2="277" stroke="#5F6C75" stroke-width="1.8" marker-end="url(#ah)"/><text x="507.0" y="271.0" font-size="11.5" fill="#4E5B64">释放放大约 10 倍</text>
+<rect x="357.0" y="284" width="286" height="44" rx="8" fill="#E9F6EE" stroke="#2F8F5B" stroke-width="1.6"/><text x="500.0" y="303.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">胞质 Ca2+ 骤升</text><text x="500.0" y="321.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">由约 100 升至 1000 nmol/L</text>
+<rect x="680" y="84" width="290" height="248" rx="12" fill="#F6F9FC" stroke="#DCE6EF" stroke-width="1.2"/>
+<text x="696" y="110" font-size="14.5" fill="#17222b" font-weight="700">③ 效应与后果</text>
+<rect x="697.0" y="128" width="256" height="44" rx="8" fill="#F1ECFA" stroke="#6B4FA8" stroke-width="1.6"/><text x="825.0" y="147.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">肌钙蛋白 C 结合 Ca2+</text><text x="825.0" y="165.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">解除位阻，横桥形成</text>
+<line x1="825.0" y1="172" x2="825.0" y2="199" stroke="#5F6C75" stroke-width="1.8" marker-end="url(#ah)"/><text x="832.0" y="193.0" font-size="11.5" fill="#4E5B64">横桥循环启动</text>
+<rect x="697.0" y="206" width="256" height="44" rx="8" fill="#E9F6EE" stroke="#2F8F5B" stroke-width="1.6"/><text x="825.0" y="225.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">收缩力与收缩速度上升</text><text x="825.0" y="243.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">变力效应，与钙峰值相关</text>
+<line x1="825.0" y1="250" x2="825.0" y2="277" stroke="#5F6C75" stroke-width="1.8" marker-end="url(#ah)"/><text x="832.0" y="271.0" font-size="11.5" fill="#4E5B64">舒张靠回收</text>
+<rect x="697.0" y="284" width="256" height="44" rx="8" fill="#E8F1FA" stroke="#2C5F9E" stroke-width="1.6"/><text x="825.0" y="303.0" font-size="13" fill="#17222b" text-anchor="middle" font-weight="600">VMP1 通道补钙</text><text x="825.0" y="321.0" font-size="11.5" fill="#4E5B64" text-anchor="middle">新发现的内质网钙摄取通道</text>
+<line x1="322" y1="208" x2="336" y2="208" stroke="#5F6C75" stroke-width="2" marker-end="url(#ah)"/>
+<line x1="662" y1="208" x2="676" y2="208" stroke="#5F6C75" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="30" y="350" width="940" height="104" rx="12" fill="#FFFDF5" stroke="#E6D9AE" stroke-width="1.2"/>
+<text x="48" y="376" font-size="13.5" fill="#17222b" font-weight="700">为什么这条链重要</text>
+<text x="48" y="400" font-size="12.5" fill="#17222b">· 收缩力由钙瞬变峰值决定，而峰值来自「外钙触发 + 内钙放大」两级结构。</text>
+<text x="48" y="421" font-size="12.5" fill="#17222b">· 任何一步失真都会落到临床：RyR2 渗漏见于心衰与儿茶酚胺敏感性室速，VMP1 缺陷削弱钙库再充盈。</text>
+<text x="48" y="442" font-size="12.5" fill="#17222b">· 可干预节点：L 型通道（二氢吡啶类）、RyR2 稳定剂、VMP1 活性——三处均可调收缩力而不改电活动。</text>
+<text x="28" y="482" font-size="11.5" fill="#4E5B64">依据 2026 年度基础医学文献整合（属解读，细节以原文为准）｜议题 01 肌浆网钙释放</text>
+</svg>
