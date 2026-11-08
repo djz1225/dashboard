@@ -47,9 +47,37 @@ h3{font-size:16px;margin:2px 0 6px}
 .empty{padding:40px;text-align:center;color:#94a3ae;background:#fff;
   border:1px dashed #d7e0e9;border-radius:16px;grid-column:1/-1}
 footer{margin-top:28px;font-size:12.2px;color:#94a3ae}
-</style></head><body>
+</style><style>
+.pghbtn{position:fixed;left:14px;bottom:14px;z-index:96;display:inline-flex;
+  align-items:center;gap:6px;height:42px;padding:0 14px 0 12px;border-radius:999px;
+  background:rgba(255,255,255,.96);border:1px solid #cfe0bf;color:#3f6b4f;
+  font:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;
+  font-size:13.5px;font-weight:700;text-decoration:none;line-height:1;
+  box-shadow:0 8px 22px -10px rgba(40,70,40,.55),0 1px 3px rgba(40,70,40,.10);
+  -webkit-backdrop-filter:saturate(160%) blur(8px);backdrop-filter:saturate(160%) blur(8px);
+  opacity:.94;transition:opacity .18s,transform .18s,background .18s;
+  -webkit-tap-highlight-color:transparent}
+.pghbtn:hover{opacity:1;background:#f2f8ea;border-color:#a9c797;transform:translateY(-2px)}
+.pghbtn:active{transform:translateY(0)}
+.pghbtn svg{width:16px;height:16px;display:block;flex:0 0 auto}
+@media(max-width:560px){.pghbtn{height:38px;padding:0 12px 0 10px;font-size:13px;
+  left:10px;bottom:10px}}
+@media print{.pghbtn{display:none!important}}
+</style>
+</head><body>
 <div class="app">
   <h1>医学动态图库 · 按学科</h1>
+  <div class="quicknav" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px">
+    <a href="motion/index.html" style="display:inline-flex;align-items:center;gap:6px;
+       min-height:40px;padding:0 16px;border-radius:11px;background:#0f766e;color:#fff;
+       font-weight:700;text-decoration:none;font-size:14px">🧠 生理学 26 张动图（可暂停/逐步）</a>
+    <a href="../proc.html" style="display:inline-flex;align-items:center;gap:6px;
+       min-height:40px;padding:0 16px;border-radius:11px;background:#fff;color:#0f766e;
+       border:1.5px solid #0f766e;font-weight:700;text-decoration:none;font-size:14px">🎛️ 交互式过程演示</a>
+    <a href="../index.html" style="display:inline-flex;align-items:center;gap:6px;
+       min-height:40px;padding:0 16px;border-radius:11px;background:#fff;color:#475569;
+       border:1.5px solid #dbe4ee;text-decoration:none;font-size:14px">← 网站首页</a>
+  </div>
   <p class="sub">每个主题三版并列：<b>机制版</b>（为什么）、<b>解剖版</b>（在哪）、
      <b>动态版</b>（怎么变，可交互）</p>
   <p class="stat">共 6 个主题，覆盖 5 个学科 · 全部为矢量或单文件 HTML</p>
@@ -168,4 +196,5 @@ footer{margin-top:28px;font-size:12.2px;color:#94a3ae}
   apply();
 })();
 </script>
+<a class="pghbtn" href="../index.html" aria-label="返回网站首页" title="返回网站首页"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg><span>返回首页</span></a>
 </body></html>
