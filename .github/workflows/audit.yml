@@ -1,0 +1,29 @@
+name: audit-gate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'specialties/**'
+      - 'audit/**'
+      - '.github/scripts/verify_audit.py'
+  workflow_dispatch:
+
+jobs:
+  verify-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 校验审校凭证与审计链
+        run: python .github/scripts/verify_audit.py
+
+      - name: 失败提示
+        if: failure()
+        run: |
+          echo "::error::审计门禁未通过——提要不具备有效审校凭证，或审计链断裂。"
+          echo "请勿以产物内容为由忽略此项：无凭证即视为未审校。"
