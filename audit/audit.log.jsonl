@@ -1,0 +1,4 @@
+{"ts": "2026-11-09 15:49:56", "event": "archive", "file": "肾内科_每日对比提要_20261109.md", "verdict": "PASS", "note": "审校pass+跨文件PASS，归档", "prev": "GENESIS", "hash": "6cb43cb452299534"}
+{"ts": "2026-11-09 15:49:57", "event": "archive", "file": "内分泌_每日对比提要_20261109.md", "verdict": "PASS", "note": "同上", "prev": "6cb43cb452299534", "hash": "d3cefbae3a4c9a88"}
+{"ts": "2026-11-09 15:49:58", "event": "archive", "file": "心血管_每日对比提要_20261109.md", "verdict": "PASS", "note": "同上", "prev": "d3cefbae3a4c9a88", "hash": "577e9b91301d7548"}
+{"ts": "2026-11-09 15:49:59", "event": "archive", "file": "基础医学_每日对比提要_20261109.md", "verdict": "PASS", "note": "同上", "prev": "577e9b91301d7548", "hash": "0458e41923f33498"}
