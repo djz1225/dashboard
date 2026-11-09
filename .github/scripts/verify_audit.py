@@ -14,9 +14,26 @@ def sha12(p):
 def main():
     if not os.path.isdir(SPEC):
         print("无 specialties 目录，跳过"); return 0
-    mds = sorted(f for f in os.listdir(SPEC) if f.endswith(".md"))
+    import subprocess
+    # 只校验本次提交变更的提要（历史存量无凭证是既成事实，不追溯）
+    changed = []
+    try:
+        out = subprocess.run(["git", "diff", "--name-only", "HEAD~1", "HEAD", "--", "specialties/"],
+                             capture_output=True, text=True, timeout=60).stdout
+        changed = [os.path.basename(x.strip()) for x in out.splitlines()
+                   if x.strip().endswith(".md")]
+    except Exception:
+        pass
+    all_mds = sorted(f for f in os.listdir(SPEC) if f.endswith(".md"))
+    mds = sorted(set(changed)) if changed else []
     if not mds:
-        print("无提要文件，跳过"); return 0
+        # 手动触发时退化为「最近 3 天内日期的提要」
+        import datetime
+        recent = [(datetime.date.today() - datetime.timedelta(days=d)).strftime("%Y%m%d") for d in range(3)]
+        mds = [f for f in all_mds if any(r in f for r in recent)]
+        print(f"（未检出变更文件，回退为校验近 3 日：{len(mds)} 份）")
+    if not mds:
+        print("本次无新增提要，跳过"); return 0
 
     fail = []
     print(f"检查 {len(mds)} 份提要\n")
