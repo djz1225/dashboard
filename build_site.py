@@ -696,6 +696,15 @@ def main():
             n_pages += 1
     with open(os.path.join(SITE, "history.html"), "w", encoding="utf-8") as f:
         f.write(build_history_page(hist, d.get("specialties", [])))
+    # 机制图随站点发布：把仓库 figs/ 拷进 site/figs（缺失则跳过，不影响主站）
+    try:
+        figs_src = os.path.join(os.path.dirname(os.path.abspath(__file__)), "figs")
+        if os.path.isdir(figs_src):
+            shutil.copytree(figs_src, os.path.join(SITE, "figs"), dirs_exist_ok=True)
+            print("figs ->", os.path.join(SITE, "figs"),
+                  len([x for x in os.listdir(figs_src) if x.endswith(".png")]), "png")
+    except Exception as _e:
+        print("figs copy skipped:", _e)
     print("site/index.html +", len(d.get("specialties", [])), "attachments +", n_pages,
           "history pages + history.html ->", SITE)
 
