@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>跨学科检索</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#eef2f7;color:#16202e;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:10px 12px 96px}
+.top{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:2px 0 12px}
+.back{display:inline-flex;align-items:center;min-height:34px;padding:0 13px;
+  font-size:12.5px;color:#475569;text-decoration:none;background:#fff;
+  border:1px solid #dbe4ee;border-radius:999px}
+.back:active{background:#f1f5f9}
+h1{font-size:19px;margin:2px 0 5px;letter-spacing:.2px}
+.sub{font-size:12.5px;color:#8095a8;line-height:1.6;margin-bottom:14px}
+.sec{display:flex;align-items:center;gap:7px;font-size:12px;color:#0f766e;
+  font-weight:700;margin:16px 0 9px}
+.sec::before{content:"";width:3px;height:13px;border-radius:2px;background:#0f766e}
+.sec::after{content:"";flex:1;height:1px;background:#e3ebf3}
+/* 学科卡（L1） */
+.scard{display:block;background:#fff;border-radius:14px;padding:14px 15px;
+  margin-bottom:10px;text-decoration:none;color:inherit;
+  box-shadow:0 1px 3px rgba(15,23,42,.06),0 8px 22px rgba(15,23,42,.05);
+  border:1px solid #e6eef6;transition:transform .12s}
+.scard:active{transform:scale(.985)}
+.scard .st{display:flex;align-items:center;gap:9px;font-size:15.5px;
+  font-weight:700;margin-bottom:5px}
+.scard .sd{font-size:12.5px;color:#8095a8;line-height:1.6}
+.scard .sm{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.pill{font-size:11px;padding:3px 9px;border-radius:999px;background:#eff6f5;
+  color:#0f766e;font-weight:600}
+.pill.g{background:#f4f7fa;color:#6b7c8d}
+/* 知识点卡（L2/L3） */
+.kcard{display:flex;gap:11px;background:#fff;border-radius:12px;padding:11px 13px;
+  margin-bottom:8px;border:1px solid #e6eef6;text-decoration:none;color:inherit;
+  box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.kcard:active{background:#f8fbfd}
+.knum{flex:0 0 26px;height:26px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:11.5px;font-weight:700;color:#fff}
+.kbody{flex:1 1 auto;min-width:0}
+.kt{font-size:13.5px;font-weight:700;margin-bottom:3px}
+.kd{font-size:11.5px;color:#8095a8;line-height:1.55}
+.pbadge{display:inline-block;margin-left:5px;padding:0 5px;font-size:10px;
+  line-height:15px;border-radius:4px;background:#0f766e;color:#fff;
+  font-weight:700;vertical-align:1px}
+/* 横排切换 */
+.hwrap{position:relative}
+.hwrap::after{content:"";position:absolute;right:0;top:0;bottom:9px;width:26px;
+  pointer-events:none;background:linear-gradient(90deg,rgba(238,242,247,0),#eef2f7);
+  border-radius:0 8px 8px 0}
+.hrow{display:flex;gap:7px;overflow-x:auto;padding:2px 0 9px;scrollbar-width:none}
+.hrow::-webkit-scrollbar{display:none}
+.hbtn{flex:0 0 auto;min-height:36px;padding:0 14px;border-radius:11px;
+  background:#fff;border:1px solid #dbe4ee;color:#4a5a6b;font-size:13px;
+  font-weight:600;cursor:pointer;white-space:nowrap;display:inline-flex;
+  align-items:center;gap:5px}
+.hbtn.on{background:#0f766e;color:#fff;border-color:#0f766e}
+.hbtn i{font-style:normal;font-size:10px;padding:1px 5px;border-radius:6px;
+  background:#eff6f5;color:#0f766e;font-weight:700;letter-spacing:.2px}
+.hbtn.on i{background:rgba(255,255,255,.22);color:#fff}
+.step{display:flex;align-items:center;gap:6px;justify-content:space-between;
+  font-size:11.5px;color:#8ea0b2;margin:0 3px 7px}
+.step b{color:#0f766e;font-weight:700}
+.hlab{display:flex;align-items:center;gap:7px;font-size:11.5px;color:#a8b6c4;
+  font-weight:700;margin:2px 0 5px}
+.hlab::after{content:"";flex:1;height:1px;background:#e8eff6}
+.stage{display:none;background:#fff;border-radius:16px;padding:8px 8px 4px;
+  box-shadow:0 1px 3px rgba(15,23,42,.06),0 10px 28px rgba(15,23,42,.06)}
+.stage.on{display:block}
+.stage svg{display:block;width:100%;height:auto;border-radius:10px}
+.desc{font-size:12px;color:#8095a8;text-align:center;margin:7px 4px 8px;
+  line-height:1.5}
+.tip{margin-top:10px;padding:8px 10px;background:#fff;border-radius:10px;
+  font-size:11.5px;color:#a8b6c4;text-align:center;line-height:1.5}
+.playbar{display:flex;align-items:center;gap:7px;margin:10px 0 0;flex-wrap:wrap;
+  padding:8px 10px;background:#fff;border:1px solid #e3ebf3;border-radius:11px}
+.pbar{flex:1 1 100%;height:4px;border-radius:2px;background:#edf3f8;
+  overflow:hidden;margin:0 0 2px;opacity:0;transition:opacity .2s}
+.pbar.on{opacity:1}
+.pbar i{display:block;height:100%;width:0;border-radius:2px;
+  background:linear-gradient(90deg,#0f766e,#2f8f57);transition:width .1s linear}
+.pbtn{flex:0 0 auto;min-height:34px;padding:0 13px;border-radius:9px;
+  border:1px solid #dbe6f0;background:#f6fafc;color:#3f5468;font-size:12.5px;
+  font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pbtn.on{background:#0f766e;color:#fff;border-color:#0f766e}
+.pbtn:disabled{opacity:.45}
+.pstat{flex:1 1 auto;text-align:right;font-size:11.5px;color:#8ea0b2}
+@keyframes ppulse{0%,100%{opacity:1}50%{opacity:.55}}
+.pbtn.on .dot{display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:#fff;margin-right:4px;animation:ppulse 1.2s infinite}
+.foot{text-align:center;font-size:11px;color:#b6c4d2;margin:22px 0 0;
+  line-height:1.7}
+/* 本页页头已有「看板首页」导航，隐藏全局浮动回首页按钮，避免压住卡片 */
+.pghbtn{display:none!important}
+
+.smctl{display:flex;align-items:center;gap:6px;margin:8px 2px 2px;
+  padding:6px 8px;background:#f6fafc;border:1px solid #e3ebf3;border-radius:9px}
+.smbtn{flex:0 0 auto;min-width:34px;height:30px;padding:0 9px;
+  font:600 13px/30px -apple-system,'PingFang SC',sans-serif;
+  color:#3f5468;background:#fff;border:1px solid #dbe6f0;border-radius:8px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.smbtn:active{transform:scale(.95)}
+.smbtn.on{background:#0f766e;color:#fff;border-color:#0f766e}
+.smlab{flex:1 1 auto;text-align:right;font-size:11px;color:#8ea0b2}
+
+.sbox{position:sticky;top:0;z-index:9;background:#f4f8fb;
+  padding:10px 0 8px;margin:0 0 6px}
+.sinput{width:100%;box-sizing:border-box;padding:11px 13px;font-size:15px;
+  border:1.5px solid #cfe0ee;border-radius:11px;background:#fff;
+  color:#1b2b3a;outline:none;font-family:inherit}
+.sinput:focus{border-color:#2c5f9e;box-shadow:0 0 0 3px rgba(44,95,158,.10)}
+.shint{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:12px;padding:4px 9px;border-radius:999px;background:#fff;
+  border:1px solid #dde7f0;color:#5a7086;cursor:pointer;user-select:none}
+.chip:active{background:#eaf2fa}
+.chip.on{background:#2c5f9e;color:#fff;border-color:#2c5f9e}
+.sstat{font-size:12px;color:#8095a8;margin:6px 0 8px}
+.sres{display:flex;flex-direction:column;gap:8px}
+.sr{display:block;text-decoration:none;background:#fff;border:1px solid #e3ebf3;
+  border-radius:11px;padding:10px 12px}
+.sr:active{background:#f7fbfe}
+.srh{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.srt{font-size:14.5px;font-weight:700;color:#1b2b3a;line-height:1.35}
+.sbadge{font-size:11px;padding:2px 7px;border-radius:999px;
+  background:#eef4f9;color:#5a7086;white-space:nowrap}
+.sbadge.p{background:#e8f3ee;color:#0f766e}
+.sbadge.b{background:#eef0fb;color:#4338ca}
+.sbadge.k{background:#fdeeea;color:#b45309}
+.srd{font-size:12.5px;color:#6b7c8d;line-height:1.55;margin-top:4px}
+.srl{font-size:11.5px;color:#a8b6c4;margin-top:4px}
+.sempty{font-size:13px;color:#8095a8;padding:18px 4px;line-height:1.8}
+mark{background:#fff3bf;color:inherit;padding:0 1px;border-radius:2px}
+</style></head>
+<body><div class="wrap">
+<div class="top"><a class="back" href="index.html">← 学科列表</a><a class="back" href="../index.html">看板首页</a></div>
+<h1>跨学科检索</h1>
+<div class="sub">一次搜三个学科的全部动图；结果直接跳对应演示，不必先选学科</div>
+<div class="sbox"><input id="sinput" class="sinput" type="search" placeholder="如：梗死、反馈、凝血、肾 重吸收、肿瘤 转移" autocomplete="off" enterkeyhint="search"><div class="shint"><span class="chip on" data-sub="">全部 188</span><span class="chip" data-sub="physio">生理学 59</span><span class="chip" data-sub="biochem">生物化学 55</span><span class="chip" data-sub="patho">病理学 74</span></div></div>
+<div class="sstat" id="sstat"></div>
+<div class="sres" id="sres"></div>
+</div><script>
+(function(g){
+  var SPEEDS=[0.5,1,1.5];
+  function makeBar(svg){
+    var wrap=document.createElement('div'); wrap.className='smctl';
+    function btn(t,ti){var b=document.createElement('button');b.type='button';
+      b.className='smbtn';b.textContent=t;if(ti)b.title=ti;return b;}
+    var bPrev=btn('\u2039','上一相位'), bPlay=btn('\u23f8','暂停 / 继续'),
+        bNext=btn('\u203a','下一相位'), bSpeed=btn('1\u00d7','切换速度'),
+        bReset=btn('\u21ba','回到开头');
+    var lab=document.createElement('span'); lab.className='smlab';
+
+    var dur=0;
+    svg.querySelectorAll('animate[dur]').forEach(function(a){
+      var v=parseFloat(a.getAttribute('dur'))||0; if(v>dur) dur=v; });
+    dur=dur||10;
+
+    var marks=[];
+    svg.querySelectorAll('animate[dur]').forEach(function(a){
+      var v=parseFloat(a.getAttribute('dur'))||0;
+      if(Math.abs(v-dur)>0.01) return;
+      var kt=(a.getAttribute('keyTimes')||'').trim(); if(!kt) return;
+      kt.split(';').forEach(function(x){var q=parseFloat(x);
+        if(!isNaN(q)&&q>0.03&&q<0.97) marks.push(q); }); });
+    marks.sort(function(a,b){return a-b});
+    var groups=[];
+    marks.forEach(function(m){
+      if(groups.length && m-groups[groups.length-1].last<0.05){
+        var q=groups[groups.length-1]; q.sum+=m; q.n+=1; q.last=m;
+      } else groups.push({sum:m,n:1,last:m});
+    });
+    var uniq=[0];
+    groups.forEach(function(q){var v=q.sum/q.n;
+      if(v-uniq[uniq.length-1]>0.04) uniq.push(v);});
+    if(uniq.length<2) uniq=[0,0.5,1];
+    if(uniq[uniq.length-1]<0.96) uniq.push(1);
+    uniq=uniq.map(function(v){return Math.round(v*1000)/1000});
+    var nStep=Math.max(uniq.length-1,1);
+
+    var t=0, playing=true, speed=1, last=0, raf=null;
+    function manual(){try{if(!svg.animationsPaused())svg.pauseAnimations();}catch(e){}}
+    function apply(){manual();try{svg.setCurrentTime(t%dur);}catch(e){}}
+    function paint(){
+      bPlay.textContent=playing?'\u23f8':'\u25b6';
+      bPlay.classList.toggle('on',playing);
+      bSpeed.textContent=speed+'\u00d7';
+      var now=t/dur,k=0;
+      for(var i=0;i<uniq.length-1;i++) if(now>=uniq[i]-1e-6) k=i;
+      lab.textContent='\u7b2c '+(k+1)+' / '+nStep+' \u6b65';
+    }
+    function loop(now){
+      if(!playing) return;
+      if(!last) last=now;
+      var dt=(now-last)/1000; last=now;
+      t+=dt*speed; if(t>=dur) t-=dur;
+      apply(); paint(); raf=requestAnimationFrame(loop);
+    }
+    function play(){playing=true;last=0;raf=requestAnimationFrame(loop);paint();}
+    function pause(){playing=false;if(raf)cancelAnimationFrame(raf);raf=null;apply();paint();}
+    bPlay.onclick=function(){playing?pause():play();};
+    bSpeed.onclick=function(){var i=SPEEDS.indexOf(speed);
+      speed=SPEEDS[(i+1)%SPEEDS.length]; last=0; paint();};
+    function step(d){
+      pause();
+      var best=0,bd=1e9;
+      for(var i=0;i<uniq.length;i++){var q=Math.abs(t/dur-uniq[i]);
+        if(q<bd){bd=q;best=i;}}
+      var ni=Math.max(0,Math.min(best+d,uniq.length-1));
+      t=Math.min(uniq[ni]*dur+0.012,dur-0.002);
+      apply(); paint();
+    }
+    bPrev.onclick=function(){step(-1);};
+    bNext.onclick=function(){step(1);};
+    bReset.onclick=function(){pause();t=0;apply();paint();};
+
+    [bPrev,bPlay,bNext,bSpeed,bReset].forEach(function(b){wrap.appendChild(b);});
+    wrap.appendChild(lab);
+
+    manual(); apply(); paint();
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting) play(); else pause(); });
+      },{rootMargin:'120px'});
+      io.observe(svg.closest('.stage')||svg);
+    } else play();
+    return wrap;
+  }
+  g.initSmilCtl=function(root){
+    (root||document).querySelectorAll('.stage').forEach(function(st){
+      if(st.dataset.ctl) return;
+      var svg=st.querySelector('svg'); if(!svg||!svg.pauseAnimations) return;
+      // 只有「有真实循环动画」的图才加控件：
+      //   至少 2 个 animate，且最大 dur > 1s（排除只有一个标题淡入的静态图）
+      var durs=[], mx=0;
+      svg.querySelectorAll('animate[dur]').forEach(function(a){
+        var v=parseFloat(a.getAttribute('dur'))||0; durs.push(v); if(v>mx) mx=v;});
+      if(durs.length<2 || mx<=1) { st.dataset.ctl='1'; st.classList.add('static'); return; }
+      st.dataset.ctl='1';
+      st.appendChild(makeBar(svg));
+    });
+  };
+  if(document.readyState==='loading')
+    document.addEventListener('DOMContentLoaded',function(){g.initSmilCtl()});
+  else g.initSmilCtl();
+})(window);
+</script><script>window.__IDX = [{"c":"01_feedback","t":"负反馈","d":"扰动被拉回；正反馈推向极端","s":"physio","sn":"生理学","l":"L0 基础：调节原理与膜电位","k":"负反馈扰动被拉回；正反馈推向极端L0基础：调节原理与膜电位01生理学生理"},{"c":"01_regulation","t":"三种调节方式","d":"神经最快、体液较广、自身调节最局部","s":"physio","sn":"生理学","l":"L0 基础：调节原理与膜电位","k":"三种调节方式神经最快、体液较广、自身调节最局部L0基础：调节原理与膜电位01生理学生理"},{"c":"proc_feedback","t":"负反馈·过程版","d":"偏离→比较→反向调节→回拉","s":"physio","sn":"生理学","l":"L0 基础：调节原理与膜电位","k":"负反馈·过程版偏离→比较→反向调节→回拉L0基础：调节原理与膜电位01生理学生理"},{"c":"membrane","t":"膜通道与离子流","d":"Na+ 去极化、Ca2+ 平台、K+ 复极","s":"physio","sn":"生理学","l":"L0 基础：调节原理与膜电位","k":"膜通道与离子流Na+去极化、Ca2+平台、K+复极L0基础：调节原理与膜电位02生理学生理"},{"c":"ecc","t":"兴奋-收缩耦联","d":"钙致钙释放，肌丝只滑入不缩短","s":"physio","sn":"生理学","l":"L1 细胞与血液","k":"兴奋-收缩耦联钙致钙释放，肌丝只滑入不缩短L1细胞与血液02生理学生理"},{"c":"proc_crossbridge","t":"横桥循环·过程版","d":"Ca²⁺ 只负责允许，ATP 才是拉手","s":"physio","sn":"生理学","l":"L1 细胞与血液","k":"横桥循环·过程版Ca²⁺只负责允许，ATP才是拉手L1细胞与血液02生理学生理"},{"c":"proc_ecc","t":"兴奋收缩耦联·过程版","d":"T 管深入→钙释放→TnC→横桥","s":"physio","sn":"生理学","l":"L1 细胞与血液","k":"兴奋收缩耦联·过程版T管深入→钙释放→TnC→横桥L1细胞与血液02生理学生理"},{"c":"proc_signal","t":"信号转导·过程版","d":"一套骨架，cAMP 与 IP₃/DAG 两主支","s":"physio","sn":"生理学","l":"L1 细胞与血液","k":"信号转导·过程版一套骨架，cAMP与IP₃/DAG两主支L1细胞与血液02生理学生理"},{"c":"03_hemostasis","t":"止血三阶段","d":"缩血管→血小板栓→纤维蛋白网","s":"physio","sn":"生理学","l":"L1 细胞与血液","k":"止血三阶段缩血管→血小板栓→纤维蛋白网L1细胞与血液03生理学生理"},{"c":"03_coagulation","t":"凝血级联","d":"内外源在Ⅹ汇合，逐级放大","s":"physio","sn":"生理学","l":"L1 细胞与血液","k":"凝血级联内外源在Ⅹ汇合，逐级放大L1细胞与血液03生理学生理血管血"},{"c":"proc_coagulation","t":"凝血级联·过程版","d":"内源慢、外源快，都汇到 Ⅹ；凝血酶正反馈爆发","s":"physio","sn":"生理学","l":"L1 细胞与血液","k":"凝血级联·过程版内源慢、外源快，都汇到Ⅹ；凝血酶正反馈爆发L1细胞与血液03生理学生理血管血"},{"c":"proc_hemostasis","t":"止血三阶段·过程版","d":"先堵、再固、后清","s":"physio","sn":"生理学","l":"L1 细胞与血液","k":"止血三阶段·过程版先堵、再固、后清L1细胞与血液03生理学生理血"},{"c":"cardiac_v6","t":"左心心动周期","d":"瓣膜只看压力差；等容期腔径不变","s":"physio","sn":"生理学","l":"L2 循环与呼吸","k":"左心心动周期瓣膜只看压力差；等容期腔径不变L2循环与呼吸04生理学生理"},{"c":"ap_smil","t":"心室肌动作电位","d":"平台期是心肌不能强直收缩的根源","s":"physio","sn":"生理学","l":"L2 循环与呼吸","k":"心室肌动作电位平台期是心肌不能强直收缩的根源L2循环与呼吸04生理学生理"},{"c":"proc_action_potential","t":"动作电位·过程版","d":"Na⁺ 进 / Ca²⁺ 撑平台 / K⁺ 出，五期成形态","s":"physio","sn":"生理学","l":"L2 循环与呼吸","k":"动作电位·过程版Na⁺进/Ca²⁺撑平台/K⁺出，五期成形态L2循环与呼吸04生理学生理心神经"},{"c":"proc_cardiac","t":"心动周期·过程版","d":"瓣膜只看压差；等容期容积不变、压力剧变","s":"physio","sn":"生理学","l":"L2 循环与呼吸","k":"心动周期·过程版瓣膜只看压差；等容期容积不变、压力剧变L2循环与呼吸04生理学生理心"},{"c":"proc_baroreflex","t":"压力感受器反射·过程版","d":"被拉一下就降压；阻力下降是关键","s":"physio","sn":"生理学","l":"L2 循环与呼吸","k":"压力感受器反射·过程版被拉一下就降压；阻力下降是关键L2循环与呼吸04生理学生理"},{"c":"05_ventilation","t":"肺通气","d":"膈肌下移→肺内压低于大气压→气入肺","s":"physio","sn":"生理学","l":"L2 循环与呼吸","k":"肺通气膈肌下移→肺内压低于大气压→气入肺L2循环与呼吸05生理学生理"},{"c":"05_odc","t":"氧解离曲线","d":"S 形三段；右移利于组织释氧","s":"physio","sn":"生理学","l":"L2 循环与呼吸","k":"氧解离曲线S形三段；右移利于组织释氧L2循环与呼吸05生理学生理"},{"c":"proc_ventilation","t":"肺通气·过程版","d":"吸气主动、平静呼气被动；只看压差","s":"physio","sn":"生理学","l":"L2 循环与呼吸","k":"肺通气·过程版吸气主动、平静呼气被动；只看压差L2循环与呼吸05生理学生理肺"},{"c":"proc_odc","t":"氧解离曲线·过程版","d":"S 形三段：携氧 / 释氧 / 储备","s":"physio","sn":"生理学","l":"L2 循环与呼吸","k":"氧解离曲线·过程版S形三段：携氧/释氧/储备L2循环与呼吸05生理学生理肺"},{"c":"proc_chemoreg","t":"呼吸化学调节·过程版","d":"CO₂ 主信号；低氧需 <60 才起效","s":"physio","sn":"生理学","l":"L2 循环与呼吸","k":"呼吸化学调节·过程版CO₂主信号；低氧需<60才起效L2循环与呼吸05生理学生理"},{"c":"06_gastric","t":"胃液分泌三时相","d":"头期 30%、胃期 60%、肠期 10%","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"胃液分泌三时相头期30%、胃期60%、肠期10%L3代谢、消化与排泄06生理学生理"},{"c":"06_absorption","t":"小肠吸收两路","d":"糖与氨基酸走门静脉；脂肪走淋巴","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"小肠吸收两路糖与氨基酸走门静脉；脂肪走淋巴L3代谢、消化与排泄06生理学生理"},{"c":"proc_gastric","t":"胃液分泌·过程版","d":"头期 30% / 胃期 60% / 肠期 10%，汇到一台泵","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"胃液分泌·过程版头期30%/胃期60%/肠期10%，汇到一台泵L3代谢、消化与排泄06生理学生理胃"},{"c":"proc_absorption","t":"小肠吸收·过程版","d":"糖与氨基酸走门脉，脂肪走淋巴","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"小肠吸收·过程版糖与氨基酸走门脉，脂肪走淋巴L3代谢、消化与排泄06生理学生理胃肠"},{"c":"proc_pancreas","t":"胰液分泌·过程版","d":"腺泡管酶、导管管水，两者互相放大","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"胰液分泌·过程版腺泡管酶、导管管水，两者互相放大L3代谢、消化与排泄06生理学生理"},{"c":"proc_digest","t":"消化整体调节·过程版","d":"神经快、激素远、局部自主","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"消化整体调节·过程版神经快、激素远、局部自主L3代谢、消化与排泄06生理学生理"},{"c":"07_thermoreg","t":"体温调节","d":"产热散热如天平，由调定点 37℃ 协调","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"体温调节产热散热如天平，由调定点37℃协调L3代谢、消化与排泄07生理学生理"},{"c":"07_energy","t":"能量代谢测定","d":"测 O2 与 CO2 算呼吸商再查表","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"能量代谢测定测O2与CO2算呼吸商再查表L3代谢、消化与排泄07生理学生理"},{"c":"proc_thermoreg","t":"体温调节·过程版","d":"产热与散热围着 37 ℃ 转；发热是调定点上移","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"体温调节·过程版产热与散热围着37℃转；发热是调定点上移L3代谢、消化与排泄07生理学生理"},{"c":"proc_energy","t":"能量代谢测定·过程版","d":"测 O₂/CO₂ 得 RQ，查氧热价","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"能量代谢测定·过程版测O₂/CO₂得RQ，查氧热价L3代谢、消化与排泄07生理学生理"},{"c":"08_filtration","t":"肾小球滤过","d":"EFP = 45 −（25+10）= 10 mmHg","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"肾小球滤过EFP=45−（25+10）=10mmHgL3代谢、消化与排泄08生理学生理肾尿"},{"c":"08_loop","t":"髓袢逆流倍增","d":"降支透水、升支透盐，梯度 300→1200","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"髓袢逆流倍增降支透水、升支透盐，梯度300→1200L3代谢、消化与排泄08生理学生理肾"},{"c":"proc_filtration","t":"肾小球滤过·过程版","d":"三层膜筛 + EFP 10 mmHg，出球端滤过停止","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"肾小球滤过·过程版三层膜筛+EFP10mmHg，出球端滤过停止L3代谢、消化与排泄08生理学生理肾"},{"c":"proc_loop","t":"逆流倍增·过程版","d":"降支失水、升支排盐，300 → 1200","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"逆流倍增·过程版降支失水、升支排盐，300→1200L3代谢、消化与排泄08生理学生理肾"},{"c":"proc_reabsorb","t":"重吸收分配·过程版","d":"67% 打底在近端，2% 定调在集合管","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"重吸收分配·过程版67%打底在近端，2%定调在集合管L3代谢、消化与排泄08生理学生理肾尿"},{"c":"proc_uradilution","t":"尿浓缩稀释·过程版","d":"梯度由髓袢建，ADH 管开关","s":"physio","sn":"生理学","l":"L3 代谢、消化与排泄","k":"尿浓缩稀释·过程版梯度由髓袢建，ADH管开关L3代谢、消化与排泄08生理学生理"},{"c":"09_vision","t":"眼的折光与感光","d":"两次聚焦；视杆暗视、视锥辨色","s":"physio","sn":"生理学","l":"L4 神经与感官","k":"眼的折光与感光两次聚焦；视杆暗视、视锥辨色L4神经与感官09生理学生理"},{"c":"09_cochlea","t":"耳蜗频率-位置","d":"高频靠蜗底、低频靠蜗顶","s":"physio","sn":"生理学","l":"L4 神经与感官","k":"耳蜗频率-位置高频靠蜗底、低频靠蜗顶L4神经与感官09生理学生理"},{"c":"proc_sensory","t":"感受器换能·过程版","d":"强度看频率、部位看通道","s":"physio","sn":"生理学","l":"L4 神经与感官","k":"感受器换能·过程版强度看频率、部位看通道L4神经与感官09生理学生理"},{"c":"proc_vision","t":"视觉换能·过程版","d":"光让感受器超极化（反常）","s":"physio","sn":"生理学","l":"L4 神经与感官","k":"视觉换能·过程版光让感受器超极化（反常）L4神经与感官09生理学生理神经"},{"c":"proc_cochlea","t":"耳蜗行波·过程版","d":"蜗底高频、蜗顶低频","s":"physio","sn":"生理学","l":"L4 神经与感官","k":"耳蜗行波·过程版蜗底高频、蜗顶低频L4神经与感官09生理学生理神经"},{"c":"10_synapse","t":"化学突触传递","d":"电→化学→电，单向；EPSP 需叠加","s":"physio","sn":"生理学","l":"L4 神经与感官","k":"化学突触传递电→化学→电，单向；EPSP需叠加L4神经与感官10生理学生理"},{"c":"10_stretch","t":"牵张反射","d":"肌梭→Ⅰa→脊髓→α→同一肌肉收缩","s":"physio","sn":"生理学","l":"L4 神经与感官","k":"牵张反射肌梭→Ⅰa→脊髓→α→同一肌肉收缩L4神经与感官10生理学生理"},{"c":"proc_synapse","t":"突触传递·过程版","d":"电→化学→电；Ca²⁺ 是唯一触发开关","s":"physio","sn":"生理学","l":"L4 神经与感官","k":"突触传递·过程版电→化学→电；Ca²⁺是唯一触发开关L4神经与感官10生理学生理神经"},{"c":"proc_stretch","t":"牵张反射·过程版","d":"单突触最短反射弧","s":"physio","sn":"生理学","l":"L4 神经与感官","k":"牵张反射·过程版单突触最短反射弧L4神经与感官10生理学生理神经"},{"c":"11_hpa","t":"下丘脑-垂体-靶腺轴","d":"三级放大 + 长负反馈","s":"physio","sn":"生理学","l":"L5 内分泌与生殖","k":"下丘脑-垂体-靶腺轴三级放大+长负反馈L5内分泌与生殖11生理学生理"},{"c":"11_glucose","t":"血糖稳态","d":"一路降对五路升","s":"physio","sn":"生理学","l":"L5 内分泌与生殖","k":"血糖稳态一路降对五路升L5内分泌与生殖11生理学生理"},{"c":"proc_hpa","t":"三级轴·过程版","d":"逐级放大、逐级专一 + 长负反馈","s":"physio","sn":"生理学","l":"L5 内分泌与生殖","k":"三级轴·过程版逐级放大、逐级专一+长负反馈L5内分泌与生殖11生理学生理甲状腺"},{"c":"proc_glucose","t":"血糖稳态·过程版","d":"胰岛素唯一降糖，升糖有六个","s":"physio","sn":"生理学","l":"L5 内分泌与生殖","k":"血糖稳态·过程版胰岛素唯一降糖，升糖有六个L5内分泌与生殖11生理学生理糖"},{"c":"12_menstrual","t":"月经周期四激素","d":"雌激素两峰；LH 峰后 24~36h 排卵","s":"physio","sn":"生理学","l":"L5 内分泌与生殖","k":"月经周期四激素雌激素两峰；LH峰后24~36h排卵L5内分泌与生殖12生理学生理"},{"c":"12_pregnancy","t":"妊娠激素交接","d":"hCG 救黄体，孕 8~10 周胎盘接手","s":"physio","sn":"生理学","l":"L5 内分泌与生殖","k":"妊娠激素交接hCG救黄体，孕8~10周胎盘接手L5内分泌与生殖12生理学生理"},{"c":"proc_menstrual","t":"月经周期·过程版","d":"雌激素两峰、孕激素单峰；LH 峰后排卵","s":"physio","sn":"生理学","l":"L5 内分泌与生殖","k":"月经周期·过程版雌激素两峰、孕激素单峰；LH峰后排卵L5内分泌与生殖12生理学生理"},{"c":"proc_pregnancy","t":"妊娠激素交接·过程版","d":"hCG 救黄体 → 胎盘 8~10 周接手","s":"physio","sn":"生理学","l":"L5 内分泌与生殖","k":"妊娠激素交接·过程版hCG救黄体→胎盘8~10周接手L5内分泌与生殖12生理学生理"},{"c":"13_growth","t":"生长两个突增期","d":"婴儿期与青春期；不是匀速直线","s":"physio","sn":"生理学","l":"L6 整体与老化","k":"生长两个突增期婴儿期与青春期；不是匀速直线L6整体与老化13生理学生理"},{"c":"13_aging","t":"衰老储备下降","d":"静息尚可但最大能力降，故易失代偿","s":"physio","sn":"生理学","l":"L6 整体与老化","k":"衰老储备下降静息尚可但最大能力降，故易失代偿L6整体与老化13生理学生理"},{"c":"proc_growth","t":"生长激素轴·过程版","d":"GH 脉冲；长骨增长靠肝 IGF-1","s":"physio","sn":"生理学","l":"L6 整体与老化","k":"生长激素轴·过程版GH脉冲；长骨增长靠肝IGF-1L6整体与老化13生理学生理甲状腺"},{"c":"proc_aging","t":"衰老储备·过程版","d":"静息看不出，应激即失代偿","s":"physio","sn":"生理学","l":"L6 整体与老化","k":"衰老储备·过程版静息看不出，应激即失代偿L6整体与老化13生理学生理"},{"c":"sh02_inhibit","t":"酶的可逆抑制","d":"竞争性 Km↑、非竞争 Vmax↓、反竞争两者都↓","s":"biochem","sn":"生物化学","l":"L0 基础：大分子与酶","k":"酶的可逆抑制竞争性Km↑、非竞争Vmax↓、反竞争两者都↓L0基础：大分子与酶02生物化学生化"},{"c":"sh02_mm","t":"米氏方程的饱和","d":"底物少则线性，[S]=Km 半速，过量则饱和","s":"biochem","sn":"生物化学","l":"L0 基础：大分子与酶","k":"米氏方程的饱和底物少则线性，[S]=Km半速，过量则饱和L0基础：大分子与酶02生物化学生化"},{"c":"sh01_fold","t":"蛋白质折叠四级","d":"一级序列 → 二级 → 三级 → 四级，驱动力逐层不同","s":"biochem","sn":"生物化学","l":"L0 基础：大分子与酶","k":"蛋白质折叠四级一级序列→二级→三级→四级，驱动力逐层不同L0基础：大分子与酶01生物化学生化"},{"c":"sh01_denature","t":"变性与盐析","d":"变性毁构象不可逆；盐析只沉淀、稀释即复溶","s":"biochem","sn":"生物化学","l":"L0 基础：大分子与酶","k":"变性与盐析变性毁构象不可逆；盐析只沉淀、稀释即复溶L0基础：大分子与酶01生物化学生化"},{"c":"sh01_hb","t":"Hb 与 Mb 的氧解离曲线","d":"Hb 是 S 形（正协同），Mb 是双曲线（只储不运）","s":"biochem","sn":"生物化学","l":"L0 基础：大分子与酶","k":"Hb与Mb的氧解离曲线Hb是S形（正协同），Mb是双曲线（只储不运）L0基础：大分子与酶01生物化学生化"},{"c":"proc_plasma_protein","t":"血浆蛋白","d":"白蛋白管胶渗与载体；γ 是抗体","s":"biochem","sn":"生物化学","l":"L0 基础：大分子与酶","k":"血浆蛋白白蛋白管胶渗与载体；γ是抗体L0基础：大分子与酶03生物化学生化肝血"},{"c":"sh02_zymogen","t":"酶原激活","d":"切掉一段激活肽，活性中心暴露；级联放大","s":"biochem","sn":"生物化学","l":"L0 基础：大分子与酶","k":"酶原激活切掉一段激活肽，活性中心暴露；级联放大L0基础：大分子与酶02生物化学生化"},{"c":"sh03_denature","t":"核酸变性与 Tm","d":"增色效应；GC 含量越高 Tm 越高","s":"biochem","sn":"生物化学","l":"L0 基础：大分子与酶","k":"核酸变性与Tm增色效应；GC含量越高Tm越高L0基础：大分子与酶03生物化学生化"},{"c":"sh06_vitk","t":"维生素 K 与 γ-羧化","d":"凝血因子 Ⅱ Ⅶ Ⅸ Ⅹ 需 γ-羧化才有活性","s":"biochem","sn":"生物化学","l":"L0 基础：大分子与酶","k":"维生素K与γ-羧化凝血因子ⅡⅦⅨⅩ需γ-羧化才有活性L0基础：大分子与酶06生物化学生化"},{"c":"proc_vitamin","t":"维生素与辅酶","d":"B 族当辅酶；B₁₂ 独有神经症状","s":"biochem","sn":"生物化学","l":"L0 基础：大分子与酶","k":"维生素与辅酶B族当辅酶；B₁₂独有神经症状L0基础：大分子与酶06生物化学生化胃"},{"c":"proc_glycolysis","t":"糖酵解","d":"投 2 收 4，净 2 ATP；三个不可逆点就是三个调控点","s":"biochem","sn":"生物化学","l":"L1 能量代谢主干","k":"糖酵解投2收4，净2ATP；三个不可逆点就是三个调控点L1能量代谢主干07生物化学生化糖"},{"c":"proc_glycogen","t":"糖原代谢","d":"磷酸解不耗 ATP、产物 G1P；肝有 G6P 酶","s":"biochem","sn":"生物化学","l":"L1 能量代谢主干","k":"糖原代谢磷酸解不耗ATP、产物G1P；肝有G6P酶L1能量代谢主干07生物化学生化糖"},{"c":"proc_tca","t":"三羧酸循环","d":"一轮 3NADH+1FADH₂+1GTP = 10 ATP","s":"biochem","sn":"生物化学","l":"L1 能量代谢主干","k":"三羧酸循环一轮3NADH+1FADH₂+1GTP=10ATPL1能量代谢主干07生物化学生化糖"},{"c":"sh08_chemiosmosis","t":"化学渗透与 ATP 合酶","d":"质子梯度驱动 F₀F₁ 马达，4 H⁺ 合成 1 ATP","s":"biochem","sn":"生物化学","l":"L1 能量代谢主干","k":"化学渗透与ATP合酶质子梯度驱动F₀F₁马达，4H⁺合成1ATPL1能量代谢主干08生物化学生化"},{"c":"sh08_chain","t":"呼吸链四个复合体","d":"Ⅰ 泵 4、Ⅲ 泵 4、Ⅳ 泵 2，共 10 H⁺；Ⅱ 不泵","s":"biochem","sn":"生物化学","l":"L1 能量代谢主干","k":"呼吸链四个复合体Ⅰ泵4、Ⅲ泵4、Ⅳ泵2，共10H⁺；Ⅱ不泵L1能量代谢主干08生物化学生化"},{"c":"sh07_glycolysis","t":"糖酵解的三调控点","d":"己糖激酶、PFK-1、丙酮酸激酶催化的三步不可逆","s":"biochem","sn":"生物化学","l":"L1 能量代谢主干","k":"糖酵解的三调控点己糖激酶、PFK-1、丙酮酸激酶催化的三步不可逆L1能量代谢主干07生物化学生化"},{"c":"sh07_tca","t":"三羧酸循环的收支","d":"3NADH+1FADH₂+1GTP，折合 10 ATP","s":"biochem","sn":"生物化学","l":"L1 能量代谢主干","k":"三羧酸循环的收支3NADH+1FADH₂+1GTP，折合10ATPL1能量代谢主干07生物化学生化"},{"c":"sh12_states","t":"进食-空腹-饥饿切换","d":"胰岛素/胰高血糖素比值决定燃料选择","s":"biochem","sn":"生物化学","l":"L1 能量代谢主干","k":"进食-空腹-饥饿切换胰岛素/胰高血糖素比值决定燃料选择L1能量代谢主干12生物化学生化"},{"c":"proc_ppp","t":"磷酸戊糖途径","d":"产 NADPH 不产 ATP；基团转移可逆","s":"biochem","sn":"生物化学","l":"L1 能量代谢主干","k":"磷酸戊糖途径产NADPH不产ATP；基团转移可逆L1能量代谢主干07生物化学生化"},{"c":"proc_gluconeogenesis","t":"糖异生","d":"三个不可逆点各换一个酶，耗 6 个高能键","s":"biochem","sn":"生物化学","l":"L1 能量代谢主干","k":"糖异生三个不可逆点各换一个酶，耗6个高能键L1能量代谢主干07生物化学生化糖"},{"c":"proc_betaox","t":"β-氧化","d":"16 碳切 7 刀，产 8 乙酰CoA，净 106 ATP","s":"biochem","sn":"生物化学","l":"L2 脂与酮体","k":"β-氧化16碳切7刀，产8乙酰CoA，净106ATPL2脂与酮体09生物化学生化脂"},{"c":"sh09_ketone","t":"酮体：肝造不用","d":"肝缺琥珀酰CoA转硫酶，只能造不能烧","s":"biochem","sn":"生物化学","l":"L2 脂与酮体","k":"酮体：肝造不用肝缺琥珀酰CoA转硫酶，只能造不能烧L2脂与酮体09生物化学生化"},{"c":"sh09_beta","t":"β-氧化的四步循环","d":"脱氢-加水-再脱氢-硫解，每轮切下 1 个乙酰CoA","s":"biochem","sn":"生物化学","l":"L2 脂与酮体","k":"β-氧化的四步循环脱氢-加水-再脱氢-硫解，每轮切下1个乙酰CoAL2脂与酮体09生物化学生化"},{"c":"proc_fas","t":"脂肪酸合成","d":"与 β-氧化四处相反：部位/载体/辅因子/方向","s":"biochem","sn":"生物化学","l":"L2 脂与酮体","k":"脂肪酸合成与β-氧化四处相反：部位/载体/辅因子/方向L2脂与酮体09生物化学生化脂"},{"c":"proc_lipoprotein","t":"血浆脂蛋白","d":"CM 外源 / VLDL 内源 / LDL 送 / HDL 收","s":"biochem","sn":"生物化学","l":"L2 脂与酮体","k":"血浆脂蛋白CM外源/VLDL内源/LDL送/HDL收L2脂与酮体09生物化学生化脂"},{"c":"proc_cholesterol","t":"胆固醇合成","d":"HMG-CoA 还原酶限速；只能转化不能分解","s":"biochem","sn":"生物化学","l":"L2 脂与酮体","k":"胆固醇合成HMG-CoA还原酶限速；只能转化不能分解L2脂与酮体09生物化学生化脂"},{"c":"proc_biotransform","t":"肝的生物转化","d":"两相把脂溶变水溶；UGT 最重要","s":"biochem","sn":"生物化学","l":"L2 脂与酮体","k":"肝的生物转化两相把脂溶变水溶；UGT最重要L2脂与酮体19生物化学生化"},{"c":"sh10_ammonia","t":"血氨两来源三去路","d":"氨必须解毒：主要去路是在肝合成尿素","s":"biochem","sn":"生物化学","l":"L3 含氮与氨基酸代谢","k":"血氨两来源三去路氨必须解毒：主要去路是在肝合成尿素L3含氮与氨基酸代谢10生物化学生化"},{"c":"sh10_urea","t":"尿素循环","d":"5 步、4 个高能键、2 个氮源；CPS-Ⅰ 需 AGA 激活","s":"biochem","sn":"生物化学","l":"L3 含氮与氨基酸代谢","k":"尿素循环5步、4个高能键、2个氮源；CPS-Ⅰ需AGA激活L3含氮与氨基酸代谢10生物化学生化"},{"c":"proc_aa","t":"氨基酸代谢","d":"转氨只搬氨基，氧化脱氨才放 NH₃","s":"biochem","sn":"生物化学","l":"L3 含氮与氨基酸代谢","k":"氨基酸代谢转氨只搬氨基，氧化脱氨才放NH₃L3含氮与氨基酸代谢10生物化学生化"},{"c":"sh11_urate","t":"尿酸与别嘌醇","d":"人缺尿酸氧化酶，别嘌醇抑制黄嘌呤氧化酶","s":"biochem","sn":"生物化学","l":"L3 含氮与氨基酸代谢","k":"尿酸与别嘌醇人缺尿酸氧化酶，别嘌醇抑制黄嘌呤氧化酶L3含氮与氨基酸代谢11生物化学生化"},{"c":"proc_nucleotide","t":"核苷酸代谢","d":"嘌呤先有糖、嘧啶先有环；人缺尿酸氧化酶","s":"biochem","sn":"生物化学","l":"L3 含氮与氨基酸代谢","k":"核苷酸代谢嘌呤先有糖、嘧啶先有环；人缺尿酸氧化酶L3含氮与氨基酸代谢11生物化学生化"},{"c":"proc_urea","t":"尿素循环·过程版","d":"两个氮来自氨与天冬氨酸；每轮耗 4 个高能键","s":"biochem","sn":"生物化学","l":"L3 含氮与氨基酸代谢","k":"尿素循环·过程版两个氮来自氨与天冬氨酸；每轮耗4个高能键L3含氮与氨基酸代谢10生物化学生化"},{"c":"proc_replication","t":"复制叉","d":"一条连续、一条分段 —— 半不连续的根源","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"复制叉一条连续、一条分段——半不连续的根源L4遗传信息流14生物化学生化"},{"c":"proc_transcription","t":"转录","d":"不需引物；σ 识别启动子，只抄一条链","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"转录不需引物；σ识别启动子，只抄一条链L4遗传信息流15生物化学生化"},{"c":"proc_translation","t":"翻译","d":"A/P/E 三位点循环，每氨基酸耗 4 个高能键","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"翻译A/P/E三位点循环，每氨基酸耗4个高能键L4遗传信息流16生物化学生化"},{"c":"proc_central","t":"中心法则","d":"五条信息流；信息只从核酸流向蛋白","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"中心法则五条信息流；信息只从核酸流向蛋白L4遗传信息流—生物化学生化"},{"c":"sh13_gene","t":"断裂基因与剪接","d":"外显子与内含子相间；剪接后才连续","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"断裂基因与剪接外显子与内含子相间；剪接后才连续L4遗传信息流13生物化学生化"},{"c":"sh14_fork","t":"复制体的分工","d":"解旋、引物、聚合酶Ⅲ、聚合酶Ⅰ、连接酶各管一段","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"复制体的分工解旋、引物、聚合酶Ⅲ、聚合酶Ⅰ、连接酶各管一段L4遗传信息流14生物化学生化"},{"c":"sh14_telomere","t":"端粒与端粒酶","d":"末端复制问题；端粒酶本质是逆转录酶","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"端粒与端粒酶末端复制问题；端粒酶本质是逆转录酶L4遗传信息流14生物化学生化"},{"c":"proc_dnarepair","t":"DNA 损伤修复","d":"MMR/BER/NER/HR 各管一类损伤","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"DNA损伤修复MMR/BER/NER/HR各管一类损伤L4遗传信息流14生物化学生化"},{"c":"proc_gene_reg","t":"真核基因调控","d":"五级层次；增强子可远隔作用","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"真核基因调控五级层次；增强子可远隔作用L4遗传信息流13生物化学生化"},{"c":"sh15_transcribe","t":"转录的起始与终止","d":"σ 因子识别启动子；发夹+寡 U 终止","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"转录的起始与终止σ因子识别启动子；发夹+寡U终止L4遗传信息流15生物化学生化"},{"c":"sh15_splice","t":"剪接两次酯交换","d":"剪接体催化；可变剪接产生多种 mRNA","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"剪接两次酯交换剪接体催化；可变剪接产生多种mRNAL4遗传信息流15生物化学生化"},{"c":"sh16_ribosome","t":"核糖体三位点","d":"A 进位、P 成肽、E 释放；每氨基酸 4 个高能键","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"核糖体三位点A进位、P成肽、E释放；每氨基酸4个高能键L4遗传信息流16生物化学生化"},{"c":"proc_posttrans","t":"翻译后加工","d":"信号肽定向；磷酸化可逆、切割不可逆","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"翻译后加工信号肽定向；磷酸化可逆、切割不可逆L4遗传信息流16生物化学生化"},{"c":"sh17_lac","t":"乳糖操纵子","d":"CAP 正调控 + 阻遏蛋白负调控的双重逻辑","s":"biochem","sn":"生物化学","l":"L4 遗传信息流","k":"乳糖操纵子CAP正调控+阻遏蛋白负调控的双重逻辑L4遗传信息流17生物化学生化"},{"c":"proc_raas","t":"RAAS 升压链","d":"失血 → 肾素 → 血管紧张素Ⅱ → 血压回升","s":"biochem","sn":"生物化学","l":"L5 组织特异与整合","k":"RAAS升压链失血→肾素→血管紧张素Ⅱ→血压回升L5组织特异与整合08生物化学生化"},{"c":"sh25_bilirubin","t":"两种胆红素","d":"未结合脂溶性不能经尿排；结合型水溶性可排","s":"biochem","sn":"生物化学","l":"L5 组织特异与整合","k":"两种胆红素未结合脂溶性不能经尿排；结合型水溶性可排L5组织特异与整合25生物化学生化"},{"c":"proc_heme","t":"血红素合成","d":"ALA 合酶限速需 B₆；缺铁螯合失败","s":"biochem","sn":"生物化学","l":"L5 组织特异与整合","k":"血红素合成ALA合酶限速需B₆；缺铁螯合失败L5组织特异与整合10生物化学生化血"},{"c":"sh26_g6pd","t":"G6PD 与蚕豆病","d":"NADPH 不足时谷胱甘肽还原不了，红细胞破裂","s":"biochem","sn":"生物化学","l":"L5 组织特异与整合","k":"G6PD与蚕豆病NADPH不足时谷胱甘肽还原不了，红细胞破裂L5组织特异与整合26生物化学生化"},{"c":"sh21_camp","t":"cAMP-PKA 级联放大","d":"一个信号放大万倍；PDE 负责降解终止","s":"biochem","sn":"生物化学","l":"L5 组织特异与整合","k":"cAMP-PKA级联放大一个信号放大万倍；PDE负责降解终止L5组织特异与整合21生物化学生化"},{"c":"sh21_rtk","t":"RTK 两条主路","d":"Ras-MAPK 管增殖；PI3K-Akt 管存活","s":"biochem","sn":"生物化学","l":"L5 组织特异与整合","k":"RTK两条主路Ras-MAPK管增殖；PI3K-Akt管存活L5组织特异与整合21生物化学生化"},{"c":"sh22_warburg","t":"Warburg 效应","d":"有氧也糖酵解：要的是合成前体与 NADPH","s":"biochem","sn":"生物化学","l":"L5 组织特异与整合","k":"Warburg效应有氧也糖酵解：要的是合成前体与NADPHL5组织特异与整合22生物化学生化"},{"c":"sh23_brca","t":"BRCA 与 PARP 合成致死","d":"两条修复通路同时坏才死，坏一个还能活","s":"biochem","sn":"生物化学","l":"L5 组织特异与整合","k":"BRCA与PARP合成致死两条修复通路同时坏才死，坏一个还能活L5组织特异与整合23生物化学生化"},{"c":"proc_cell_injury","t":"细胞损伤：可逆到不可逆","d":"ATP ↓ → 钠泵失灵 → 钙超载 → 膜破裂","s":"patho","sn":"病理学","l":"L0 细胞损伤与死亡","k":"细胞损伤：可逆到不可逆ATP↓→钠泵失灵→钙超载→膜破裂L0细胞损伤与死亡02病理学病理"},{"c":"proc_necrosis_apoptosis","t":"坏死与凋亡","d":"坏死被动、膜破裂、有炎症；凋亡主动、膜完整","s":"patho","sn":"病理学","l":"L0 细胞损伤与死亡","k":"坏死与凋亡坏死被动、膜破裂、有炎症；凋亡主动、膜完整L0细胞损伤与死亡02病理学病理"},{"c":"proc_radiation","t":"电离辐射损伤","d":"DNA 断裂；越爱增殖越怕照；放射病三型","s":"patho","sn":"病理学","l":"L0 细胞损伤与死亡","k":"电离辐射损伤DNA断裂；越爱增殖越怕照；放射病三型L0细胞损伤与死亡02病理学病理"},{"c":"proc_thrombosis","t":"血栓形成与转归","d":"Virchow 三要素；动脉白血栓、静脉红血栓","s":"patho","sn":"病理学","l":"L1 循环障碍","k":"血栓形成与转归Virchow三要素；动脉白血栓、静脉红血栓L1循环障碍03病理学病理血管血栓"},{"c":"proc_thrombus_type","t":"血栓四型：成分与治疗","d":"白/红/混合/透明血栓；抗血小板 vs 抗凝","s":"patho","sn":"病理学","l":"L1 循环障碍","k":"血栓四型：成分与治疗白/红/混合/透明血栓；抗血小板vs抗凝L1循环障碍03病理学病理血管血栓"},{"c":"proc_antithrombotic","t":"抗栓药三类靶点","d":"抗血小板/抗凝/溶栓：靶点与监测","s":"patho","sn":"病理学","l":"L1 循环障碍","k":"抗栓药三类靶点抗血小板/抗凝/溶栓：靶点与监测L1循环障碍03病理学病理血栓"},{"c":"proc_rejection","t":"移植排斥四型","d":"超急性/急性细胞/急性抗体/慢性","s":"patho","sn":"病理学","l":"L1 循环障碍","k":"移植排斥四型超急性/急性细胞/急性抗体/慢性L1循环障碍03病理学病理"},{"c":"proc_banff","t":"移植肾 Banff 分级","d":"i/t→T 细胞；ptc/C4d→抗体；ci/ct→慢性","s":"patho","sn":"病理学","l":"L1 循环障碍","k":"移植肾Banff分级i/t→T细胞；ptc/C4d→抗体；ci/ct→慢性L1循环障碍03病理学病理"},{"c":"proc_transplant_organ","t":"实体器官移植","d":"排斥、感染、药物毒性；各器官特点不同","s":"patho","sn":"病理学","l":"L1 循环障碍","k":"实体器官移植排斥、感染、药物毒性；各器官特点不同L1循环障碍03病理学病理"},{"c":"proc_ptld","t":"移植后淋巴增殖性疾病","d":"监视下降+EBV驱动；早期增生→单形性","s":"patho","sn":"病理学","l":"L1 循环障碍","k":"移植后淋巴增殖性疾病监视下降+EBV驱动；早期增生→单形性L1循环障碍03病理学病理"},{"c":"proc_embolism","t":"栓塞与栓子运行途径","d":"静脉→肺、动脉→体循环、门静脉→肝","s":"patho","sn":"病理学","l":"L1 循环障碍","k":"栓塞与栓子运行途径静脉→肺、动脉→体循环、门静脉→肝L1循环障碍03病理学病理血栓"},{"c":"proc_infarct","t":"梗死的类型","d":"动脉阻塞 + 器官结构 + 有无淤血 → 颜色与形态","s":"patho","sn":"病理学","l":"L1 循环障碍","k":"梗死的类型动脉阻塞+器官结构+有无淤血→颜色与形态L1循环障碍03病理学病理心"},{"c":"proc_dic","t":"DIC：先凝血后出血","d":"组织因子爆发 → 微血栓 → 因子耗竭 → 纤溶亢进","s":"patho","sn":"病理学","l":"L1 循环障碍","k":"DIC：先凝血后出血组织因子爆发→微血栓→因子耗竭→纤溶亢进L1循环障碍03病理学病理血血栓"},{"c":"proc_coag_lab","t":"止血实验室：PT 与 APTT","d":"PT 看外源、APTT 看内源；都正常→血小板","s":"patho","sn":"病理学","l":"L1 循环障碍","k":"止血实验室：PT与APTTPT看外源、APTT看内源；都正常→血小板L1循环障碍03病理学病理血栓"},{"c":"proc_inflammation","t":"急性炎症血管反应","d":"痉挛→扩张→变慢→通透↑→渗出→五大体征","s":"patho","sn":"病理学","l":"L2 炎症与修复","k":"急性炎症血管反应痉挛→扩张→变慢→通透↑→渗出→五大体征L2炎症与修复04病理学病理免疫炎症"},{"c":"proc_leukocyte","t":"白细胞渗出六步","d":"滚动→黏附→穿出→趋化→吞噬→杀菌","s":"patho","sn":"病理学","l":"L2 炎症与修复","k":"白细胞渗出六步滚动→黏附→穿出→趋化→吞噬→杀菌L2炎症与修复04病理学病理免疫炎症"},{"c":"proc_healing","t":"创伤愈合四期","d":"止血→炎症→肉芽→胶原→上皮→重塑","s":"patho","sn":"病理学","l":"L2 炎症与修复","k":"创伤愈合四期止血→炎症→肉芽→胶原→上皮→重塑L2炎症与修复05病理学病理炎症"},{"c":"proc_atherosclerosis","t":"动脉粥样硬化","d":"内皮损伤→ox-LDL→泡沫细胞→纤维斑块→破裂","s":"patho","sn":"病理学","l":"L3 血管病理","k":"动脉粥样硬化内皮损伤→ox-LDL→泡沫细胞→纤维斑块→破裂L3血管病理06病理学病理心血管脂"},{"c":"proc_myocarditis","t":"心肌炎与心肌病","d":"心肌炎（炎症+坏死）；三型按腔大/壁厚/壁硬分","s":"patho","sn":"病理学","l":"L3 血管病理","k":"心肌炎与心肌病心肌炎（炎症+坏死）；三型按腔大/壁厚/壁硬分L3血管病理06病理学病理心"},{"c":"proc_aneurysm","t":"动脉瘤与主动脉夹层","d":"瘤是扩张、夹层是裂开；Stanford A/B","s":"patho","sn":"病理学","l":"L3 血管病理","k":"动脉瘤与主动脉夹层瘤是扩张、夹层是裂开；StanfordA/BL3血管病理06病理学病理心血管"},{"c":"proc_carcinogenesis","t":"肿瘤发生多阶段","d":"启动→促长→癌基因激活+抑癌失活→浸润","s":"patho","sn":"病理学","l":"L4 肿瘤总论","k":"肿瘤发生多阶段启动→促长→癌基因激活+抑癌失活→浸润L4肿瘤总论07病理学病理肿瘤"},{"c":"proc_metastasis","t":"肿瘤转移六步","d":"脱离→侵入→循环存活→穿出→定植→血管生成","s":"patho","sn":"病理学","l":"L4 肿瘤总论","k":"肿瘤转移六步脱离→侵入→循环存活→穿出→定植→血管生成L4肿瘤总论07病理学病理肿瘤"},{"c":"proc_lobar_pneumonia","t":"大叶性肺炎四期","d":"充血水肿→红肝样变→灰肝样变→溶解消散","s":"patho","sn":"病理学","l":"L5 系统病理（呼吸·消化）","k":"大叶性肺炎四期充血水肿→红肝样变→灰肝样变→溶解消散L5系统病理（呼吸·消化）08病理学病理肺"},{"c":"proc_resp_failure","t":"呼吸衰竭四机制","d":"通气/弥散/V-Q/分流 → Ⅰ 型与 Ⅱ 型","s":"patho","sn":"病理学","l":"L5 系统病理（呼吸·消化）","k":"呼吸衰竭四机制通气/弥散/V-Q/分流→Ⅰ型与Ⅱ型L5系统病理（呼吸·消化）08病理学病理肺"},{"c":"proc_ild","t":"间质性肺疾病","d":"UIP 时相不均 vs NSIP 均匀；结节病肉芽肿","s":"patho","sn":"病理学","l":"L5 系统病理（呼吸·消化）","k":"间质性肺疾病UIP时相不均vsNSIP均匀；结节病肉芽肿L5系统病理（呼吸·消化）08病理学病理肺"},{"c":"proc_pneumoconiosis","t":"尘肺与职业中毒","d":"矽结节（结节性）vs 石棉肺（弥漫性）","s":"patho","sn":"病理学","l":"L5 系统病理（呼吸·消化）","k":"尘肺与职业中毒矽结节（结节性）vs石棉肺（弥漫性）L5系统病理（呼吸·消化）08病理学病理肺"},{"c":"proc_peptic_ulcer","t":"消化性溃疡","d":"侵袭 vs 防御；Hp 与 NSAID 两大外因","s":"patho","sn":"病理学","l":"L5 系统病理（呼吸·消化）","k":"消化性溃疡侵袭vs防御；Hp与NSAID两大外因L5系统病理（呼吸·消化）09病理学病理胃炎症"},{"c":"proc_ibd","t":"炎症性肠病 UC vs CD","d":"UC 连续累黏膜；CD 跳跃透全层","s":"patho","sn":"病理学","l":"L5 系统病理（呼吸·消化）","k":"炎症性肠病UCvsCDUC连续累黏膜；CD跳跃透全层L5系统病理（呼吸·消化）09病理学病理肠炎症"},{"c":"proc_cirrhosis","t":"肝硬化与假小叶","d":"星状细胞活化→纤维隔→假小叶→门脉高压","s":"patho","sn":"病理学","l":"L5 系统病理（呼吸·消化）","k":"肝硬化与假小叶星状细胞活化→纤维隔→假小叶→门脉高压L5系统病理（呼吸·消化）09病理学病理肝"},{"c":"proc_hepatitis","t":"病毒性肝炎与肝衰竭","d":"五型传播与慢性化；大片坏死致肝衰竭","s":"patho","sn":"病理学","l":"L5 系统病理（呼吸·消化）","k":"病毒性肝炎与肝衰竭五型传播与慢性化；大片坏死致肝衰竭L5系统病理（呼吸·消化）09病理学病理肝"},{"c":"proc_dili","t":"药物性肝损伤","d":"固有型 vs 特异质；R 值分三型","s":"patho","sn":"病理学","l":"L5 系统病理（呼吸·消化）","k":"药物性肝损伤固有型vs特异质；R值分三型L5系统病理（呼吸·消化）09病理学病理肝"},{"c":"proc_gn","t":"急性肾炎：免疫复合物伤肾","d":"免疫复合物→补体→增生→滤过膜受损→三联征","s":"patho","sn":"病理学","l":"L6 泌尿系统","k":"急性肾炎：免疫复合物伤肾免疫复合物→补体→增生→滤过膜受损→三联征L6泌尿系统10病理学病理肾免疫"},{"c":"proc_gn_types","t":"肾炎五型怎么分","d":"光镜 + 免疫荧光部位 + 电镜沉积位置","s":"patho","sn":"病理学","l":"L6 泌尿系统","k":"肾炎五型怎么分光镜+免疫荧光部位+电镜沉积位置L6泌尿系统10病理学病理肾"},{"c":"proc_atn","t":"急性肾小管坏死","d":"管型阻塞 + 滤液回漏 + 入球收缩 → 少尿","s":"patho","sn":"病理学","l":"L6 泌尿系统","k":"急性肾小管坏死管型阻塞+滤液回漏+入球收缩→少尿L6泌尿系统10病理学病理肾尿"},{"c":"proc_immunofluorescence","t":"免疫荧光四模式","d":"颗粒/线状/系膜/寡免疫 → 四类病","s":"patho","sn":"病理学","l":"L6 泌尿系统","k":"免疫荧光四模式颗粒/线状/系膜/寡免疫→四类病L6泌尿系统10病理学病理免疫"},{"c":"proc_tubulointerstitial","t":"肾小管间质性肾病","d":"间质水肿→小管损伤→纤维化；小管功能异常在先","s":"patho","sn":"病理学","l":"L6 泌尿系统","k":"肾小管间质性肾病间质水肿→小管损伤→纤维化；小管功能异常在先L6泌尿系统10病理学病理肾尿"},{"c":"proc_dn","t":"糖尿病肾病五期","d":"高滤过→微量蛋白尿→KW 结节→大量蛋白尿→衰竭","s":"patho","sn":"病理学","l":"L6 泌尿系统","k":"糖尿病肾病五期高滤过→微量蛋白尿→KW结节→大量蛋白尿→衰竭L6泌尿系统10病理学病理肾糖"},{"c":"proc_tuberculosis","t":"结核病：肉芽肿与干酪坏死","d":"胞内繁殖→Th1 致敏→上皮样细胞→干酪坏死","s":"patho","sn":"病理学","l":"L7 感染性疾病","k":"结核病：肉芽肿与干酪坏死胞内繁殖→Th1致敏→上皮样细胞→干酪坏死L7感染性疾病11病理学病理肺炎症"},{"c":"proc_malaria","t":"疟疾：蚊到红细胞六步","d":"红前期→红内期→周期破裂；恶性疟最凶险","s":"patho","sn":"病理学","l":"L7 感染性疾病","k":"疟疾：蚊到红细胞六步红前期→红内期→周期破裂；恶性疟最凶险L7感染性疾病11病理学病理"},{"c":"proc_immunodeficiency","t":"免疫缺陷病","d":"B/T/联合/吞噬/补体五类；继发远多于原发","s":"patho","sn":"病理学","l":"L7 感染性疾病","k":"免疫缺陷病B/T/联合/吞噬/补体五类；继发远多于原发L7感染性疾病11病理学病理免疫"},{"c":"proc_thyroid","t":"甲状腺疾病","d":"先判功能（TSH）→再查抗体→最后定形态","s":"patho","sn":"病理学","l":"L8 内分泌系统","k":"甲状腺疾病先判功能（TSH）→再查抗体→最后定形态L8内分泌系统12病理学病理甲状腺"},{"c":"proc_thyroid_cancer","t":"甲状腺癌四型","d":"乳头状/滤泡状/髓样/未分化","s":"patho","sn":"病理学","l":"L8 内分泌系统","k":"甲状腺癌四型乳头状/滤泡状/髓样/未分化L8内分泌系统12病理学病理甲状腺"},{"c":"proc_thyroiditis","t":"甲状腺炎三型","d":"桥本无痛终身甲减；亚急性剧痛自限","s":"patho","sn":"病理学","l":"L8 内分泌系统","k":"甲状腺炎三型桥本无痛终身甲减；亚急性剧痛自限L8内分泌系统12病理学病理甲状腺"},{"c":"proc_endocrine_gland","t":"肾上腺与垂体","d":"垂体六激素；皮质三层→库欣/原醛；髓质→嗜铬","s":"patho","sn":"病理学","l":"L8 内分泌系统","k":"肾上腺与垂体垂体六激素；皮质三层→库欣/原醛；髓质→嗜铬L8内分泌系统12病理学病理"},{"c":"proc_mds","t":"骨髓增生异常综合征","d":"克隆突变→无效造血→血细胞减少；≥20% 原始细胞即 AML","s":"patho","sn":"病理学","l":"L12 造血系统","k":"骨髓增生异常综合征克隆突变→无效造血→血细胞减少；≥20%原始细胞即AMLL12造血系统16病理学病理血"},{"c":"proc_skin_pathology","t":"皮肤病理：按层次定位","d":"角化过度/棘层肥厚/界面皮炎/水疱定位","s":"patho","sn":"病理学","l":"L13 皮肤病理","k":"皮肤病理：按层次定位角化过度/棘层肥厚/界面皮炎/水疱定位L13皮肤病理17病理学病理"},{"c":"proc_stroke","t":"脑血管病：缺血与出血","d":"血栓/栓塞→软化灶；高血压→基底节出血","s":"patho","sn":"病理学","l":"L14 神经病理","k":"脑血管病：缺血与出血血栓/栓塞→软化灶；高血压→基底节出血L14神经病理18病理学病理心神经"},{"c":"proc_neurodegeneration","t":"神经退行性病变","d":"AD（Aβ+tau，从海马）/ PD（α-突触核蛋白，从黑质）","s":"patho","sn":"病理学","l":"L14 神经病理","k":"神经退行性病变AD（Aβ+tau，从海马）/PD（α-突触核蛋白，从黑质）L14神经病理18病理学病理神经"},{"c":"proc_liver_carcinoma","t":"肝炎到肝癌的演进链","d":"病毒→肝炎→纤维化→肝硬化→异型增生→HCC","s":"patho","sn":"病理学","l":"L9 肿瘤各论","k":"肝炎到肝癌的演进链病毒→肝炎→纤维化→肝硬化→异型增生→HCCL9肿瘤各论13病理学病理肝肿瘤"},{"c":"proc_lung_cancer","t":"肺癌四型","d":"位置（中央/周围）× 吸烟 → 鳞/腺/小细胞/大细胞","s":"patho","sn":"病理学","l":"L9 肿瘤各论","k":"肺癌四型位置（中央/周围）×吸烟→鳞/腺/小细胞/大细胞L9肿瘤各论13病理学病理肺肿瘤"},{"c":"proc_gastric_cancer","t":"胃癌：Correa 级联","d":"Hp→萎缩→肠化→异型增生→胃癌","s":"patho","sn":"病理学","l":"L9 肿瘤各论","k":"胃癌：Correa级联Hp→萎缩→肠化→异型增生→胃癌L9肿瘤各论13病理学病理胃肠肿瘤"},{"c":"proc_breast_cancer","t":"乳腺癌分子分型","d":"ER/PR + HER2 + Ki67 → 四型 → 治疗与预后","s":"patho","sn":"病理学","l":"L9 肿瘤各论","k":"乳腺癌分子分型ER/PR+HER2+Ki67→四型→治疗与预后L9肿瘤各论13病理学病理肿瘤"},{"c":"proc_prostate_bladder","t":"前列腺与膀胱肿瘤","d":"前列腺起外周带、成骨转移；膀胱看是否浸润肌层","s":"patho","sn":"病理学","l":"L9 肿瘤各论","k":"前列腺与膀胱肿瘤前列腺起外周带、成骨转移；膀胱看是否浸润肌层L9肿瘤各论13病理学病理肿瘤"},{"c":"proc_lymphoma","t":"淋巴瘤：霍奇金与非霍奇金","d":"RS 细胞 + CD30/15 + 连续播散 vs 单克隆 + 跳跃","s":"patho","sn":"病理学","l":"L9 肿瘤各论","k":"淋巴瘤：霍奇金与非霍奇金RS细胞+CD30/15+连续播散vs单克隆+跳跃L9肿瘤各论13病理学病理免疫肿瘤"},{"c":"proc_melanoma","t":"黑色素瘤：痣到垂直侵袭","d":"水平生长期可治愈 → 垂直生长期 → Breslow 厚度","s":"patho","sn":"病理学","l":"L9 肿瘤各论","k":"黑色素瘤：痣到垂直侵袭水平生长期可治愈→垂直生长期→Breslow厚度L9肿瘤各论13病理学病理肿瘤"},{"c":"proc_soft_tissue_tumor","t":"软组织肿瘤","d":"良性/中间性/恶性；韧带样瘤不转移但易复发","s":"patho","sn":"病理学","l":"L9 肿瘤各论","k":"软组织肿瘤良性/中间性/恶性；韧带样瘤不转移但易复发L9肿瘤各论13病理学病理肿瘤"},{"c":"proc_gynecologic_tumor","t":"妇科三大肿瘤","d":"宫颈HPV、内膜雌激素、卵巢无筛查","s":"patho","sn":"病理学","l":"L9 肿瘤各论","k":"妇科三大肿瘤宫颈HPV、内膜雌激素、卵巢无筛查L9肿瘤各论13病理学病理肿瘤"},{"c":"proc_mediastinal","t":"纵隔肿瘤分区","d":"前胸腺瘤/畸胎瘤；中淋巴瘤；后神经源","s":"patho","sn":"病理学","l":"L9 肿瘤各论","k":"纵隔肿瘤分区前胸腺瘤/畸胎瘤；中淋巴瘤；后神经源L9肿瘤各论13病理学病理"},{"c":"proc_ra","t":"类风湿关节炎","d":"ACPA → 滑膜炎 → 血管翳 → 骨侵蚀 → 畸形","s":"patho","sn":"病理学","l":"L10 骨与关节","k":"类风湿关节炎ACPA→滑膜炎→血管翳→骨侵蚀→畸形L10骨与关节14病理学病理"},{"c":"proc_osteosarcoma","t":"骨肉瘤","d":"青少年干骺端 → 肿瘤骨 → 破皮质 → 肺转移","s":"patho","sn":"病理学","l":"L10 骨与关节","k":"骨肉瘤青少年干骺端→肿瘤骨→破皮质→肺转移L10骨与关节14病理学病理"},{"c":"proc_myopathy","t":"肌病分类","d":"肌病近端/反射保留；DMD 假性肥大；包涵体肌炎","s":"patho","sn":"病理学","l":"L10 骨与关节","k":"肌病分类肌病近端/反射保留；DMD假性肥大；包涵体肌炎L10骨与关节14病理学病理神经"},{"c":"proc_congenital","t":"先天畸形四机制","d":"停滞 / 过度 / 不全 / 变形阻断","s":"patho","sn":"病理学","l":"L11 儿科病理","k":"先天畸形四机制停滞/过度/不全/变形阻断L11儿科病理15病理学病理"},{"c":"proc_childhood_tumor","t":"儿童常见肿瘤","d":"神经母 / 肾母 / 视网膜母 / 肝母","s":"patho","sn":"病理学","l":"L11 儿科病理","k":"儿童常见肿瘤神经母/肾母/视网膜母/肝母L11儿科病理15病理学病理"},{"c":"proc_metabolic","t":"先天代谢病","d":"一酶缺陷→底物蓄积+产物缺乏；蓄积部位定表型","s":"patho","sn":"病理学","l":"L11 儿科病理","k":"先天代谢病一酶缺陷→底物蓄积+产物缺乏；蓄积部位定表型L11儿科病理15病理学病理肝"},{"c":"proc_molecular_path","t":"分子病理三件套","d":"免疫组化看定位，FISH 看扩增，测序看突变","s":"patho","sn":"病理学","l":"L15 病理技术与实务","k":"分子病理三件套免疫组化看定位，FISH看扩增，测序看突变L15病理技术与实务17病理学病理"},{"c":"proc_frozen_section","t":"冰冻切片术中诊断","d":"不固定→速冻→切片；只答三问，石蜡为准","s":"patho","sn":"病理学","l":"L15 病理技术与实务","k":"冰冻切片术中诊断不固定→速冻→切片；只答三问，石蜡为准L15病理技术与实务17病理学病理"},{"c":"proc_autopsy","t":"尸检与死因链","d":"体表→原位→取材；根本到直接死因三级","s":"patho","sn":"病理学","l":"L15 病理技术与实务","k":"尸检与死因链体表→原位→取材；根本到直接死因三级L15病理技术与实务18病理学病理"},{"c":"proc_path_report","t":"病理报告六要素","d":"核对/大体/镜下/诊断/辅助/分期","s":"patho","sn":"病理学","l":"L15 病理技术与实务","k":"病理报告六要素核对/大体/镜下/诊断/辅助/分期L15病理技术与实务18病理学病理"},{"c":"proc_animal_model","t":"动物模型与实验病理","d":"五类模型；像人要看到哪一层；3R 是前提","s":"patho","sn":"病理学","l":"L15 病理技术与实务","k":"动物模型与实验病理五类模型；像人要看到哪一层；3R是前提L15病理技术与实务19病理学病理"},{"c":"proc_digital_path","t":"数字病理与全切片","d":"扫描拼接成 WSI；远程会诊与 AI 辅助","s":"patho","sn":"病理学","l":"L15 病理技术与实务","k":"数字病理与全切片扫描拼接成WSI；远程会诊与AI辅助L15病理技术与实务17病理学病理"},{"c":"proc_qc_eqa","t":"质控与室间质评","d":"内部对照、外部盲评、Kappa 一致性","s":"patho","sn":"病理学","l":"L15 病理技术与实务","k":"质控与室间质评内部对照、外部盲评、Kappa一致性L15病理技术与实务17病理学病理"},{"c":"proc_mtb","t":"分子肿瘤委员会","d":"筛选→汇总→证据分级→多学科→推荐→再检","s":"patho","sn":"病理学","l":"L15 病理技术与实务","k":"分子肿瘤委员会筛选→汇总→证据分级→多学科→推荐→再检L15病理技术与实务19病理学病理免疫"},{"c":"proc_postmortem","t":"法医死亡时间推断","d":"尸冷/尸斑/尸僵/角膜/胃内容交叉印证","s":"patho","sn":"病理学","l":"L16 法医病理","k":"法医死亡时间推断尸冷/尸斑/尸僵/角膜/胃内容交叉印证L16法医病理20病理学病理"},{"c":"proc_injury_forensic","t":"损伤与死亡方式","d":"组织间桥辨钝锐；缢斜勒平；死亡方式四类","s":"patho","sn":"病理学","l":"L16 法医病理","k":"损伤与死亡方式组织间桥辨钝锐；缢斜勒平；死亡方式四类L16法医病理20病理学病理"}];</script><script>
+(function(){
+  var DATA = window.__IDX || [];
+  var box = document.getElementById('sinput');
+  var res = document.getElementById('sres');
+  var stat = document.getElementById('sstat');
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+  var sub = '';   // 学科过滤
+
+  var SUBNAME = {'physio':'生理学','biochem':'生物化学','patho':'病理学'};
+  var CLS = {'physio':'p','biochem':'b','patho':'k'};
+
+  function esc(s){ return (s||'').replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function words(q){
+    return q.trim().toLowerCase().split(/\s+/).filter(function(x){return x;});
+  }
+
+  // 返回 {hit: 命中词数, sc: 分数}；命中 0 个词才剔除。
+  // 全命中记为 tier 2，部分命中 tier 1 —— 排序时全命中永远在前。
+  function score(it, ws){
+    var t = it.t.toLowerCase(), d = (it.d||'').toLowerCase();
+    var k = (it.k||'').toLowerCase(), s = 0, hit = 0;
+    for (var i=0;i<ws.length;i++){
+      var w = ws[i];
+      var inT = t.indexOf(w) >= 0, inD = d.indexOf(w) >= 0;
+      var inK = k.indexOf(w) >= 0;
+      if (!inT && !inD && !inK) continue;
+      hit++;
+      if (inT) s += (t.indexOf(w) === 0 ? 60 : 40);
+      if (inD) s += 18;
+      if (inK) s += 6;
+    }
+    if (!hit) return {hit: 0, sc: -1};
+    var tier = (hit === ws.length) ? 2 : 1;
+    return {hit: hit, sc: tier * 1000 + s};
+  }
+
+  function hl(text, ws){
+    var out = esc(text);
+    for (var i=0;i<ws.length;i++){
+      var w = ws[i]; if (!w) continue;
+      var re = new RegExp('(' + w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+      out = out.replace(re, '<mark>$1</mark>');
+    }
+    return out;
+  }
+
+  function render(){
+    var q = box.value;
+    var ws = words(q);
+    var pool = DATA.filter(function(it){ return !sub || it.s === sub; });
+
+    var hit;
+    if (!ws.length){
+      // 空搜索：不用全景列表，提示用法
+      res.innerHTML = '<div class="sempty">共 ' + DATA.length
+        + ' 张图可检索。试试这些常用词：</div>'
+        + '<div class="shint" id="hot">'
+        + ['梗死','血栓','炎症','肿瘤','转移','反馈','凝血','肾小球',
+           '重吸收','心','肺','肝','甲状腺','免疫','损伤','细胞']
+            .map(function(w){ return '<span class="chip hot" data-w="' + w + '">'
+                 + w + '</span>'; }).join('')
+        + '</div>';
+      stat.textContent = '输入关键词，或点上方学科筛选';
+      Array.prototype.forEach.call(res.querySelectorAll('.chip.hot'),
+        function(c){ c.addEventListener('click', function(){
+          box.value = c.dataset.w; render(); }); });
+      return;
+    }
+    hit = pool.map(function(it){ var r = score(it, ws);
+                    return {it: it, sc: r.sc, hit: r.hit}; })
+               .filter(function(x){ return x.sc >= 0; })
+               .sort(function(a,b){ return b.sc - a.sc; });
+
+    var full = hit.filter(function(x){ return x.hit === ws.length; }).length;
+    var part = hit.length - full;
+    stat.textContent = '找到 ' + hit.length + ' 张（'
+      + (sub ? SUBNAME[sub] : '全部学科') + '）'
+      + (part > 0 ? '｜其中 ' + full + ' 张全部命中，' + part + ' 张部分命中（排在后面）'
+                  : '');
+
+    if (!hit.length){
+      res.innerHTML = '<div class="sempty">没有匹配的结果。<br>'
+        + '试试更短的词，例如「梗死」「反馈」「凝血」；'
+        + '或用两个词缩小范围，如「肾 重吸收」。</div>';
+      return;
+    }
+
+    var html = '';
+    hit.slice(0, 80).forEach(function(x){
+      var it = x.it;
+      html += '<a class="sr" href="' + it.s + '/player.html#c-' + it.c + '">'
+        + '<div class="srh">'
+        + '<span class="srt">' + hl(it.t, ws) + '</span>'
+        + '<span class="sbadge ' + (CLS[it.s]||'') + '">' + esc(it.sn) + '</span>'
+        + '</div>'
+        + (it.d ? '<div class="srd">' + hl(it.d, ws) + '</div>' : '')
+        + (it.l ? '<div class="srl">' + esc(it.l) + '</div>' : '')
+        + '</a>';
+    });
+    if (hit.length > 80){
+      html += '<div class="sstat">仅显示前 80 条，请再加一个关键词缩小范围</div>';
+    }
+    res.innerHTML = html;
+  }
+
+  chips.forEach(function(ch){
+    ch.addEventListener('click', function(){
+      var v = ch.dataset.sub || '';
+      if (sub === v){ sub = ''; } else { sub = v; }
+      chips.forEach(function(c){
+        c.classList.toggle('on', (c.dataset.sub||'') === sub);
+      });
+      render();
+    });
+  });
+
+  box.addEventListener('input', render);
+  box.addEventListener('search', render);
+  render();
+
+  // 支持 URL 带 ?q=xxx 直接检索
+  try {
+    var u = new URLSearchParams(location.search);
+    var q0 = u.get('q');
+    if (q0){ box.value = q0; render(); }
+  } catch(e){}
+})();
+</script></body></html>
