@@ -1,0 +1,8 @@
+{
+ "status": "pass",
+ "file": "肾内科_每日对比提要_20261123.md",
+ "content_sha": "009252d33ee5",
+ "reviewer": "独立审校子代理（分层口径：仅数字错误/无出处断言/等级矛盾判阻断）+ 阻断项修复 + 主控Crossref复核",
+ "note": "首轮四库均判FAIL，阻断项已逐条修复并复算复核；改后重跑check_digest/check_weekday全PASS。",
+ "ts": "2026-11-23 07:10:05"
+}
